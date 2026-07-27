@@ -1,8 +1,13 @@
 ./raw_data
 ./processed_data
-
+./NewData_270726
+./deprecated
 
 *.docx
 *.pdf
 *.xlsx
 *.csv
+*.xls
+*.png
+*.zip
+*.txt

@@ -4,42 +4,41 @@ Project: Harry Rourke's MGHL thesis
 
 Prepared by: Ethan Phillips
 
-Date: 28 June 2026
+Date: 9 July 2026
 
 ## Purpose
 
-This folder contains the raw country-level source files used in the project. Most files are in wide format with one row per country and one column per year.
+This folder contains the raw country-level source files used in the project. Most files are wide country-year panels with one row per geography and one column per year. `health_spend_and_outcomes_by_year.csv` is a stacked panel with one row per country-indicator combination.
 
 ## File Inventory
 
-| File | Contents | Source / notes |
-| --- | --- | --- |
-| `defence_spending_pct_gdp.csv` | Military expenditure as a share of GDP | SIPRI Military Expenditure Database; 173 countries; 1949-2025. |
-| `defence_spending_pct_gov_spending.csv` | Military expenditure as a share of general government spending | SIPRI Military Expenditure Database. |
-| `health_spending_pct_gdp.csv` | Domestic general government health expenditure as a share of GDP | WHO Global Health Expenditure Database, accessed via World Bank. |
-| `health_spending_pct_gov_spending.csv` | Domestic general government health expenditure as a share of general government spending | WHO Global Health Expenditure Database, accessed via World Bank. |
-| `annual_gdp.csv` | GDP in current US dollars | OECD National Accounts data, accessed via World Bank. |
-| `gdp_per_capita.csv` | GDP per capita in current US dollars | OECD National Accounts data, accessed via World Bank. |
-| `oecd_europe_health_systems.csv` | Country list, health system type, and regional cluster | OECD country list plus published typologies. |
+| File | Shape | Contents | Source / notes |
+| --- | --- | --- | --- |
+| `annual_gdp.csv` | 266 rows x 70 cols | GDP in current US$ | World Bank/OECD national accounts data. Metadata columns: `country`, `code`, `var`, `var-code`; year columns run from 1960 to 2025. |
+| `defence_spending_pct_gov_spending.csv` | 194 rows x 40 cols | Military expenditure as a share of general government spending | SIPRI Military Expenditure Database; wide format with `country`, `code`, and year columns from 1988 to 2025. |
+| `gdp_per_capita.csv` | 266 rows x 70 cols | GDP per capita in current US$ | World Bank/OECD national accounts data. Metadata columns: `country`, `code`, `indicator`, `var_code`; year columns run from 1960 to 2025. |
+| `health_spend_and_outcomes_by_year.csv` | 222 rows x 29 cols | Health expenditure and outcome indicators by country/year | World Bank Health, Nutrition and Population Statistics. The file contains 3 metadata rows plus 217 usable country-indicator rows covering 31 countries x 7 indicators. The `variable` column identifies the indicator; year columns run from 1999 to 2024. |
+| `oecd_europe_health_systems.csv` | 31 rows x 3 cols | Country list, health system type, and regional cluster | OECD European country list plus published typologies. Columns: `country`, `code`, `system`. |
 
 ## Standard Conventions
 
-- Country-level tables use one row per country or country group.
+- Country-level tables use one row per country or country group, except `health_spend_and_outcomes_by_year.csv`, which is stacked by indicator.
 - Year columns are named with four-digit years in ascending order.
-- Identifier columns vary by source, but usually include country name and country code.
-- Missing values are represented by empty cells in most files.
-- In the SIPRI defence files, `xxx` and `...` also mean missing data.
+- Identifier columns vary by source, but commonly include `country`, `code`, `var`, `var-code`, `indicator`, and `variable`.
+- Missing values are blank in most files.
+- In the SIPRI files, `xxx` and `...` also mean missing data.
+- In the World Bank health file, `..` also means missing data.
 
-## Health System Metadata
+## Health Indicator Notes
 
-- Country list: OECD European region member states.
-- Health system type sources:
-  - https://doi.org/10.1186/s12913-024-11743-0
-  - https://doi.org/10.1016/j.jval.2019.11.001
-  - https://pubmed.ncbi.nlm.nih.gov/28900351/
-- Regional cluster source:
-  - https://doi.org/10.1186/s12913-018-3323-3
-- Some regional cluster assignments include limited extrapolation based on geography.
+- `health_pct_gge`: health expenditure as a share of general government expenditure.
+- `hosp_beds_per_thou`: hospital beds per 1,000 people.
+- `life_exp`: life expectancy at birth.
+- `mds_per_thou`: medical doctors per 1,000 people.
+- `nurses_per_thou`: nurses and midwives per 1,000 people.
+- `oop_pct`: out-of-pocket health expenditure as a share of current health expenditure.
+- `uhc_idx`: universal health coverage service coverage index.
+- The metadata rows at the top of the file should be ignored in analysis.
 
 ## Processing Note
 
