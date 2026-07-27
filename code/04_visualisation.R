@@ -19,9 +19,17 @@ master_df <- read_csv("processed_data/primary_analysis.csv", na = c(""), show_co
 results_dir <- "results"
 dir.create(results_dir, showWarnings = FALSE)
 
+excluded_primary_codes <- c("ISL", "LUX")
+
+plot_master_df <- master_df %>%
+  filter(
+    year <= 2023,
+    !code %in% excluded_primary_codes
+  )
+
 
 # Prepare plot data
-plot_df <- master_df %>%
+plot_df <- plot_master_df %>%
   filter(!is.na(health_def_ratio))
 
 country_labels <- plot_df %>%
@@ -85,7 +93,7 @@ health_def_ratio_plot <- plot_df %>%
   coord_cartesian(clip = "off") +
   labs(
     title = "Health-to-Defence Spending Ratio Over Time",
-    subtitle = "Ratio of health spending share of government expenditure to defence spending share of government expenditure",
+    subtitle = "Ratio of health spending share of GDP to defence spending share of GDP",
     x = "Year",
     y = "Health-to-defence spending ratio",
     colour = "Country"
@@ -124,7 +132,7 @@ cat("Saved health_def_ratio time-series plot to results/health_def_ratio_timeser
 
 
 # Plot average health and defence spending as a share of GDP by health-system type
-system_spend_df <- master_df %>%
+system_spend_df <- plot_master_df %>%
   mutate(
     system_label = case_when(
       system == "BEV" ~ "Beveridge",
@@ -216,7 +224,12 @@ system_spend_plot <- system_spend_df %>%
   coord_cartesian(clip = "off") +
   labs(
     title = "Average Health and Defence Spending as a Share of GDP",
-    subtitle = "Beveridge and Bismarck country averages, 2000-2022",
+    subtitle = paste0(
+      "Beveridge and Bismarck country averages, ",
+      min(system_spend_df$year, na.rm = TRUE),
+      "-",
+      max(system_spend_df$year, na.rm = TRUE)
+    ),
     x = "Year",
     y = "Average spending as a share of GDP"
   ) +
