@@ -10,6 +10,7 @@ suppressPackageStartupMessages({
   library(broom)
   library(broom.mixed)
   library(dplyr)
+  library(geepack)
   library(lme4)
   library(nlme)
   library(readr)
@@ -58,21 +59,6 @@ panel_df <- master_df %>%
       (year - 1L) %in% excluded_analysis_years,
       NA_real_,
       lag(government_debt_pct_gdp) / 0.10
-    ),
-    debt_before_lag1_defence_10pp = if_else(
-      (year - 2L) %in% excluded_analysis_years,
-      NA_real_,
-      lag(government_debt_pct_gdp, 2) / 0.10
-    ),
-    debt_before_lag2_defence_10pp = if_else(
-      (year - 3L) %in% excluded_analysis_years,
-      NA_real_,
-      lag(government_debt_pct_gdp, 3) / 0.10
-    ),
-    debt_before_lag3_defence_10pp = if_else(
-      (year - 4L) %in% excluded_analysis_years,
-      NA_real_,
-      lag(government_debt_pct_gdp, 4) / 0.10
     ),
     debt_start_3yr_10pp = if_else(
       (year - 3L) %in% excluded_analysis_years,
@@ -171,18 +157,6 @@ centres <- c(
   log2_gdp_percap = mean(primary_df$log2_gdp_percap, na.rm = TRUE),
   debt_change_pp = mean(primary_df$debt_change_pp, na.rm = TRUE),
   previous_debt_10pp = mean(primary_df$previous_debt_10pp, na.rm = TRUE),
-  debt_before_lag1_defence_10pp = mean(
-    primary_df$debt_before_lag1_defence_10pp,
-    na.rm = TRUE
-  ),
-  debt_before_lag2_defence_10pp = mean(
-    primary_df$debt_before_lag2_defence_10pp,
-    na.rm = TRUE
-  ),
-  debt_before_lag3_defence_10pp = mean(
-    primary_df$debt_before_lag3_defence_10pp,
-    na.rm = TRUE
-  ),
   debt_start_3yr_10pp = mean(
     primary_df$debt_start_3yr_10pp,
     na.rm = TRUE
@@ -201,15 +175,6 @@ panel_df <- panel_df %>%
       debt_change_pp - centres[["debt_change_pp"]],
     previous_debt_10pp_c =
       previous_debt_10pp - centres[["previous_debt_10pp"]],
-    debt_before_lag1_defence_10pp_c =
-      debt_before_lag1_defence_10pp -
-        centres[["debt_before_lag1_defence_10pp"]],
-    debt_before_lag2_defence_10pp_c =
-      debt_before_lag2_defence_10pp -
-        centres[["debt_before_lag2_defence_10pp"]],
-    debt_before_lag3_defence_10pp_c =
-      debt_before_lag3_defence_10pp -
-        centres[["debt_before_lag3_defence_10pp"]],
     debt_start_3yr_10pp_c =
       debt_start_3yr_10pp - centres[["debt_start_3yr_10pp"]],
     gdp_per_10k_c =
@@ -233,6 +198,12 @@ primary_df <- panel_df %>%
 model_status <- function(model) {
   if (inherits(model, "error")) {
     return(conditionMessage(model))
+  }
+
+  if (inherits(model, "geeglm") && model$geese$error != 0) {
+    return(
+      paste("GEE fitting error code:", model$geese$error)
+    )
   }
 
   if (inherits(model, "merMod")) {
@@ -333,6 +304,16 @@ fit_sensitivity_model <- function(
           ),
           method = "ML"
         )
+      } else if (model_type == "gee_ar1") {
+        geepack::geeglm(
+          formula,
+          data = model_data,
+          id = country,
+          waves = year,
+          family = gaussian(link = "identity"),
+          corstr = "ar1",
+          std.err = "san.se"
+        )
       } else {
         stop("Unknown model type: ", model_type)
       }
@@ -355,6 +336,8 @@ fit_sensitivity_model <- function(
     } else if (inherits(model_object, "merMod")) {
       optimizer_code <- model_object@optinfo$conv$opt
       is.null(optimizer_code) || all(optimizer_code == 0)
+    } else if (inherits(model_object, "geeglm")) {
+      model_object$geese$error == 0
     } else {
       TRUE
     },
@@ -408,14 +391,14 @@ add_main_sensitivity <- function(
 # Test one-, two-, and three-year lags
 #
 # Each lagged defence change is moderated by debt measured one year before
-# that defence-spending decision.
+# the health-spending change outcome.
 add_main_sensitivity(
   "lag_1_year",
   "One-year lag of defence change",
   primary_df,
   health_change_percent ~
     lag_defence_1_10pct * system +
-    lag_defence_1_10pct * debt_before_lag1_defence_10pp_c +
+    lag_defence_1_10pct * previous_debt_10pp_c +
     log2_gdp_percap_c +
     year_factor +
     (1 | country)
@@ -427,7 +410,7 @@ add_main_sensitivity(
   primary_df,
   health_change_percent ~
     lag_defence_2_10pct * system +
-    lag_defence_2_10pct * debt_before_lag2_defence_10pp_c +
+    lag_defence_2_10pct * previous_debt_10pp_c +
     log2_gdp_percap_c +
     year_factor +
     (1 | country)
@@ -439,7 +422,7 @@ add_main_sensitivity(
   primary_df,
   health_change_percent ~
     lag_defence_3_10pct * system +
-    lag_defence_3_10pct * debt_before_lag3_defence_10pp_c +
+    lag_defence_3_10pct * previous_debt_10pp_c +
     log2_gdp_percap_c +
     year_factor +
     (1 | country)
@@ -482,6 +465,21 @@ add_main_sensitivity(
     log2_gdp_percap_c +
     year_factor,
   model_type = "gls_ar1"
+)
+
+add_main_sensitivity(
+  "gee_ar1",
+  paste(
+    "GEE with country clusters, AR(1) working correlation,",
+    "and robust standard errors"
+  ),
+  primary_df,
+  health_change_percent ~
+    defence_change_10pct * system +
+    defence_change_10pct * previous_debt_10pp_c +
+    log2_gdp_percap_c +
+    year_factor,
+  model_type = "gee_ar1"
 )
 
 
@@ -1120,8 +1118,8 @@ secondary_sensitivity_results <- bind_rows(
     )
   )
 
-if (nrow(main_sensitivity_overview) != 18) {
-  stop("Expected 18 main sensitivity specifications.")
+if (nrow(main_sensitivity_overview) != 19) {
+  stop("Expected 19 main sensitivity specifications.")
 }
 
 if (any(!main_sensitivity_overview$converged)) {

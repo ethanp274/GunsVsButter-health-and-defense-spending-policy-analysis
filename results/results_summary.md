@@ -108,13 +108,13 @@ For log-transformed outcomes, effects below are percentage changes per doubling 
 
 ### Lagged defence-change sensitivity
 
-These models estimate whether defence-spending change predicts health-spending change one, two, or three years later. For each lag, the debt moderator is measured one year before the defence-change exposure.
+These models estimate whether defence-spending change predicts health-spending change one, two, or three years later. For every lag, the debt moderator is measured in the year before the health-spending change outcome.
 
 | Sensitivity | N | Countries | Focal estimate [95% CI] | Singular fit |
 | --- | --- | --- | --- | --- |
-| One-year lag of defence change | 522 | 29 | 0.887 [0.122, 1.653] | TRUE |
-| Two-year lag of defence change | 493 | 29 | 1.442 [0.653, 2.232] | TRUE |
-| Three-year lag of defence change | 493 | 29 | -0.275 [-1.083, 0.534] | TRUE |
+| One-year lag of defence change | 551 | 29 | 0.739 [-0.018, 1.496] | TRUE |
+| Two-year lag of defence change | 493 | 29 | 1.459 [0.676, 2.242] | TRUE |
+| Three-year lag of defence change | 464 | 29 | -0.183 [-0.991, 0.625] | TRUE |
 
 ### Other notable sensitivities
 
@@ -125,6 +125,7 @@ The focal estimates below correspond to the defence-change term used by each spe
 | Three-year cumulative changes with debt at the start of the period | 522 | 29 | 2.086 [1.349, 2.823] | TRUE |
 | Country and year fixed effects | 580 | 29 | 1.160 [0.414, 1.907] |  |
 | Generalized least squares with country-specific AR(1) correlation | 580 | 29 | 1.095 [0.391, 1.800] |  |
+| GEE with country clusters, AR(1) working correlation, and robust standard errors | 580 | 29 | 1.100 [-0.094, 2.295] |  |
 | Absolute percentage-point changes in GDP shares | 580 | 29 | 0.308 [0.072, 0.545] | TRUE |
 | Current NATO members only | 480 | 24 | 0.835 [0.018, 1.652] | TRUE |
 | Restore Luxembourg while continuing to exclude Iceland | 600 | 30 | 1.063 [0.375, 1.751] | TRUE |
@@ -183,6 +184,7 @@ Across the remaining change-on-change models, 5 of 36 95% confidence intervals e
 - The models are associational and may retain residual confounding or reverse causation.
 - Health, defence, and debt measures share GDP-related denominators, so common economic shocks can create coupled movements.
 - A singular random-intercept fit indicates that the estimated between-country residual variance is effectively zero after included covariates.
+- The GEE sensitivity estimates a population-average association with robust standard errors. With 29 country clusters, sandwich standard errors may still have limited small-sample accuracy.
 - Secondary analyses are exploratory and span outcomes with different observation schedules and sample sizes.
 - Annual differencing may reduce trend confounding but magnifies measurement error and is poorly suited to intermittently observed outcomes.
 

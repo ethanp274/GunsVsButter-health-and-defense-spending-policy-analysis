@@ -11,3 +11,5 @@
 *.png
 *.zip
 *.txt
+.Rproj.user
+.positai
