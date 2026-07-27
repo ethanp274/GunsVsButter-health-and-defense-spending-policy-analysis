@@ -27,12 +27,24 @@ results_dir <- "results"
 dir.create(results_dir, showWarnings = FALSE)
 
 excluded_primary_codes <- c("ISL", "LUX")
+excluded_analysis_years <- c(2020L, 2021L)
 
 
 # Prepare the primary sample and interpretable model scales
 primary_df <- master_df %>%
+  group_by(code) %>%
+  arrange(year, .by_group = TRUE) %>%
+  mutate(
+    previous_debt_10pp = if_else(
+      (year - 1L) %in% excluded_analysis_years,
+      NA_real_,
+      lag(government_debt_pct_gdp) / 0.10
+    )
+  ) %>%
+  ungroup() %>%
   filter(
     year <= 2023,
+    !year %in% excluded_analysis_years,
     !code %in% excluded_primary_codes
   ) %>%
   mutate(
@@ -41,12 +53,11 @@ primary_df <- master_df %>%
     year_factor = factor(year),
     health_change_percent = 100 * change_health_gdp,
     defence_change_10pct = change_def_gdp / 0.10,
-    debt_change_10pct = change_debt_gdp / 0.10,
     log2_gdp_percap = log2(gdp_percap)
   )
 
-debt_change_center <- mean(
-  primary_df$debt_change_10pct,
+previous_debt_center <- mean(
+  primary_df$previous_debt_10pp,
   na.rm = TRUE
 )
 
@@ -57,14 +68,15 @@ gdp_center <- mean(
 
 primary_df <- primary_df %>%
   mutate(
-    debt_change_10pct_c = debt_change_10pct - debt_change_center,
+    previous_debt_10pp_c =
+      previous_debt_10pp - previous_debt_center,
     log2_gdp_percap_c = log2_gdp_percap - gdp_center
   )
 
 scaled_main_vars <- c(
   "health_change_percent",
   "defence_change_10pct",
-  "debt_change_10pct_c",
+  "previous_debt_10pp_c",
   "log2_gdp_percap_c"
 )
 
@@ -83,7 +95,7 @@ if (any(has_infinite_main_value)) {
 main_required_vars <- c(
   "health_change_percent",
   "defence_change_10pct",
-  "debt_change_10pct_c",
+  "previous_debt_10pp_c",
   "log2_gdp_percap_c",
   "system",
   "country",
@@ -95,11 +107,16 @@ main_data <- primary_df[
 ] %>%
   droplevels()
 
-if (nrow(main_data) != 667 ||
+if (nrow(main_data) != 580 ||
     n_distinct(main_data$country) != 29 ||
     min(main_data$year) != 2001 ||
     max(main_data$year) != 2023) {
-  stop("The expected main-analysis sample is 667 rows from 29 countries, 2001-2023.")
+  stop(
+    paste(
+      "The expected main-analysis sample is 580 rows from 29 countries,",
+      "with 2020-2021 excluded and 2022 unavailable for lagged debt."
+    )
+  )
 }
 
 
@@ -126,7 +143,7 @@ main_model_3 <- lmer(
 main_model_4 <- lmer(
   health_change_percent ~
     defence_change_10pct * system +
-    defence_change_10pct * debt_change_10pct_c +
+    defence_change_10pct * previous_debt_10pp_c +
     (1 | country),
   data = main_data,
   REML = FALSE
@@ -135,7 +152,7 @@ main_model_4 <- lmer(
 main_model_5 <- lmer(
   health_change_percent ~
     defence_change_10pct * system +
-    defence_change_10pct * debt_change_10pct_c +
+    defence_change_10pct * previous_debt_10pp_c +
     log2_gdp_percap_c +
     year_factor +
     (1 | country),
@@ -225,14 +242,14 @@ label_term <- function(term) {
     term == "defence_change_10pct" ~
       "Defence change, per 10% relative increase",
     term == "systemBIS" ~ "Bismarck-style health system",
-    term == "debt_change_10pct_c" ~
-      "Public-debt change, per 10% relative increase",
+    term == "previous_debt_10pp_c" ~
+      "Previous-year public debt, per 10 percentage points of GDP",
     term == "log2_gdp_percap_c" ~
       "GDP per capita, per doubling",
     term == "defence_change_10pct:systemBIS" ~
       "Defence change x Bismarck system",
-    term == "defence_change_10pct:debt_change_10pct_c" ~
-      "Defence change x public-debt change",
+    term == "defence_change_10pct:previous_debt_10pp_c" ~
+      "Defence change x previous-year public debt",
     term == "ratio_within" ~
       "Within-country log2 health-to-defence ratio",
     term == "ratio_between" ~
@@ -315,7 +332,7 @@ if (any(!main_model_overview$converged)) {
 
 # Translate the two interactions into conditional defence slopes
 debt_percentiles <- quantile(
-  main_data$debt_change_10pct,
+  main_data$previous_debt_10pp,
   probs = c(0.25, 0.50, 0.75),
   na.rm = TRUE
 )
@@ -325,7 +342,7 @@ interaction_grid <- bind_rows(
     tibble(
       system = c("BEV", "BIS"),
       debt_percentile = names(debt_percentiles)[[i]],
-      debt_change_10pct = as.numeric(debt_percentiles[[i]])
+      previous_debt_10pp = as.numeric(debt_percentiles[[i]])
     )
   })
 )
@@ -345,8 +362,8 @@ calculate_defence_slope <- function(system_value, debt_value) {
     weights[["defence_change_10pct:systemBIS"]] <- 1
   }
 
-  weights[["defence_change_10pct:debt_change_10pct_c"]] <-
-    debt_value - debt_change_center
+  weights[["defence_change_10pct:previous_debt_10pp_c"]] <-
+    debt_value - previous_debt_center
 
   estimate <- sum(weights * fixed_estimates)
   std_error <- sqrt(
@@ -365,7 +382,7 @@ main_interaction_slopes <- interaction_grid %>%
   rowwise() %>%
   mutate(
     slope = list(
-      calculate_defence_slope(system, debt_change_10pct)
+      calculate_defence_slope(system, previous_debt_10pp)
     )
   ) %>%
   unnest(slope) %>%
@@ -373,7 +390,7 @@ main_interaction_slopes <- interaction_grid %>%
   transmute(
     system,
     debt_percentile,
-    debt_change_percent = round(10 * debt_change_10pct, 2),
+    previous_debt_pct_gdp = round(10 * previous_debt_10pp, 2),
     estimate = round(estimate, 4),
     std_error = round(std_error, 4),
     conf_low = round(conf_low, 4),
@@ -383,7 +400,11 @@ main_interaction_slopes <- interaction_grid %>%
   )
 
 
-# Prepare the health-system and health-outcome variables
+# Prepare outcome levels for the secondary analyses
+#
+# The primary secondary estimand relates a country's spending balance to its
+# outcome level. Annual outcome changes are tested separately as sensitivities
+# because differencing slow-moving indicators can amplify measurement noise.
 secondary_df <- primary_df %>%
   filter(!is.na(health_def_ratio), health_def_ratio > 0) %>%
   mutate(
@@ -469,8 +490,6 @@ secondary_specs <- tribble(
   "Medical doctors", "Log outcome",
   "log_nurses_per_thou", "nurses_midwives_model",
   "Nurses and midwives", "Log outcome",
-  "uhc_idx", "uhc_service_coverage_model",
-  "UHC service coverage", "Index points",
   "log_premature_ncd_mortality", "premature_ncd_mortality_model",
   "Premature NCD mortality", "Log outcome",
   "log_avoidable_mortality", "avoidable_mortality_model",
@@ -636,7 +655,7 @@ analysis_sample_flow <- bind_rows(
     last_year = max(master_df$year)
   ),
   tibble(
-    stage = "Primary countries through 2023",
+    stage = "Primary countries through 2023, excluding 2020-2021",
     rows = nrow(primary_df),
     countries = n_distinct(primary_df$code),
     first_year = min(primary_df$year),
@@ -697,8 +716,8 @@ headline_terms <- main_model_coefficients %>%
     term %in% c(
       "defence_change_10pct",
       "defence_change_10pct:systemBIS",
-      "debt_change_10pct_c",
-      "defence_change_10pct:debt_change_10pct_c",
+      "previous_debt_10pp_c",
+      "defence_change_10pct:previous_debt_10pp_c",
       "log2_gdp_percap_c"
     )
   )
@@ -716,6 +735,8 @@ summary_lines <- c(
     max(main_data$year)
   ),
   "Iceland and Luxembourg are excluded from the primary analysis.",
+  "All primary and secondary analyses exclude observations from 2020 and 2021.",
+  "The main models also omit 2022 because its previous-year debt value is from excluded 2021.",
   "The headline model includes country random intercepts and categorical year effects.",
   sprintf(
     "Headline random-intercept variance: %.6f | Singular fit: %s",

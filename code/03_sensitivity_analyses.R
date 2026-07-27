@@ -28,6 +28,7 @@ results_dir <- "results"
 dir.create(results_dir, showWarnings = FALSE)
 
 excluded_primary_codes <- c("ISL", "LUX")
+excluded_analysis_years <- c(2020L, 2021L)
 current_non_nato_codes <- c("AUT", "CYP", "IRL", "MLT", "CHE")
 
 
@@ -38,7 +39,7 @@ panel_df <- master_df %>%
   mutate(
     health_change_percent = 100 * change_health_gdp,
     defence_change_10pct = change_def_gdp / 0.10,
-    debt_change_10pct = change_debt_gdp / 0.10,
+    current_debt_10pp = government_debt_pct_gdp / 0.10,
     log2_gdp_percap = log2(gdp_percap),
     gdp_per_10k = gdp_percap / 10000,
     gdp_growth_percent = if_else(
@@ -53,13 +54,46 @@ panel_df <- master_df %>%
     debt_change_pp = 100 * (
       government_debt_pct_gdp - lag(government_debt_pct_gdp)
     ),
-    lag_debt_level_10pp = lag(government_debt_pct_gdp) / 0.10,
-    lag_defence_1_10pct = lag(change_def_gdp, 1) / 0.10,
-    lag_defence_2_10pct = lag(change_def_gdp, 2) / 0.10,
-    lag_defence_3_10pct = lag(change_def_gdp, 3) / 0.10,
-    lag_debt_1_10pct = lag(change_debt_gdp, 1) / 0.10,
-    lag_debt_2_10pct = lag(change_debt_gdp, 2) / 0.10,
-    lag_debt_3_10pct = lag(change_debt_gdp, 3) / 0.10,
+    previous_debt_10pp = if_else(
+      (year - 1L) %in% excluded_analysis_years,
+      NA_real_,
+      lag(government_debt_pct_gdp) / 0.10
+    ),
+    debt_before_lag1_defence_10pp = if_else(
+      (year - 2L) %in% excluded_analysis_years,
+      NA_real_,
+      lag(government_debt_pct_gdp, 2) / 0.10
+    ),
+    debt_before_lag2_defence_10pp = if_else(
+      (year - 3L) %in% excluded_analysis_years,
+      NA_real_,
+      lag(government_debt_pct_gdp, 3) / 0.10
+    ),
+    debt_before_lag3_defence_10pp = if_else(
+      (year - 4L) %in% excluded_analysis_years,
+      NA_real_,
+      lag(government_debt_pct_gdp, 4) / 0.10
+    ),
+    debt_start_3yr_10pp = if_else(
+      (year - 3L) %in% excluded_analysis_years,
+      NA_real_,
+      lag(government_debt_pct_gdp, 3) / 0.10
+    ),
+    lag_defence_1_10pct = if_else(
+      (year - 1L) %in% excluded_analysis_years,
+      NA_real_,
+      lag(change_def_gdp, 1) / 0.10
+    ),
+    lag_defence_2_10pct = if_else(
+      (year - 2L) %in% excluded_analysis_years,
+      NA_real_,
+      lag(change_def_gdp, 2) / 0.10
+    ),
+    lag_defence_3_10pct = if_else(
+      (year - 3L) %in% excluded_analysis_years,
+      NA_real_,
+      lag(change_def_gdp, 3) / 0.10
+    ),
     health_change_3yr_percent = if_else(
       !is.na(health_pct_gdp) &
         !is.na(lag(health_pct_gdp, 3)) &
@@ -74,28 +108,42 @@ panel_df <- master_df %>%
       (defence_pct_gdp / lag(defence_pct_gdp, 3) - 1) / 0.10,
       NA_real_
     ),
-    debt_change_3yr_10pct = if_else(
-      !is.na(government_debt_pct_gdp) &
-        !is.na(lag(government_debt_pct_gdp, 3)) &
-        lag(government_debt_pct_gdp, 3) > 0,
-      (
-        government_debt_pct_gdp /
-          lag(government_debt_pct_gdp, 3) - 1
-      ) / 0.10,
-      NA_real_
-    ),
     log2_ratio = if_else(
       health_def_ratio > 0,
       log2(health_def_ratio),
       NA_real_
     ),
     change_log2_ratio = log2_ratio - lag(log2_ratio),
-    lag_log2_ratio_1 = lag(log2_ratio, 1),
-    lag_log2_ratio_3 = lag(log2_ratio, 3),
-    lag_log2_ratio_5 = lag(log2_ratio, 5),
-    lag_change_log2_ratio_1 = lag(change_log2_ratio, 1),
-    lag_change_log2_ratio_3 = lag(change_log2_ratio, 3),
-    lag_change_log2_ratio_5 = lag(change_log2_ratio, 5),
+    lag_log2_ratio_1 = if_else(
+      (year - 1L) %in% excluded_analysis_years,
+      NA_real_,
+      lag(log2_ratio, 1)
+    ),
+    lag_log2_ratio_3 = if_else(
+      (year - 3L) %in% excluded_analysis_years,
+      NA_real_,
+      lag(log2_ratio, 3)
+    ),
+    lag_log2_ratio_5 = if_else(
+      (year - 5L) %in% excluded_analysis_years,
+      NA_real_,
+      lag(log2_ratio, 5)
+    ),
+    lag_change_log2_ratio_1 = if_else(
+      (year - 1L) %in% excluded_analysis_years,
+      NA_real_,
+      lag(change_log2_ratio, 1)
+    ),
+    lag_change_log2_ratio_3 = if_else(
+      (year - 3L) %in% excluded_analysis_years,
+      NA_real_,
+      lag(change_log2_ratio, 3)
+    ),
+    lag_change_log2_ratio_5 = if_else(
+      (year - 5L) %in% excluded_analysis_years,
+      NA_real_,
+      lag(change_log2_ratio, 5)
+    ),
     log2_health_share = if_else(
       health_pct_gdp > 0,
       log2(health_pct_gdp),
@@ -114,47 +162,60 @@ panel_df <- master_df %>%
 primary_df <- panel_df %>%
   filter(
     year <= 2023,
+    !year %in% excluded_analysis_years,
     !code %in% excluded_primary_codes
   )
 
 centres <- c(
-  debt_change_10pct = mean(primary_df$debt_change_10pct, na.rm = TRUE),
+  current_debt_10pp = mean(primary_df$current_debt_10pp, na.rm = TRUE),
   log2_gdp_percap = mean(primary_df$log2_gdp_percap, na.rm = TRUE),
   debt_change_pp = mean(primary_df$debt_change_pp, na.rm = TRUE),
-  lag_debt_level_10pp = mean(primary_df$lag_debt_level_10pp, na.rm = TRUE),
-  gdp_per_10k = mean(primary_df$gdp_per_10k, na.rm = TRUE),
-  gdp_growth_percent = mean(primary_df$gdp_growth_percent, na.rm = TRUE),
-  lag_debt_1_10pct = mean(primary_df$lag_debt_1_10pct, na.rm = TRUE),
-  lag_debt_2_10pct = mean(primary_df$lag_debt_2_10pct, na.rm = TRUE),
-  lag_debt_3_10pct = mean(primary_df$lag_debt_3_10pct, na.rm = TRUE),
-  debt_change_3yr_10pct = mean(
-    primary_df$debt_change_3yr_10pct,
+  previous_debt_10pp = mean(primary_df$previous_debt_10pp, na.rm = TRUE),
+  debt_before_lag1_defence_10pp = mean(
+    primary_df$debt_before_lag1_defence_10pp,
     na.rm = TRUE
-  )
+  ),
+  debt_before_lag2_defence_10pp = mean(
+    primary_df$debt_before_lag2_defence_10pp,
+    na.rm = TRUE
+  ),
+  debt_before_lag3_defence_10pp = mean(
+    primary_df$debt_before_lag3_defence_10pp,
+    na.rm = TRUE
+  ),
+  debt_start_3yr_10pp = mean(
+    primary_df$debt_start_3yr_10pp,
+    na.rm = TRUE
+  ),
+  gdp_per_10k = mean(primary_df$gdp_per_10k, na.rm = TRUE),
+  gdp_growth_percent = mean(primary_df$gdp_growth_percent, na.rm = TRUE)
 )
 
 panel_df <- panel_df %>%
   mutate(
-    debt_change_10pct_c =
-      debt_change_10pct - centres[["debt_change_10pct"]],
+    current_debt_10pp_c =
+      current_debt_10pp - centres[["current_debt_10pp"]],
     log2_gdp_percap_c =
       log2_gdp_percap - centres[["log2_gdp_percap"]],
     debt_change_pp_c =
       debt_change_pp - centres[["debt_change_pp"]],
-    lag_debt_level_10pp_c =
-      lag_debt_level_10pp - centres[["lag_debt_level_10pp"]],
+    previous_debt_10pp_c =
+      previous_debt_10pp - centres[["previous_debt_10pp"]],
+    debt_before_lag1_defence_10pp_c =
+      debt_before_lag1_defence_10pp -
+        centres[["debt_before_lag1_defence_10pp"]],
+    debt_before_lag2_defence_10pp_c =
+      debt_before_lag2_defence_10pp -
+        centres[["debt_before_lag2_defence_10pp"]],
+    debt_before_lag3_defence_10pp_c =
+      debt_before_lag3_defence_10pp -
+        centres[["debt_before_lag3_defence_10pp"]],
+    debt_start_3yr_10pp_c =
+      debt_start_3yr_10pp - centres[["debt_start_3yr_10pp"]],
     gdp_per_10k_c =
       gdp_per_10k - centres[["gdp_per_10k"]],
     gdp_growth_percent_c =
       gdp_growth_percent - centres[["gdp_growth_percent"]],
-    lag_debt_1_10pct_c =
-      lag_debt_1_10pct - centres[["lag_debt_1_10pct"]],
-    lag_debt_2_10pct_c =
-      lag_debt_2_10pct - centres[["lag_debt_2_10pct"]],
-    lag_debt_3_10pct_c =
-      lag_debt_3_10pct - centres[["lag_debt_3_10pct"]],
-    debt_change_3yr_10pct_c =
-      debt_change_3yr_10pct - centres[["debt_change_3yr_10pct"]],
     country = factor(country),
     system = relevel(factor(system), ref = "BEV"),
     year_factor = factor(year)
@@ -163,6 +224,7 @@ panel_df <- panel_df %>%
 primary_df <- panel_df %>%
   filter(
     year <= 2023,
+    !year %in% excluded_analysis_years,
     !code %in% excluded_primary_codes
   )
 
@@ -320,7 +382,7 @@ fit_sensitivity_model <- function(
 # The fully adjusted annual-change formula is the reference specification
 full_formula <- health_change_percent ~
   defence_change_10pct * system +
-  defence_change_10pct * debt_change_10pct_c +
+  defence_change_10pct * previous_debt_10pp_c +
   log2_gdp_percap_c +
   year_factor +
   (1 | country)
@@ -344,13 +406,16 @@ add_main_sensitivity <- function(
 
 
 # Test one-, two-, and three-year lags
+#
+# Each lagged defence change is moderated by debt measured one year before
+# that defence-spending decision.
 add_main_sensitivity(
   "lag_1_year",
-  "One-year lag of defence and debt changes",
+  "One-year lag of defence change",
   primary_df,
   health_change_percent ~
     lag_defence_1_10pct * system +
-    lag_defence_1_10pct * lag_debt_1_10pct_c +
+    lag_defence_1_10pct * debt_before_lag1_defence_10pp_c +
     log2_gdp_percap_c +
     year_factor +
     (1 | country)
@@ -358,11 +423,11 @@ add_main_sensitivity(
 
 add_main_sensitivity(
   "lag_2_years",
-  "Two-year lag of defence and debt changes",
+  "Two-year lag of defence change",
   primary_df,
   health_change_percent ~
     lag_defence_2_10pct * system +
-    lag_defence_2_10pct * lag_debt_2_10pct_c +
+    lag_defence_2_10pct * debt_before_lag2_defence_10pp_c +
     log2_gdp_percap_c +
     year_factor +
     (1 | country)
@@ -370,11 +435,11 @@ add_main_sensitivity(
 
 add_main_sensitivity(
   "lag_3_years",
-  "Three-year lag of defence and debt changes",
+  "Three-year lag of defence change",
   primary_df,
   health_change_percent ~
     lag_defence_3_10pct * system +
-    lag_defence_3_10pct * lag_debt_3_10pct_c +
+    lag_defence_3_10pct * debt_before_lag3_defence_10pp_c +
     log2_gdp_percap_c +
     year_factor +
     (1 | country)
@@ -382,11 +447,11 @@ add_main_sensitivity(
 
 add_main_sensitivity(
   "cumulative_3_year_change",
-  "Three-year cumulative health, defence, and debt changes",
+  "Three-year cumulative changes with debt at the start of the period",
   primary_df,
   health_change_3yr_percent ~
     defence_change_3yr_10pct * system +
-    defence_change_3yr_10pct * debt_change_3yr_10pct_c +
+    defence_change_3yr_10pct * debt_start_3yr_10pp_c +
     log2_gdp_percap_c +
     year_factor +
     (1 | country)
@@ -400,7 +465,7 @@ add_main_sensitivity(
   primary_df,
   health_change_percent ~
     defence_change_10pct * system +
-    defence_change_10pct * debt_change_10pct_c +
+    defence_change_10pct * previous_debt_10pp_c +
     log2_gdp_percap_c +
     year_factor +
     country,
@@ -413,7 +478,7 @@ add_main_sensitivity(
   primary_df,
   health_change_percent ~
     defence_change_10pct * system +
-    defence_change_10pct * debt_change_10pct_c +
+    defence_change_10pct * previous_debt_10pp_c +
     log2_gdp_percap_c +
     year_factor,
   model_type = "gls_ar1"
@@ -427,19 +492,19 @@ add_main_sensitivity(
   primary_df,
   health_change_pp ~
     defence_change_pp * system +
-    defence_change_pp * debt_change_pp_c +
+    defence_change_pp * previous_debt_10pp_c +
     log2_gdp_percap_c +
     year_factor +
     (1 | country)
 )
 
 add_main_sensitivity(
-  "lagged_debt_level",
-  "Lagged public-debt level as moderator",
+  "current_debt_level",
+  "Current-year public-debt level as moderator",
   primary_df,
   health_change_percent ~
     defence_change_10pct * system +
-    defence_change_10pct * lag_debt_level_10pp_c +
+    defence_change_10pct * current_debt_10pp_c +
     log2_gdp_percap_c +
     year_factor +
     (1 | country)
@@ -459,11 +524,11 @@ add_main_sensitivity(
 
 add_main_sensitivity(
   "debt_without_moderation",
-  "Public-debt relative change without interaction",
+  "Previous-year public-debt level without interaction",
   primary_df,
   health_change_percent ~
     defence_change_10pct * system +
-    debt_change_10pct_c +
+    previous_debt_10pp_c +
     log2_gdp_percap_c +
     year_factor +
     (1 | country)
@@ -475,7 +540,7 @@ add_main_sensitivity(
   primary_df,
   health_change_percent ~
     defence_change_10pct * system +
-    defence_change_10pct * debt_change_10pct_c +
+    defence_change_10pct * previous_debt_10pp_c +
     gdp_growth_percent_c +
     year_factor +
     (1 | country)
@@ -487,7 +552,7 @@ add_main_sensitivity(
   primary_df,
   health_change_percent ~
     defence_change_10pct * system +
-    defence_change_10pct * debt_change_10pct_c +
+    defence_change_10pct * previous_debt_10pp_c +
     gdp_per_10k_c +
     year_factor +
     (1 | country)
@@ -507,7 +572,11 @@ add_main_sensitivity(
   "restore_luxembourg",
   "Restore Luxembourg while continuing to exclude Iceland",
   panel_df %>%
-    filter(year <= 2023, code != "ISL"),
+    filter(
+      year <= 2023,
+      !year %in% excluded_analysis_years,
+      code != "ISL"
+    ),
   full_formula
 )
 
@@ -515,15 +584,10 @@ add_main_sensitivity(
   "include_2024",
   "Include available observations from 2024",
   panel_df %>%
-    filter(!code %in% excluded_primary_codes),
-  full_formula
-)
-
-add_main_sensitivity(
-  "exclude_covid_years",
-  "Exclude 2020 and 2021",
-  primary_df %>%
-    filter(!year %in% 2020:2021),
+    filter(
+      !year %in% excluded_analysis_years,
+      !code %in% excluded_primary_codes
+    ),
   full_formula
 )
 
@@ -558,7 +622,7 @@ add_main_sensitivity(
 )
 
 
-# Winsorise the three relative-change variables at the 1st and 99th percentiles
+# Winsorise health and defence changes at the 1st and 99th percentiles
 winsorise <- function(x, reference) {
   limits <- quantile(
     reference,
@@ -578,18 +642,12 @@ winsorised_df <- primary_df %>%
     defence_change_10pct = winsorise(
       defence_change_10pct,
       primary_df$defence_change_10pct
-    ),
-    debt_change_10pct = winsorise(
-      debt_change_10pct,
-      primary_df$debt_change_10pct
-    ),
-    debt_change_10pct_c =
-      debt_change_10pct - mean(debt_change_10pct, na.rm = TRUE)
+    )
   )
 
 add_main_sensitivity(
   "winsorised_changes",
-  "Relative changes winsorised at the 1st and 99th percentiles",
+  "Health and defence changes winsorised at the 1st and 99th percentiles",
   winsorised_df,
   full_formula
 )
@@ -611,7 +669,7 @@ leave_one_country_out <- bind_rows(
         term %in% c(
           "defence_change_10pct",
           "defence_change_10pct:systemBIS",
-          "defence_change_10pct:debt_change_10pct_c"
+          "defence_change_10pct:previous_debt_10pp_c"
         )
       ) %>%
       mutate(
@@ -641,9 +699,13 @@ main_sensitivity_coefficients <- bind_rows(
   )
 
 
-# Prepare transformed secondary outcomes
-secondary_df <- primary_df %>%
-  filter(!is.na(log2_ratio)) %>%
+# Prepare secondary outcome levels and year-on-year changes
+#
+# Level models answer whether the spending balance is associated with the
+# level of system strength or health outcomes. Change-on-change models answer
+# the narrower short-run question and are kept as sensitivities because annual
+# differences can magnify measurement error in slow-moving indicators.
+secondary_df <- panel_df %>%
   mutate(
     oop_pct_points = 100 * oop_pct,
     oop_logit = if_else(
@@ -681,24 +743,100 @@ secondary_df <- primary_df %>%
       log(treatable_mortality_per_100k),
       NA_real_
     )
+  ) %>%
+  group_by(code) %>%
+  arrange(year, .by_group = TRUE) %>%
+  mutate(
+    valid_annual_comparison =
+      year - lag(year) == 1L &
+      !year %in% excluded_analysis_years &
+      !lag(year) %in% excluded_analysis_years,
+    change_log2_ratio_clean = if_else(
+      valid_annual_comparison,
+      log2_ratio - lag(log2_ratio),
+      NA_real_
+    ),
+    lag_change_log2_ratio_clean_1 =
+      lag(change_log2_ratio_clean, 1),
+    lag_change_log2_ratio_clean_3 =
+      lag(change_log2_ratio_clean, 3),
+    lag_change_log2_ratio_clean_5 =
+      lag(change_log2_ratio_clean, 5),
+    change_oop_pct_points = if_else(
+      valid_annual_comparison,
+      oop_pct_points - lag(oop_pct_points),
+      NA_real_
+    ),
+    change_life_exp = if_else(
+      valid_annual_comparison,
+      life_exp - lag(life_exp),
+      NA_real_
+    ),
+    change_hosp_beds_per_thou = if_else(
+      valid_annual_comparison,
+      hosp_beds_per_thou - lag(hosp_beds_per_thou),
+      NA_real_
+    ),
+    change_log_mds_per_thou = if_else(
+      valid_annual_comparison,
+      log_mds_per_thou - lag(log_mds_per_thou),
+      NA_real_
+    ),
+    change_log_nurses_per_thou = if_else(
+      valid_annual_comparison,
+      log_nurses_per_thou - lag(log_nurses_per_thou),
+      NA_real_
+    ),
+    change_log_premature_ncd_mortality = if_else(
+      valid_annual_comparison,
+      log_premature_ncd_mortality -
+        lag(log_premature_ncd_mortality),
+      NA_real_
+    ),
+    change_log_avoidable_mortality = if_else(
+      valid_annual_comparison,
+      log_avoidable_mortality - lag(log_avoidable_mortality),
+      NA_real_
+    ),
+    change_log_preventable_mortality = if_else(
+      valid_annual_comparison,
+      log_preventable_mortality -
+        lag(log_preventable_mortality),
+      NA_real_
+    ),
+    change_log_treatable_mortality = if_else(
+      valid_annual_comparison,
+      log_treatable_mortality - lag(log_treatable_mortality),
+      NA_real_
+    )
+  ) %>%
+  ungroup() %>%
+  filter(
+    year <= 2023,
+    !year %in% excluded_analysis_years,
+    !code %in% excluded_primary_codes
   )
 
 secondary_specs <- tribble(
-  ~outcome_var, ~raw_outcome_var, ~outcome_label,
-  "oop_pct_points", "oop_logit", "Out-of-pocket expenditure",
-  "life_exp", NA, "Life expectancy at birth",
-  "hosp_beds_per_thou", NA, "Hospital beds",
-  "log_mds_per_thou", "mds_per_thou", "Medical doctors",
-  "log_nurses_per_thou", "nurses_per_thou", "Nurses and midwives",
-  "uhc_idx", NA, "UHC service coverage",
-  "log_premature_ncd_mortality", "premature_ncd_mortality_pct",
-  "Premature NCD mortality",
-  "log_avoidable_mortality", "avoidable_mortality_per_100k",
-  "Avoidable mortality",
-  "log_preventable_mortality", "preventable_mortality_per_100k",
-  "Preventable mortality",
-  "log_treatable_mortality", "treatable_mortality_per_100k",
-  "Treatable mortality"
+  ~outcome_var, ~change_outcome_var, ~raw_outcome_var, ~outcome_label,
+  "oop_pct_points", "change_oop_pct_points", "oop_logit",
+  "Out-of-pocket expenditure",
+  "life_exp", "change_life_exp", NA, "Life expectancy at birth",
+  "hosp_beds_per_thou", "change_hosp_beds_per_thou", NA,
+  "Hospital beds",
+  "log_mds_per_thou", "change_log_mds_per_thou", "mds_per_thou",
+  "Medical doctors",
+  "log_nurses_per_thou", "change_log_nurses_per_thou",
+  "nurses_per_thou", "Nurses and midwives",
+  "log_premature_ncd_mortality",
+  "change_log_premature_ncd_mortality",
+  "premature_ncd_mortality_pct", "Premature NCD mortality",
+  "log_avoidable_mortality", "change_log_avoidable_mortality",
+  "avoidable_mortality_per_100k", "Avoidable mortality",
+  "log_preventable_mortality", "change_log_preventable_mortality",
+  "preventable_mortality_per_100k", "Preventable mortality",
+  "log_treatable_mortality", "change_log_treatable_mortality",
+  "treatable_mortality_per_100k", "Treatable mortality"
 )
 
 
@@ -750,7 +888,7 @@ fit_secondary_sensitivity <- function(
     c(
       "system",
       "log2_gdp_percap_c",
-      "lag_debt_level_10pp_c",
+      "previous_debt_10pp_c",
       "year_factor"
     )
   } else {
@@ -786,8 +924,25 @@ fit_secondary_sensitivity <- function(
     model_type = "lmer"
   )
 
-  result$coefficients %>%
-    filter(term %in% c(within_var, between_var)) %>%
+  focal_coefficients <- result$coefficients %>%
+    filter(term %in% c(within_var, between_var))
+
+  # Retain prespecified models that cannot be estimated from sparse outcomes
+  if (nrow(focal_coefficients) == 0) {
+    focal_coefficients <- tibble(
+      model = model_name,
+      description = paste(outcome_label, "-", exposure_label),
+      term = c(within_var, between_var),
+      estimate = NA_real_,
+      std_error = NA_real_,
+      conf_low = NA_real_,
+      conf_high = NA_real_,
+      statistic = NA_real_,
+      p_value = NA_real_
+    )
+  }
+
+  focal_coefficients %>%
     mutate(
       outcome = outcome_label,
       outcome_variable = outcome_var,
@@ -798,7 +953,13 @@ fit_secondary_sensitivity <- function(
         "Within country",
         "Between country"
       ),
-      adjustment
+      adjustment,
+      observations = result$overview$observations,
+      countries = result$overview$countries,
+      first_year = result$overview$first_year,
+      last_year = result$overview$last_year,
+      singular_fit = result$overview$singular_fit,
+      status = result$overview$status
     )
 }
 
@@ -820,21 +981,24 @@ secondary_lag_results <- bind_rows(
 )
 
 
-# Test contemporaneous and lagged changes in the log ratio
+# Test whether ratio changes are associated with outcome changes
 secondary_ratio_change_results <- bind_rows(
   lapply(seq_len(nrow(secondary_specs)), function(i) {
     exposure_specs <- c(
-      change_log2_ratio = "ratio_change_current",
-      lag_change_log2_ratio_1 = "ratio_change_lag_1_year",
-      lag_change_log2_ratio_3 = "ratio_change_lag_3_years",
-      lag_change_log2_ratio_5 = "ratio_change_lag_5_years"
+      change_log2_ratio_clean = "ratio_change_current",
+      lag_change_log2_ratio_clean_1 = "ratio_change_lag_1_year",
+      lag_change_log2_ratio_clean_3 = "ratio_change_lag_3_years",
+      lag_change_log2_ratio_clean_5 = "ratio_change_lag_5_years"
     )
 
     bind_rows(
       lapply(names(exposure_specs), function(exposure_var) {
         fit_secondary_sensitivity(
-          outcome_var = secondary_specs$outcome_var[[i]],
-          outcome_label = secondary_specs$outcome_label[[i]],
+          outcome_var = secondary_specs$change_outcome_var[[i]],
+          outcome_label = paste0(
+            secondary_specs$outcome_label[[i]],
+            " annual change"
+          ),
           exposure_var = exposure_var,
           exposure_label = exposure_specs[[exposure_var]]
         )
@@ -956,8 +1120,8 @@ secondary_sensitivity_results <- bind_rows(
     )
   )
 
-if (nrow(main_sensitivity_overview) != 19) {
-  stop("Expected 19 main sensitivity specifications.")
+if (nrow(main_sensitivity_overview) != 18) {
+  stop("Expected 18 main sensitivity specifications.")
 }
 
 if (any(!main_sensitivity_overview$converged)) {
@@ -968,8 +1132,8 @@ if (n_distinct(leave_one_country_out$omitted_code) != 29) {
   stop("Expected 29 leave-one-country-out analyses.")
 }
 
-if (nrow(secondary_sensitivity_results) != 214) {
-  stop("Expected 214 secondary sensitivity coefficient rows.")
+if (nrow(secondary_sensitivity_results) != 194) {
+  stop("Expected 194 secondary sensitivity coefficient rows.")
 }
 
 

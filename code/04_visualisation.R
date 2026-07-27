@@ -20,19 +20,31 @@ results_dir <- "results"
 dir.create(results_dir, showWarnings = FALSE)
 
 excluded_primary_codes <- c("ISL", "LUX")
+excluded_analysis_years <- c(2020L, 2021L)
 
 plot_master_df <- master_df %>%
   filter(
     year <= 2023,
     !code %in% excluded_primary_codes
+  ) %>%
+  mutate(
+    across(
+      c(health_def_ratio, health_pct_gdp, defence_pct_gdp),
+      ~ if_else(
+        year %in% excluded_analysis_years,
+        NA_real_,
+        .x
+      )
+    )
   )
 
 
 # Prepare plot data
 plot_df <- plot_master_df %>%
-  filter(!is.na(health_def_ratio))
+  select(country, year, health_def_ratio)
 
 country_labels <- plot_df %>%
+  filter(!is.na(health_def_ratio)) %>%
   group_by(country) %>%
   slice_max(year, n = 1, with_ties = FALSE) %>%
   ungroup() %>%
@@ -55,7 +67,7 @@ country_labels <- country_labels %>%
 health_def_ratio_plot <- plot_df %>%
   ggplot(aes(x = year, y = health_def_ratio, group = country, colour = country)) +
   geom_line(linewidth = 0.7, alpha = 0.85) +
-  geom_point(size = 1, alpha = 0.7) +
+  geom_point(size = 1, alpha = 0.7, na.rm = TRUE) +
   geom_segment(
     data = country_labels,
     aes(
@@ -93,7 +105,10 @@ health_def_ratio_plot <- plot_df %>%
   coord_cartesian(clip = "off") +
   labs(
     title = "Health-to-Defence Spending Ratio Over Time",
-    subtitle = "Ratio of health spending share of GDP to defence spending share of GDP",
+    subtitle = paste(
+      "Ratio of health spending share of GDP to defence spending share of GDP;",
+      "2020-2021 excluded"
+    ),
     x = "Year",
     y = "Health-to-defence spending ratio",
     colour = "Country"
@@ -142,8 +157,16 @@ system_spend_df <- plot_master_df %>%
   ) %>%
   group_by(system_label, year) %>%
   summarise(
-    health_pct_gdp = mean(health_pct_gdp, na.rm = TRUE),
-    defence_pct_gdp = mean(defence_pct_gdp, na.rm = TRUE),
+    health_pct_gdp = if_else(
+      all(is.na(health_pct_gdp)),
+      NA_real_,
+      mean(health_pct_gdp, na.rm = TRUE)
+    ),
+    defence_pct_gdp = if_else(
+      all(is.na(defence_pct_gdp)),
+      NA_real_,
+      mean(defence_pct_gdp, na.rm = TRUE)
+    ),
     .groups = "drop"
   ) %>%
   pivot_longer(
@@ -177,7 +200,7 @@ system_spend_plot <- system_spend_df %>%
     )
   ) +
   geom_line(linewidth = 1) +
-  geom_point(size = 1.8) +
+  geom_point(size = 1.8, na.rm = TRUE) +
   geom_segment(
     data = system_spend_labels,
     aes(
@@ -228,7 +251,8 @@ system_spend_plot <- system_spend_df %>%
       "Beveridge and Bismarck country averages, ",
       min(system_spend_df$year, na.rm = TRUE),
       "-",
-      max(system_spend_df$year, na.rm = TRUE)
+      max(system_spend_df$year, na.rm = TRUE),
+      "; 2020-2021 excluded"
     ),
     x = "Year",
     y = "Average spending as a share of GDP"

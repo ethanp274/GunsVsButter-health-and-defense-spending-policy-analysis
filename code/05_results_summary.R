@@ -188,8 +188,8 @@ main_equations <- tibble(
     "$\\Delta H_{it}=\\beta_0+\\beta_1\\Delta D_{it}+\\epsilon_{it}$",
     "$\\Delta H_{it}=\\beta_0+\\beta_1\\Delta D_{it}+u_i+\\epsilon_{it}$",
     "$\\Delta H_{it}=\\beta_0+\\beta_1\\Delta D_{it}+\\beta_2S_i+\\beta_3(\\Delta D_{it}\\times S_i)+u_i+\\epsilon_{it}$",
-    "$\\Delta H_{it}=\\beta_0+\\beta_1\\Delta D_{it}+\\beta_2S_i+\\beta_3(\\Delta D_{it}\\times S_i)+\\beta_4\\Delta B_{it}+\\beta_5(\\Delta D_{it}\\times\\Delta B_{it})+u_i+\\epsilon_{it}$",
-    "$\\Delta H_{it}=\\beta_0+\\beta_1\\Delta D_{it}+\\beta_2S_i+\\beta_3(\\Delta D_{it}\\times S_i)+\\beta_4\\Delta B_{it}+\\beta_5(\\Delta D_{it}\\times\\Delta B_{it})+\\beta_6\\log_2(GDPpc_{it})+\\gamma_t+u_i+\\epsilon_{it}$"
+    "$\\Delta H_{it}=\\beta_0+\\beta_1\\Delta D_{it}+\\beta_2S_i+\\beta_3(\\Delta D_{it}\\times S_i)+\\beta_4B_{i,t-1}+\\beta_5(\\Delta D_{it}\\times B_{i,t-1})+u_i+\\epsilon_{it}$",
+    "$\\Delta H_{it}=\\beta_0+\\beta_1\\Delta D_{it}+\\beta_2S_i+\\beta_3(\\Delta D_{it}\\times S_i)+\\beta_4B_{i,t-1}+\\beta_5(\\Delta D_{it}\\times B_{i,t-1})+\\beta_6\\log_2(GDPpc_{it})+\\gamma_t+u_i+\\epsilon_{it}$"
   )
 )
 
@@ -209,10 +209,10 @@ main_model_table <- main_overview %>%
 main_focal_terms <- c(
   "defence_change_10pct",
   "systemBIS",
-  "debt_change_10pct_c",
+  "previous_debt_10pp_c",
   "log2_gdp_percap_c",
   "defence_change_10pct:systemBIS",
-  "defence_change_10pct:debt_change_10pct_c"
+  "defence_change_10pct:previous_debt_10pp_c"
 )
 
 main_coefficient_table <- main_coefficients %>%
@@ -234,8 +234,9 @@ main_coefficient_table <- main_coefficients %>%
 main_slope_table <- interaction_slopes %>%
   transmute(
     System = system,
-    `Debt-change percentile` = debt_percentile,
-    `Debt change (%)` = format_number(debt_change_percent, 2),
+    `Debt-level percentile` = debt_percentile,
+    `Previous-year debt (% GDP)` =
+      format_number(previous_debt_pct_gdp, 2),
     `Defence slope [95% CI]` = format_estimate_ci(
       estimate,
       conf_low,
@@ -318,7 +319,6 @@ sensitivity_term_map <- tribble(
   "current_nato_members", "defence_change_10pct",
   "restore_luxembourg", "defence_change_10pct",
   "include_2024", "defence_change_10pct",
-  "exclude_covid_years", "defence_change_10pct",
   "exclude_financial_crisis", "defence_change_10pct",
   "winsorised_changes", "defence_change_10pct"
 )
@@ -357,6 +357,12 @@ notable_sensitivity_table <- sensitivity_term_map %>%
     ),
     `Singular fit` = singular_fit
   )
+
+lagged_main_table <- notable_sensitivity_table %>%
+  slice_head(n = 3)
+
+other_notable_sensitivity_table <- notable_sensitivity_table %>%
+  slice(-(1:3))
 
 leave_one_out_summary <- leave_one_country_out %>%
   filter(term == "defence_change_10pct") %>%
@@ -398,6 +404,56 @@ secondary_lag_table <- secondary_sensitivity %>%
   ) %>%
   rename(Outcome = outcome)
 
+# Show the short-run change-on-change alternative estimand
+secondary_change_table <- secondary_sensitivity %>%
+  filter(
+    component == "Within country",
+    exposure %in% c(
+      "ratio_change_current",
+      "ratio_change_lag_1_year",
+      "ratio_change_lag_3_years",
+      "ratio_change_lag_5_years"
+    )
+  ) %>%
+  mutate(
+    outcome = sub(" annual change$", "", outcome),
+    result = if_else(
+      is.na(estimate),
+      "Not estimable",
+      format_estimate_ci(
+        estimate,
+        conf_low,
+        conf_high
+      )
+    ),
+    timing = recode(
+      exposure,
+      ratio_change_current = "Same year",
+      ratio_change_lag_1_year = "1-year lag",
+      ratio_change_lag_3_years = "3-year lag",
+      ratio_change_lag_5_years = "5-year lag"
+    )
+  ) %>%
+  select(outcome, timing, result) %>%
+  pivot_wider(
+    names_from = timing,
+    values_from = result
+  ) %>%
+  rename(Outcome = outcome)
+
+secondary_change_summary <- secondary_sensitivity %>%
+  filter(
+    component == "Within country",
+    grepl("^ratio_change", exposure),
+    !is.na(estimate)
+  ) %>%
+  summarise(
+    estimable_models = n(),
+    intervals_excluding_zero = sum(
+      conf_low > 0 | conf_high < 0
+    )
+  )
+
 
 # Build the Markdown report
 main_sample <- sample_flow %>%
@@ -405,6 +461,27 @@ main_sample <- sample_flow %>%
 
 headline_overview <- main_overview %>%
   filter(model == "model_5_fully_adjusted")
+
+year_effect_table <- bind_rows(
+  tibble(
+    Year = as.integer(main_sample$first_year),
+    `Effect [95% CI]` = "0.000 (reference)"
+  ),
+  main_coefficients %>%
+    filter(
+      model == "model_5_fully_adjusted",
+      grepl("^year_factor", term)
+    ) %>%
+    transmute(
+      Year = as.integer(sub("^year_factor", "", term)),
+      `Effect [95% CI]` = format_estimate_ci(
+        estimate,
+        conf_low,
+        conf_high
+      )
+    )
+) %>%
+  arrange(Year)
 
 report_lines <- c(
   "# Health and Defence Spending: Results Summary",
@@ -416,7 +493,7 @@ report_lines <- c(
   "## Analysis sample",
   "",
   sprintf(
-    "The main analysis includes **%s observations from %s countries during %s-%s**. Iceland and Luxembourg are excluded from the primary sample.",
+    "The main analysis includes **%s observations from %s countries during %s-%s**. Iceland and Luxembourg are excluded, 2020-2021 are excluded, and 2022 is unavailable because its previous-year debt value comes from excluded 2021.",
     main_sample$rows,
     main_sample$countries,
     main_sample$first_year,
@@ -435,12 +512,12 @@ report_lines <- c(
   "",
   markdown_table(main_model_table),
   "",
-  "Here, $\\Delta H$ is relative health-spending change, $\\Delta D$ is relative defence-spending change, $S$ is health-system type, $\\Delta B$ is relative public-debt change, $\\gamma_t$ denotes categorical year effects, and $u_i$ is the country random intercept.",
+  "Here, $\\Delta H$ is relative health-spending change, $\\Delta D$ is relative defence-spending change, $S$ is health-system type, $B_{i,t-1}$ is previous-year public debt as a share of GDP, $\\gamma_t$ denotes categorical year effects, and $u_i$ is the country random intercept.",
   "",
   "### Key headline findings",
   "",
   paste0(
-    "- In Beveridge countries at average debt change, a 10% relative increase in defence spending was associated with a **",
+    "- In Beveridge countries at average previous-year debt, a 10% relative increase in defence spending was associated with a **",
     get_main_term("defence_change_10pct"),
     "** percentage-point relative change in health spending."
   ),
@@ -450,8 +527,8 @@ report_lines <- c(
     "**."
   ),
   paste0(
-    "- The defence-by-debt-change interaction was **",
-    get_main_term("defence_change_10pct:debt_change_10pct_c"),
+    "- The defence-by-previous-year-debt interaction was **",
+    get_main_term("defence_change_10pct:previous_debt_10pp_c"),
     "**."
   ),
   paste0(
@@ -468,6 +545,12 @@ report_lines <- c(
   "",
   markdown_table(main_slope_table),
   "",
+  "### Categorical year effects",
+  "",
+  "These coefficients are the common year-level differences in relative health-spending change from the 2001 reference year in the fully adjusted model. They should be interpreted as adjustment for shared annual shocks, not as effects caused by the calendar year.",
+  "",
+  markdown_table(year_effect_table),
+  "",
   "## Secondary analyses",
   "",
   "All secondary models use the common form:",
@@ -476,15 +559,25 @@ report_lines <- c(
   "",
   "where $R$ is the log2 health-to-defence spending ratio. The within-country coefficient is the principal longitudinal association. A one-unit change in log2 ratio represents a doubling of the health-to-defence ratio.",
   "",
+  "The primary secondary models use outcome levels because beds, workforce, life expectancy, coverage, and mortality are slow-moving stocks or rates, often measured intermittently. Differencing them would discard information and can magnify measurement error. Change in the log ratio paired with year-on-year outcome change is therefore reported as a short-run sensitivity rather than mixed into the primary estimand.",
+  "",
   "For log-transformed outcomes, effects below are percentage changes per doubling of the ratio. Other outcomes retain the units shown.",
   "",
   markdown_table(secondary_result_table),
   "",
   "## Notable sensitivity analyses",
   "",
+  "### Lagged defence-change sensitivity",
+  "",
+  "These models estimate whether defence-spending change predicts health-spending change one, two, or three years later. For each lag, the debt moderator is measured one year before the defence-change exposure.",
+  "",
+  markdown_table(lagged_main_table),
+  "",
+  "### Other notable sensitivities",
+  "",
   "The focal estimates below correspond to the defence-change term used by each specification.",
   "",
-  markdown_table(notable_sensitivity_table),
+  markdown_table(other_notable_sensitivity_table),
   "",
   sprintf(
     "Across leave-one-country-out analyses, the headline defence coefficient ranged from **%s to %s**. The full range of lower and upper confidence limits was **%s to %s**.",
@@ -499,6 +592,18 @@ report_lines <- c(
   "These are within-country model-scale coefficients [95% confidence interval] for lagged log2 spending ratios.",
   "",
   markdown_table(secondary_lag_table),
+  "",
+  "### Change-on-change secondary associations",
+  "",
+  "These sensitivity models relate within-country change in the log2 spending ratio to year-on-year outcome change. Transitions involving 2020 or 2021 are not used. Coefficients are shown on each outcome's model scale.",
+  "",
+  markdown_table(secondary_change_table),
+  "",
+  sprintf(
+    "Across the remaining change-on-change models, %s of %s 95%% confidence intervals excluded zero. Directions and timing varied across outcomes, so these results do not indicate a consistent short-run pattern.",
+    secondary_change_summary$intervals_excluding_zero,
+    secondary_change_summary$estimable_models
+  ),
   "",
   "## Descriptive figures",
   "",
@@ -516,6 +621,7 @@ report_lines <- c(
   "- Health, defence, and debt measures share GDP-related denominators, so common economic shocks can create coupled movements.",
   "- A singular random-intercept fit indicates that the estimated between-country residual variance is effectively zero after included covariates.",
   "- Secondary analyses are exploratory and span outcomes with different observation schedules and sample sizes.",
+  "- Annual differencing may reduce trend confounding but magnifies measurement error and is poorly suited to intermittently observed outcomes.",
   "",
   "## Reproducibility",
   "",
