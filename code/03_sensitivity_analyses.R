@@ -683,10 +683,10 @@ main_sensitivity_coefficients <- bind_rows(
 # differences can magnify measurement error in slow-moving indicators.
 secondary_df <- panel_df %>%
   mutate(
-    oop_pct_points = 100 * oop_pct,
-    oop_logit = if_else(
-      oop_pct > 0 & oop_pct < 1,
-      qlogis(oop_pct),
+    oop_health_spend_pct_points = 100 * oop_share_health_spend,
+    oop_share_health_spend_logit = if_else(
+      oop_share_health_spend > 0 & oop_share_health_spend < 1,
+      qlogis(oop_share_health_spend),
       NA_real_
     ),
     log_mds_per_thou = if_else(
@@ -723,9 +723,9 @@ secondary_df <- panel_df %>%
       lag(change_log2_ratio_clean, 3),
     lag_change_log2_ratio_clean_5 =
       lag(change_log2_ratio_clean, 5),
-    change_oop_pct_points = if_else(
+    change_oop_health_spend_pct_points = if_else(
       valid_annual_comparison,
-      oop_pct_points - lag(oop_pct_points),
+      oop_health_spend_pct_points - lag(oop_health_spend_pct_points),
       NA_real_
     ),
     change_hosp_beds_per_thou = if_else(
@@ -758,8 +758,9 @@ secondary_df <- panel_df %>%
 
 secondary_specs <- tribble(
   ~outcome_var, ~change_outcome_var, ~raw_outcome_var, ~outcome_label,
-  "oop_pct_points", "change_oop_pct_points", "oop_logit",
-  "Out-of-pocket expenditure",
+  "oop_health_spend_pct_points", "change_oop_health_spend_pct_points",
+  "oop_share_health_spend_logit",
+  "Out-of-pocket share of health expenditure",
   "hosp_beds_per_thou", "change_hosp_beds_per_thou", NA,
   "Hospital beds",
   "log_mds_per_thou", "change_log_mds_per_thou", "mds_per_thou",

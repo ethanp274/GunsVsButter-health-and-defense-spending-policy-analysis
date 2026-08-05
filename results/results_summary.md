@@ -91,14 +91,16 @@ $$g(Y_{it})=\beta_0+\beta_W(R_{it}-\bar{R}_i)+\beta_B\bar{R}_i+\beta_SS_i+\beta_
 
 where $R$ is the log2 health-to-defence spending ratio. The within-country coefficient is the principal longitudinal association. A one-unit change in log2 ratio represents a doubling of the health-to-defence ratio.
 
-The primary secondary models use outcome levels because out-of-pocket spending, beds, workforce, and treatable mortality are slow-moving measures, often observed intermittently. Differencing them would discard information and can magnify measurement error. Change in the log ratio paired with year-on-year outcome change is therefore reported as a short-run sensitivity rather than mixed into the primary estimand.
+Hospital beds use OECD as the primary source, with WHO values used only for country-years where OECD is missing.
+
+The primary secondary models use outcome levels because the out-of-pocket share of current health expenditure, beds, workforce, and treatable mortality are slow-moving measures, often observed intermittently. Differencing them would discard information and can magnify measurement error. Change in the log ratio paired with year-on-year outcome change is therefore reported as a short-run sensitivity rather than mixed into the primary estimand.
 
 For log-transformed outcomes, effects below are percentage changes per doubling of the ratio. Other outcomes retain the units shown.
 
 | Outcome | Scale | N | Countries | Years | Within-country effect [95% CI] | Between-country effect [95% CI] |
 | --- | --- | --- | --- | --- | --- | --- |
-| Out-of-pocket expenditure | Percentage points | 622 | 28 | 2000-2025 | -3.128 [-3.991, -2.265] | -5.664 [-9.457, -1.871] |
-| Hospital beds | Beds per 1,000 people | 577 | 27 | 2000-2025 | 0.411 [0.264, 0.559] | -0.346 [-0.983, 0.290] |
+| Out-of-pocket share of health expenditure | Percentage points of current health expenditure | 622 | 28 | 2000-2025 | -3.128 [-3.991, -2.265] | -5.664 [-9.457, -1.871] |
+| Hospital beds | Beds per 1,000 people | 610 | 28 | 2000-2025 | 0.249 [0.094, 0.405] | -0.171 [-0.783, 0.442] |
 | Medical doctors | Log outcome | 530 | 28 | 2000-2025 | 7.610 [5.366, 9.902] | 1.795 [-6.588, 10.931] |
 | Nurses and midwives | Log outcome | 522 | 27 | 2000-2025 | 6.161 [3.364, 9.034] | 44.180 [24.793, 66.580] |
 | Treatable mortality | Log outcome | 533 | 26 | 2000-2024 | -1.033 [-3.053, 1.029] | -34.152 [-45.278, -20.764] |
@@ -140,8 +142,8 @@ These are within-country model-scale coefficients [95% confidence interval] for 
 
 | Outcome | 1-year lag | 3-year lag | 5-year lag |
 | --- | --- | --- | --- |
-| Out-of-pocket expenditure | -2.588 [-3.499, -1.678] | -1.528 [-2.531, -0.524] | -1.535 [-2.681, -0.389] |
-| Hospital beds | 0.406 [0.251, 0.561] | 0.178 [-0.008, 0.364] | 0.346 [0.165, 0.527] |
+| Out-of-pocket share of health expenditure | -2.588 [-3.499, -1.678] | -1.528 [-2.531, -0.524] | -1.535 [-2.681, -0.389] |
+| Hospital beds | 0.255 [0.090, 0.421] | 0.012 [-0.185, 0.209] | 0.186 [-0.001, 0.373] |
 | Medical doctors | 0.063 [0.040, 0.086] | 0.047 [0.019, 0.075] | 0.034 [0.005, 0.063] |
 | Nurses and midwives | 0.052 [0.024, 0.081] | 0.033 [-0.004, 0.070] | 0.032 [-0.005, 0.069] |
 | Treatable mortality | 0.001 [-0.020, 0.022] | -0.017 [-0.039, 0.004] | -0.012 [-0.033, 0.009] |
@@ -152,8 +154,8 @@ These sensitivity models relate within-country change in the log2 spending ratio
 
 | Outcome | Same year | 1-year lag | 3-year lag | 5-year lag |
 | --- | --- | --- | --- | --- |
-| Out-of-pocket expenditure | -2.291 [-3.186, -1.396] | 1.180 [0.126, 2.234] | -0.425 [-1.698, 0.848] | 0.115 [-0.878, 1.108] |
-| Hospital beds | -0.010 [-0.087, 0.068] | 0.005 [-0.089, 0.098] | 0.036 [-0.072, 0.144] | -0.014 [-0.106, 0.078] |
+| Out-of-pocket share of health expenditure | -2.291 [-3.186, -1.396] | 1.180 [0.126, 2.234] | -0.425 [-1.698, 0.848] | 0.115 [-0.878, 1.108] |
+| Hospital beds | -0.014 [-0.113, 0.085] | 0.041 [-0.079, 0.161] | 0.048 [-0.085, 0.182] | -0.026 [-0.142, 0.090] |
 | Medical doctors | 0.015 [-0.004, 0.034] | -0.016 [-0.038, 0.006] | 0.032 [0.006, 0.058] | -0.010 [-0.030, 0.011] |
 | Nurses and midwives | 0.010 [-0.010, 0.031] | 0.008 [-0.017, 0.033] | -0.014 [-0.043, 0.015] | -0.019 [-0.044, 0.007] |
 | Treatable mortality | 0.006 [-0.013, 0.024] | -0.001 [-0.022, 0.020] | 0.008 [-0.015, 0.031] | -0.014 [-0.037, 0.009] |

@@ -105,14 +105,16 @@ and influential observations.
 
 The current secondary analyses cover:
 
-- out-of-pocket health expenditure;
+- household out-of-pocket payments as a share of current health expenditure;
 - hospital beds;
 - physicians;
 - nurses and midwives;
 - treatable mortality.
 
-Doctor consultations and CT, MRI, and PET scans are retained as descriptive
-variables in the processed panel but are not currently modelled.
+Any-setting and in-person doctor consultations are retained as separate
+descriptive variables. CT and MRI examinations are retained separately and as
+a combined CT-plus-MRI total; PET examinations are excluded. These descriptive
+variables are not currently modelled.
 
 The primary secondary models use within- and between-country components of the
 log2 health-to-defence spending ratio, system type, log2 GDP per capita,
@@ -125,29 +127,47 @@ lagged debt adjustment, and health and defence shares as separate exposures.
 The authoritative data inventory, units, mappings, and limitations are in
 [the raw-data dictionary](raw_data/data_dictionary.md).
 
-The current CSV inputs are:
+The current source inputs are:
 
 - `raw_data/SIPRI_defence_pct_gdp.csv`
 - `raw_data/OECD_health_spending_pct_gdp.csv`
 - `raw_data/OECD_gdp_per_cap.csv`
 - `raw_data/IMF_debt_pct_gdp.csv`
 - `raw_data/OECD_beds_per_k.csv`
+- `raw_data/updated_sources_040826/20260731-WHO BEDS .csv`
 - `raw_data/OECD_mds_per_k.csv`
 - `raw_data/OECD_rns_per_k.csv`
 - `raw_data/OECD_md_consults_per_person.csv`
+- `raw_data/updated_sources_040826/20260731-OECD CONSULTS.xlsx`
 - `raw_data/OECD_oop_pct_health_spend.csv`
 - `raw_data/OECD_scans_per_k.csv`
 - `raw_data/OECD_treat_mortality_per_100k.csv`
 - `raw_data/oecd_europe_health_systems.csv`
 
 GDP-share and percentage-share variables are stored as proportions: `0.05`
-means 5%. GDP per capita is PPP-converted OECD US dollars per person at current
-prices. Missing values remain missing.
+means 5%. This keeps the processed data on one consistent scale; the analysis
+scripts rescale terms when reporting percentage-point or per-10-percentage-point
+interpretations. Numeric output columns are rounded to no more than five
+decimal places. GDP per capita is PPP-converted OECD US dollars per person at
+current prices. Missing values remain missing.
 
-Source workbooks and Numbers files are retained under `raw_data/sources/` and
-`raw_data/updated_sources_040826/` for provenance. The processing script reads
-the current CSV inputs listed above, not those workbook files directly. Files
-under `deprecated/` are not pipeline inputs.
+Hospital beds use OECD as the primary source. WHO beds are converted from per
+10,000 to per 1,000 people and used only where the corresponding OECD value is
+missing; both component values and the selected source are retained in the
+processed panel. The consultation CSV supplies the in-person series, while the
+OECD workbook supplies the broader any-setting series. The two consultation
+definitions remain separate and are not used to fill one another.
+
+Other source workbooks and Numbers files under `raw_data/sources/` and
+`raw_data/updated_sources_040826/` are retained for provenance but are not read
+directly. Files under `deprecated/` are not pipeline inputs.
+
+The primary out-of-pocket measure is the household out-of-pocket share of
+current health expenditure. The workbook
+`raw_data/updated_sources_040826/02082026-OECD OOP.xlsx`, which instead reports
+out-of-pocket payments as a share of GDP, is retained as an optional alternative
+source. The two measures have different denominators and must not be combined
+or used to fill one another's missing observations.
 
 ## Running the pipeline
 
@@ -172,12 +192,14 @@ Required R packages are:
 install.packages(c(
   "broom",
   "broom.mixed",
+  "commonmark",
   "dplyr",
   "geepack",
   "ggplot2",
   "lme4",
   "nlme",
   "readr",
+  "readxl",
   "tidyr"
 ))
 ```
@@ -194,10 +216,11 @@ sensitivity results, and figures under `results/`.
 The main human-readable output is:
 
 - [results/results_summary.md](results/results_summary.md)
+- [results/results_summary.html](results/results_summary.html)
 
-It contains the model equations, headline and secondary results, conditional
+They contain the model equations, headline and secondary results, conditional
 slopes, categorical year effects, lagged sensitivities, other robustness
-checks, interpretation cautions, and figures. It is regenerated from the
+checks, interpretation cautions, and figures. Both are regenerated from the
 machine-readable outputs; estimates should not be edited manually.
 
 ## Important limitations

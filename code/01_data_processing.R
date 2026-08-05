@@ -8,11 +8,12 @@
 suppressPackageStartupMessages({
   library(dplyr)
   library(readr)
+  library(readxl)
   library(tidyr)
 })
 
 
-# Read the current CSV inputs
+# Read the current source inputs
 missing_values <- c("", "NA", "xxx", "...", "..", ". .")
 
 read_source_csv <- function(path) {
@@ -34,13 +35,34 @@ health_raw <- read_source_csv("raw_data/OECD_health_spending_pct_gdp.csv")
 gdp_percap_raw <- read_source_csv("raw_data/OECD_gdp_per_cap.csv")
 debt_raw <- read_source_csv("raw_data/IMF_debt_pct_gdp.csv")
 beds_raw <- read_source_csv("raw_data/OECD_beds_per_k.csv")
-consults_raw <- read_source_csv("raw_data/OECD_md_consults_per_person.csv")
+who_beds_raw <- read_source_csv(
+  "raw_data/updated_sources_040826/20260731-WHO BEDS .csv"
+)
+in_person_consults_raw <- read_source_csv(
+  "raw_data/OECD_md_consults_per_person.csv"
+)
 physicians_raw <- read_source_csv("raw_data/OECD_mds_per_k.csv")
 nurses_raw <- read_source_csv("raw_data/OECD_rns_per_k.csv")
 oop_raw <- read_source_csv("raw_data/OECD_oop_pct_health_spend.csv")
 scans_raw <- read_source_csv("raw_data/OECD_scans_per_k.csv")
 treatable_mortality_raw <- read_source_csv(
   "raw_data/OECD_treat_mortality_per_100k.csv"
+)
+
+any_consults_path <- paste0(
+  "raw_data/updated_sources_040826/",
+  "20260731-OECD CONSULTS.xlsx"
+)
+
+if (!file.exists(any_consults_path)) {
+  stop("Required source file is missing: ", any_consults_path)
+}
+
+any_consults_raw <- read_excel(
+  any_consults_path,
+  sheet = "Table",
+  col_names = FALSE,
+  .name_repair = "minimal"
 )
 
 systems_df <- read_source_csv("raw_data/oecd_europe_health_systems.csv") %>%
@@ -130,6 +152,45 @@ standardise_oecd_rows <- function(data, source_name) {
     )
 }
 
+# Reshape an OECD Data Explorer workbook with one country per row and one year
+# per column. The workbook keeps its filter description above the data table.
+reshape_oecd_excel_table <- function(data, source_name) {
+  data_matrix <- as.matrix(data)
+  first_column <- trimws(as.character(data_matrix[, 1]))
+  reference_row <- which(first_column == "Reference area")
+
+  if (length(reference_row) != 1) {
+    stop(source_name, " must contain one 'Reference area' header row.")
+  }
+
+  year_row <- reference_row - 1L
+  years <- suppressWarnings(
+    as.integer(as.character(data_matrix[year_row, ]))
+  )
+  year_columns <- which(!is.na(years))
+
+  if (length(year_columns) == 0) {
+    stop(source_name, " does not contain four-digit year columns.")
+  }
+
+  data_rows <- seq.int(reference_row + 1L, nrow(data_matrix))
+
+  expand_grid(
+    row_index = data_rows,
+    column_index = year_columns
+  ) %>%
+    transmute(
+      source_country = trimws(
+        as.character(data_matrix[row_index, 1])
+      ),
+      year = years[column_index],
+      value = suppressWarnings(
+        as.numeric(data_matrix[cbind(row_index, column_index)])
+      )
+    ) %>%
+    filter(!is.na(source_country), source_country != "")
+}
+
 
 # Prepare SIPRI defence spending and IMF government debt.
 defence_df <- reshape_wide_country_year(
@@ -177,8 +238,8 @@ gdp_percap_df <- standardise_oecd_rows(
   transmute(code, year, gdp_percap = value)
 
 
-# Prepare the longitudinal OECD health-system indicators.
-beds_df <- standardise_oecd_rows(
+# Prepare hospital beds. OECD is the primary source; WHO fills only OECD gaps.
+beds_oecd_df <- standardise_oecd_rows(
   beds_raw,
   "OECD hospital-bed data"
 ) %>%
@@ -191,7 +252,57 @@ beds_df <- standardise_oecd_rows(
     MEDICAL_TECH == "_Z",
     HEALTH_CARE_PROVIDER == "_Z"
   ) %>%
-  transmute(code, year, hosp_beds_per_thou = value)
+  transmute(
+    code,
+    year,
+    hosp_beds_oecd_per_thou = value
+  )
+
+require_columns(
+  who_beds_raw,
+  c(
+    "SpatialDimValueCode",
+    "Period",
+    "IndicatorCode",
+    "FactValueNumeric"
+  ),
+  "WHO hospital-bed data"
+)
+
+beds_who_df <- who_beds_raw %>%
+  transmute(
+    code = toupper(trimws(SpatialDimValueCode)),
+    year = as.integer(Period),
+    indicator = trimws(IndicatorCode),
+    value = as.numeric(FactValueNumeric)
+  ) %>%
+  filter(
+    code %in% study_codes,
+    year %in% source_years,
+    indicator == "WHS6_102"
+  ) %>%
+  transmute(
+    code,
+    year,
+    hosp_beds_who_per_thou = value / 10
+  )
+
+beds_df <- full_join(
+  beds_oecd_df,
+  beds_who_df,
+  by = c("code", "year")
+) %>%
+  mutate(
+    hosp_beds_per_thou = coalesce(
+      hosp_beds_oecd_per_thou,
+      hosp_beds_who_per_thou
+    ),
+    hosp_beds_source = case_when(
+      !is.na(hosp_beds_oecd_per_thou) ~ "OECD",
+      !is.na(hosp_beds_who_per_thou) ~ "WHO",
+      TRUE ~ NA_character_
+    )
+  )
 
 physicians_df <- standardise_oecd_rows(
   physicians_raw,
@@ -221,18 +332,70 @@ nurses_df <- standardise_oecd_rows(
   ) %>%
   transmute(code, year, nurses_per_thou = value)
 
-consults_df <- standardise_oecd_rows(
-  consults_raw,
-  "OECD consultation data"
+# The current OECD CSV is explicitly restricted to in-person consultations.
+in_person_consults_df <- standardise_oecd_rows(
+  in_person_consults_raw,
+  "OECD in-person consultation data"
 ) %>%
   filter(
     MEASURE == "CONSULT",
     UNIT_MEASURE == "CN_PS",
     OCCUPATION == "OC221",
+    CONSULTATION_TYPE == "CIP",
     AGE == "_Z",
     SEX == "_Z"
   ) %>%
-  transmute(code, year, doctor_consults_per_person = value)
+  transmute(
+    code,
+    year,
+    in_person_consults_per_person = value
+  )
+
+# The workbook reports the broader doctor-consultation series across settings.
+any_consult_metadata <- trimws(as.character(any_consults_raw[[1]][1:4]))
+expected_any_consult_metadata <- c(
+  "Consultations",
+  "Measure: Consultations",
+  "Occupation: Medical doctors",
+  "Unit of measure: Consultations per person"
+)
+
+if (!identical(any_consult_metadata, expected_any_consult_metadata)) {
+  stop("The OECD any-consultation workbook metadata has changed.")
+}
+
+consult_country_lookup <- in_person_consults_raw %>%
+  transmute(
+    code = toupper(trimws(REF_AREA)),
+    source_country = trimws(`Reference area`)
+  ) %>%
+  distinct()
+
+any_consults_df <- reshape_oecd_excel_table(
+  any_consults_raw,
+  "OECD any-consultation data"
+) %>%
+  left_join(consult_country_lookup, by = "source_country")
+
+unmatched_consult_countries <- any_consults_df %>%
+  filter(!is.na(value), is.na(code)) %>%
+  distinct(source_country) %>%
+  pull(source_country)
+
+if (length(unmatched_consult_countries) > 0) {
+  stop(
+    "OECD any-consultation countries could not be matched: ",
+    paste(unmatched_consult_countries, collapse = ", ")
+  )
+}
+
+any_consults_df <- any_consults_df %>%
+  filter(code %in% study_codes, year %in% source_years) %>%
+  transmute(
+    code,
+    year,
+    any_consults_per_person = value
+  )
 
 oop_df <- standardise_oecd_rows(
   oop_raw,
@@ -245,15 +408,18 @@ oop_df <- standardise_oecd_rows(
     PROVIDER == "_T",
     FUNCTION == "_T"
   ) %>%
-  transmute(code, year, oop_pct = value / 100)
+  transmute(
+    code,
+    year,
+    oop_share_health_spend = value / 100
+  )
 
 
-# Diagnostic scans contain three technologies and multiple provider types.
-# Retain the total-provider series and widen the three technologies.
+# Diagnostic scans contain multiple technologies and provider types. Retain
+# only total-provider CT and MRI examinations.
 scan_columns <- c(
   "ct_scans_per_thou",
-  "mri_scans_per_thou",
-  "pet_scans_per_thou"
+  "mri_scans_per_thou"
 )
 
 scans_df <- standardise_oecd_rows(
@@ -269,7 +435,6 @@ scans_df <- standardise_oecd_rows(
     scan_variable = case_when(
       HEALTH_FACILITY == "CT_SCAN" ~ "ct_scans_per_thou",
       HEALTH_FACILITY == "MRI" ~ "mri_scans_per_thou",
-      HEALTH_FACILITY == "PET_SCAN" ~ "pet_scans_per_thou",
       TRUE ~ NA_character_
     )
   ) %>%
@@ -285,7 +450,15 @@ for (column in setdiff(scan_columns, names(scans_df))) {
 }
 
 scans_df <- scans_df %>%
-  select(code, year, all_of(scan_columns))
+  select(code, year, all_of(scan_columns)) %>%
+  mutate(
+    ct_mri_scans_per_thou = if_else(
+      if_all(all_of(scan_columns), is.na),
+      NA_real_,
+      rowSums(across(all_of(scan_columns)), na.rm = TRUE)
+    )
+  )
+
 
 
 # The current OECD mortality extract contains the retained treatable outcome.
@@ -320,10 +493,16 @@ check_unique_keys(defence_df, "SIPRI defence data")
 check_unique_keys(health_df, "OECD health-spending data")
 check_unique_keys(gdp_percap_df, "OECD GDP-per-capita data")
 check_unique_keys(debt_df, "IMF government-debt data")
-check_unique_keys(beds_df, "OECD hospital-bed data")
+check_unique_keys(beds_oecd_df, "OECD hospital-bed data")
+check_unique_keys(beds_who_df, "WHO hospital-bed data")
+check_unique_keys(beds_df, "Combined hospital-bed data")
 check_unique_keys(physicians_df, "OECD physician data")
 check_unique_keys(nurses_df, "OECD nurse data")
-check_unique_keys(consults_df, "OECD consultation data")
+check_unique_keys(
+  in_person_consults_df,
+  "OECD in-person consultation data"
+)
+check_unique_keys(any_consults_df, "OECD any-consultation data")
 check_unique_keys(oop_df, "OECD out-of-pocket data")
 check_unique_keys(scans_df, "OECD diagnostic-scan data")
 check_unique_keys(
@@ -345,7 +524,8 @@ panel_df <- expand_grid(
   left_join(beds_df, by = c("code", "year")) %>%
   left_join(physicians_df, by = c("code", "year")) %>%
   left_join(nurses_df, by = c("code", "year")) %>%
-  left_join(consults_df, by = c("code", "year")) %>%
+  left_join(in_person_consults_df, by = c("code", "year")) %>%
+  left_join(any_consults_df, by = c("code", "year")) %>%
   left_join(oop_df, by = c("code", "year")) %>%
   left_join(scans_df, by = c("code", "year")) %>%
   left_join(treatable_mortality_df, by = c("code", "year"))
@@ -405,14 +585,18 @@ master_df <- panel_df %>%
     gdp_percap,
     government_debt_pct_gdp,
     previous_government_debt_pct_gdp,
+    hosp_beds_oecd_per_thou,
+    hosp_beds_who_per_thou,
     hosp_beds_per_thou,
+    hosp_beds_source,
     mds_per_thou,
     nurses_per_thou,
-    doctor_consults_per_person,
-    oop_pct,
+    in_person_consults_per_person,
+    any_consults_per_person,
+    oop_share_health_spend,
     ct_scans_per_thou,
     mri_scans_per_thou,
-    pet_scans_per_thou,
+    ct_mri_scans_per_thou,
     treatable_mortality_per_100k,
     change_def_gdp,
     change_health_gdp,
@@ -445,9 +629,32 @@ if (any(is.na(master_df$country)) ||
   stop("Country, code, system, and year must be complete.")
 }
 
+invalid_bed_source <- with(
+  master_df,
+  (!is.na(hosp_beds_source) &
+    !hosp_beds_source %in% c("OECD", "WHO")) |
+    (hosp_beds_source == "OECD" &
+      is.na(hosp_beds_oecd_per_thou)) |
+    (hosp_beds_source == "WHO" &
+      (!is.na(hosp_beds_oecd_per_thou) |
+        is.na(hosp_beds_who_per_thou))) |
+    (hosp_beds_source == "OECD" &
+      !is.na(hosp_beds_per_thou) &
+      abs(hosp_beds_per_thou - hosp_beds_oecd_per_thou) > 1e-10) |
+    (hosp_beds_source == "WHO" &
+      !is.na(hosp_beds_per_thou) &
+      abs(hosp_beds_per_thou - hosp_beds_who_per_thou) > 1e-10) |
+    (!is.na(hosp_beds_per_thou) &
+      is.na(hosp_beds_source))
+)
+
+if (any(invalid_bed_source, na.rm = TRUE)) {
+  stop("Hospital-bed source precedence or provenance is invalid.")
+}
+
 measure_columns <- setdiff(
   names(master_df),
-  c("country", "code", "system")
+  c("country", "code", "system", "hosp_beds_source")
 )
 
 if (!all(vapply(master_df[measure_columns], is.numeric, logical(1)))) {
@@ -460,14 +667,17 @@ nonnegative_columns <- c(
   "gdp_percap",
   "government_debt_pct_gdp",
   "previous_government_debt_pct_gdp",
+  "hosp_beds_oecd_per_thou",
+  "hosp_beds_who_per_thou",
   "hosp_beds_per_thou",
   "mds_per_thou",
   "nurses_per_thou",
-  "doctor_consults_per_person",
-  "oop_pct",
+  "in_person_consults_per_person",
+  "any_consults_per_person",
+  "oop_share_health_spend",
   "ct_scans_per_thou",
   "mri_scans_per_thou",
-  "pet_scans_per_thou",
+  "ct_mri_scans_per_thou",
   "treatable_mortality_per_100k"
 )
 
@@ -484,7 +694,7 @@ if (any(has_negative_value)) {
 proportion_columns <- c(
   "defence_pct_gdp",
   "health_pct_gdp",
-  "oop_pct"
+  "oop_share_health_spend"
 )
 
 has_invalid_proportion <- vapply(
@@ -494,7 +704,7 @@ has_invalid_proportion <- vapply(
 )
 
 if (any(has_invalid_proportion)) {
-  stop("GDP-share and OOP proportion columns must not exceed 1.")
+  stop("GDP-share and OOP health-spending-share columns must not exceed 1.")
 }
 
 derived_check <- panel_df %>%
@@ -545,6 +755,13 @@ if (any(invalid_defence_change) ||
     any(invalid_ratio)) {
   stop("Derived variables do not handle missing or non-positive values correctly.")
 }
+
+
+# Round numeric output columns after all transformations are complete. This
+# removes long trailing decimals without changing the underlying variable
+# definitions or the 0-1 proportion scale.
+master_df <- master_df %>%
+  mutate(across(where(is.numeric), ~ round(.x, 5)))
 
 
 # Save the finalized dataset for the analysis stage.

@@ -412,7 +412,7 @@ secondary_df <- primary_df %>%
   filter(!is.na(health_def_ratio), health_def_ratio > 0) %>%
   mutate(
     log2_ratio = log2(health_def_ratio),
-    oop_pct_points = 100 * oop_pct,
+    oop_health_spend_pct_points = 100 * oop_share_health_spend,
     log_mds_per_thou = if_else(
       mds_per_thou > 0,
       log(mds_per_thou),
@@ -465,8 +465,9 @@ if (any(has_infinite_secondary_value)) {
 
 secondary_specs <- tribble(
   ~outcome_var, ~model_name, ~outcome_label, ~outcome_scale,
-  "oop_pct_points", "out_of_pocket_model",
-  "Out-of-pocket expenditure", "Percentage points",
+  "oop_health_spend_pct_points", "out_of_pocket_model",
+  "Out-of-pocket share of health expenditure",
+  "Percentage points of current health expenditure",
   "hosp_beds_per_thou", "hospital_beds_model",
   "Hospital beds", "Beds per 1,000 people",
   "log_mds_per_thou", "medical_doctors_model",

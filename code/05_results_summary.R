@@ -14,6 +14,7 @@ suppressPackageStartupMessages({
 
 results_dir <- "results"
 output_file <- file.path(results_dir, "results_summary.md")
+html_output_file <- file.path(results_dir, "results_summary.html")
 
 
 # Check that every required result and figure is available
@@ -563,7 +564,9 @@ report_lines <- c(
   "",
   "where $R$ is the log2 health-to-defence spending ratio. The within-country coefficient is the principal longitudinal association. A one-unit change in log2 ratio represents a doubling of the health-to-defence ratio.",
   "",
-  "The primary secondary models use outcome levels because out-of-pocket spending, beds, workforce, and treatable mortality are slow-moving measures, often observed intermittently. Differencing them would discard information and can magnify measurement error. Change in the log ratio paired with year-on-year outcome change is therefore reported as a short-run sensitivity rather than mixed into the primary estimand.",
+  "Hospital beds use OECD as the primary source, with WHO values used only for country-years where OECD is missing.",
+  "",
+  "The primary secondary models use outcome levels because the out-of-pocket share of current health expenditure, beds, workforce, and treatable mortality are slow-moving measures, often observed intermittently. Differencing them would discard information and can magnify measurement error. Change in the log ratio paired with year-on-year outcome change is therefore reported as a short-run sensitivity rather than mixed into the primary estimand.",
   "",
   "For log-transformed outcomes, effects below are percentage changes per doubling of the ratio. Other outcomes retain the units shown.",
   "",
@@ -647,7 +650,51 @@ report_lines <- c(
 
 writeLines(report_lines, output_file)
 
+html_body <- commonmark::markdown_html(
+  paste(report_lines, collapse = "\n"),
+  extensions = c(
+    "table",
+    "strikethrough",
+    "autolink",
+    "tagfilter",
+    "tasklist"
+  )
+)
+
+html_document <- paste0(
+  "<!doctype html>\n",
+  "<html lang=\"en\">\n",
+  "<head>\n",
+  "<meta charset=\"utf-8\">\n",
+  "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n",
+  "<title>Health and Defence Spending: Results Summary</title>\n",
+  "<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css\">\n",
+  "<style>",
+  "body{font-family:system-ui,sans-serif;line-height:1.6;max-width:1100px;",
+  "margin:2rem auto;padding:0 1rem;color:#1f2328}",
+  "table{border-collapse:collapse;width:100%;margin:1rem 0}",
+  "th,td{border:1px solid #d0d7de;padding:.45rem;text-align:left;",
+  "vertical-align:top}",
+  "th{background:#f6f8fa}",
+  "blockquote{border-left:4px solid #d0d7de;margin-left:0;padding-left:1rem}",
+  "code{background:#f6f8fa;padding:.1rem .25rem}",
+  "pre code{display:block;padding:1rem;overflow:auto}",
+  "img{max-width:100%;height:auto}",
+  "</style>\n",
+  "</head>\n",
+  "<body>\n",
+  html_body,
+  "<script defer src=\"https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js\"></script>\n",
+  "<script defer src=\"https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js\" ",
+  "onload=\"renderMathInElement(document.body,{delimiters:[",
+  "{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});\"></script>\n",
+  "</body>\n",
+  "</html>"
+)
+
+writeLines(html_document, html_output_file)
+
 cat(
-  "Saved", output_file,
-  "with", length(report_lines), "Markdown lines.\n"
+  "Saved", output_file, "and", html_output_file,
+  "from", length(report_lines), "Markdown lines.\n"
 )

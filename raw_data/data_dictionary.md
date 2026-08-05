@@ -6,14 +6,15 @@ Last updated: 5 August 2026
 
 ## Purpose
 
-The current CSV inputs are combined by `code/01_data_processing.R` into a
+The current source inputs are combined by `code/01_data_processing.R` into a
 31-country panel covering 2000-2025. Source values from 1999 are used only as
 the prior-year input for the first retained year's changes and debt. The output
 has one row per country-year from 2000 through 2025; source observations that
 are unavailable remain `NA`.
 
-The pipeline reads the current CSV files directly. Workbooks and Numbers files
-are retained as provenance and are not read directly by the processing script.
+The pipeline reads the current CSV files plus the WHO beds CSV and OECD
+consultation workbook under `updated_sources_040826/`. Other workbooks and
+Numbers files are retained for provenance and are not read directly.
 
 ## File inventory
 
@@ -21,9 +22,11 @@ are retained as provenance and are not read directly by the processing script.
 | --- | ---: | --- |
 | `IMF_debt_pct_gdp.csv` | 384 x 78 | Wide IMF general government debt as a share of GDP. |
 | `OECD_beds_per_k.csv` | 1,225 x 40 | Long OECD hospital beds, per 1,000 people. |
+| `updated_sources_040826/20260731-WHO BEDS .csv` | 704 x 34 | Long WHO hospital beds, per 10,000 people; used only to supplement missing OECD values. |
 | `OECD_gdp_per_cap.csv` | 1,132 x 44 | Long OECD GDP per capita in PPP-converted US dollars per person at current prices. |
 | `OECD_health_spending_pct_gdp.csv` | 1,488 x 46 | Long OECD government/compulsory health spending as a percentage of GDP. |
-| `OECD_md_consults_per_person.csv` | 957 x 56 | Long OECD medical-doctor consultations per person. |
+| `OECD_md_consults_per_person.csv` | 957 x 56 | Long OECD in-person medical-doctor consultations per person. |
+| `updated_sources_040826/20260731-OECD CONSULTS.xlsx` | 31 x 13 on `Table` | Wide OECD medical-doctor consultations per person across settings, with years 2015-2024. |
 | `OECD_mds_per_k.csv` | 1,089 x 40 | Long OECD practicing physicians, per 1,000 people. |
 | `OECD_oop_pct_health_spend.csv` | 1,447 x 46 | Long OECD household out-of-pocket expenditure as a percentage of current health expenditure. |
 | `OECD_rns_per_k.csv` | 1,046 x 40 | Long OECD practicing nurses, per 1,000 people. |
@@ -44,11 +47,17 @@ are retained as provenance and are not read directly by the processing script.
 - Blank cells, `NA`, `xxx`, `...`, `..`, and `. .` are treated as missing.
 - Missing observations remain missing. The pipeline does not impute or
   interpolate values.
-- Health spending, defence spending, out-of-pocket spending, and government
-  debt are stored as proportions. For example, `0.05` means 5%.
+- OECD is the primary hospital-bed source. WHO values fill only country-years
+  where OECD is missing; WHO values never overwrite OECD observations.
+- Health spending, defence spending, the out-of-pocket share of current health
+  expenditure, and government debt are stored as proportions. For example,
+  `0.05` means 5%.
 - GDP per capita is stored in PPP-converted OECD US dollars per person at
   current prices.
 - Other outcomes retain their source units.
+- After all derived variables are calculated, numeric output columns are
+  rounded to no more than five decimal places. Proportion variables remain on
+  the 0-1 scale.
 
 ## Study countries and health systems
 
@@ -67,19 +76,35 @@ used in the processed dataset.
 | OECD GDP per capita, PPP converted | `gdp_percap` | PPP-converted US dollars per person at current prices. |
 | IMF general government debt | `government_debt_pct_gdp` | Proportion of GDP; source is already stored as a proportion. |
 | Previous-year IMF general government debt | `previous_government_debt_pct_gdp` | Current year's `t - 1` debt level; 2000 uses the 1999 source value. |
-| OECD hospital beds | `hosp_beds_per_thou` | Beds per 1,000 people. |
+| OECD hospital beds | `hosp_beds_oecd_per_thou` | OECD beds per 1,000 people. |
+| WHO hospital beds | `hosp_beds_who_per_thou` | WHO beds per 10,000 people divided by 10. Retained even where an OECD value is also available. |
+| OECD-first supplemented hospital beds | `hosp_beds_per_thou` | OECD beds where available, otherwise WHO beds; beds per 1,000 people. |
+| Selected hospital-bed source | `hosp_beds_source` | `OECD` when OECD supplies the combined value and `WHO` only where WHO fills an OECD gap. |
 | OECD practicing physicians | `mds_per_thou` | Physicians per 1,000 people. |
 | OECD practicing nurses | `nurses_per_thou` | Nurses per 1,000 people. |
-| OECD medical-doctor consultations | `doctor_consults_per_person` | Consultations per person. Descriptive panel variable; not currently modelled. |
-| OECD household out-of-pocket expenditure | `oop_pct` | Proportion of current health expenditure; source percentage divided by 100. |
+| OECD in-person medical-doctor consultations | `in_person_consults_per_person` | In-person consultations per person (`CONSULTATION_TYPE = CIP`). Descriptive panel variable; not currently modelled. |
+| OECD medical-doctor consultations across settings | `any_consults_per_person` | Broader consultations-per-person series from the 2015-2024 workbook. Kept separate from the in-person series and not currently modelled. |
+| OECD household out-of-pocket expenditure | `oop_share_health_spend` | Household out-of-pocket payments as a proportion of current health expenditure; source percentage divided by 100. |
 | OECD CT examinations, total provider | `ct_scans_per_thou` | Examinations per 1,000 people. Descriptive panel variable; not currently modelled. |
 | OECD MRI examinations, total provider | `mri_scans_per_thou` | Examinations per 1,000 people. Descriptive panel variable; not currently modelled. |
-| OECD PET examinations, total provider | `pet_scans_per_thou` | Examinations per 1,000 people. Descriptive panel variable; not currently modelled. |
+| OECD CT plus MRI examinations, total provider | `ct_mri_scans_per_thou` | Sum of available CT and MRI examinations per 1,000 people; missing when both components are missing. PET is excluded. |
 | OECD treatable mortality | `treatable_mortality_per_100k` | Deaths per 100,000 people. |
 
 Life expectancy, UHC service coverage, premature non-communicable disease
 mortality, avoidable mortality, and preventable mortality are not included in
 the revised processed dataset or analyses.
+
+### Optional alternative out-of-pocket measure
+
+`updated_sources_040826/02082026-OECD OOP.xlsx` reports household
+out-of-pocket payments as a percentage of GDP. It is retained for provenance
+and as an optional alternative analysis measure, but it is not read by the
+current processing pipeline. If introduced later, it should be stored
+separately as `oop_pct_gdp`, divided by 100 to form a proportion.
+
+The optional GDP-denominator measure must not be combined with
+`oop_share_health_spend` or used to fill its missing observations. The two
+series answer different questions because their denominators differ.
 
 ## Derived variables
 
@@ -110,12 +135,17 @@ to the health-change outcome year.
   calculations; it is not included as a processed panel year.
 - OECD indicator coverage differs across countries and years. GDP per capita,
   beds, nurses, scans, and treatable mortality therefore contain some `NA`
-  values in the panel.
-- Diagnostic-scan data contain separate CT, MRI, and PET series and multiple
-  provider types. The processing script retains the total-provider series.
+  values in the panel. WHO adds hospital-bed values only where OECD is missing.
+- The consultation definitions are not interchangeable. The in-person series
+  has broader historical coverage; the any-setting workbook covers 2015-2024.
+- Diagnostic-scan inputs contain CT, MRI, and PET series and multiple provider
+  types. Processing retains only total-provider CT and MRI; PET is excluded.
 
 ## Source provenance
 
 Additional source workbooks and Numbers files are retained under
 `raw_data/sources/` and `raw_data/updated_sources_040826/`. They document the
 source downloads and exports used to create or update the current CSV inputs.
+The WHO beds CSV and OECD consultations workbook are direct pipeline inputs.
+The OOP workbook in `updated_sources_040826/` is an explicitly retained
+alternative; the primary OOP input remains `OECD_oop_pct_health_spend.csv`.
