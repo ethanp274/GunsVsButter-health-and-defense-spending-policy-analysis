@@ -38,7 +38,9 @@ the code before relying on an old estimate.
 
 Preserve these decisions unless the user explicitly changes them:
 
-- The processed panel covers 31 countries and 2000-2024.
+- The processed panel covers 31 countries and 2000-2025. Source values from
+  1999 are used only to calculate the first retained year's changes and
+  previous-year debt; 1999 is not an output panel year.
 - Raw missing observations remain `NA`; do not impute or interpolate.
 - Health and defence spending are shares of GDP, stored as proportions.
 - Health spending as a share of total government spending is not used.
@@ -58,7 +60,7 @@ Preserve these decisions unless the user explicitly changes them:
 - Secondary primary models use the within-/between-country decomposition of
   the log2 health-to-defence ratio against outcome levels.
 - Change-on-change secondary models are sensitivities.
-- UHC is retained in processed data but is excluded from secondary analyses.
+- UHC is removed from the revised processed data and all analyses.
 - Interpret every model as associational, not causal.
 
 ## Lag convention
@@ -81,8 +83,8 @@ without an explicit methodological decision from the user.
 ## Pipeline map
 
 - `code/00_run_pipeline.R`: runs the full pipeline.
-- `code/01_data_processing.R`: reads the seven raw CSVs and creates the clean
-  panel.
+- `code/01_data_processing.R`: reads the current raw CSV inputs and creates
+  the clean panel.
 - `code/02_analysis.R`: fits the five main models and primary secondary models.
 - `code/03_sensitivity_analyses.R`: fits main and secondary robustness checks.
 - `code/04_visualisation.R`: generates descriptive figures.
@@ -127,8 +129,10 @@ Rscript code/00_run_pipeline.R
 Then check:
 
 - every stage exits successfully;
-- the processed data still contain 31 countries, 775 rows, and years
-  2000-2024;
+- the processed data still contain 31 countries, 806 rows, and years
+  2000-2025;
+- the 2000 change variables use 1999 source values while the output panel
+  begins in 2000;
 - the main model uses the intended countries, years, timing, and complete-case
   sample;
 - 2020 and 2021 do not appear as fitted year effects;

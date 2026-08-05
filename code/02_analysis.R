@@ -1,7 +1,7 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # MAIN ANALYSIS OF HEALTH AND DEFENCE SPENDING
 # Harry Rourke & Ethan Phillips
-# Last updated: 2026-07-27
+# Last updated: 2026-08-05
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # This script estimates associations rather than causal effects.
@@ -28,6 +28,7 @@ dir.create(results_dir, showWarnings = FALSE)
 
 excluded_primary_codes <- c("ISL", "LUX")
 excluded_analysis_years <- c(2020L, 2021L)
+analysis_end_year <- max(master_df$year, na.rm = TRUE)
 
 
 # Prepare the primary sample and interpretable model scales
@@ -38,12 +39,12 @@ primary_df <- master_df %>%
     previous_debt_10pp = if_else(
       (year - 1L) %in% excluded_analysis_years,
       NA_real_,
-      lag(government_debt_pct_gdp) / 0.10
+      previous_government_debt_pct_gdp / 0.10
     )
   ) %>%
   ungroup() %>%
   filter(
-    year <= 2023,
+    year <= analysis_end_year,
     !year %in% excluded_analysis_years,
     !code %in% excluded_primary_codes
   ) %>%
@@ -107,14 +108,16 @@ main_data <- primary_df[
 ] %>%
   droplevels()
 
-if (nrow(main_data) != 580 ||
-    n_distinct(main_data$country) != 29 ||
-    min(main_data$year) != 2001 ||
-    max(main_data$year) != 2023) {
+if (nrow(main_data) != 607 ||
+    n_distinct(main_data$country) != 28 ||
+    min(main_data$year) != 2000 ||
+    max(main_data$year) != 2025 ||
+    any(main_data$year %in% excluded_analysis_years)) {
   stop(
     paste(
-      "The expected main-analysis sample is 580 rows from 29 countries,",
-      "with 2020-2021 excluded and 2022 unavailable for lagged debt."
+      "The expected main-analysis sample is 607 rows from 28 countries,",
+      "covering 2000-2025 with 2020-2021 excluded and 2022 unavailable",
+      "because its previous-year debt value is from excluded 2021."
     )
   )
 }
@@ -420,21 +423,6 @@ secondary_df <- primary_df %>%
       log(nurses_per_thou),
       NA_real_
     ),
-    log_premature_ncd_mortality = if_else(
-      premature_ncd_mortality_pct > 0,
-      log(premature_ncd_mortality_pct),
-      NA_real_
-    ),
-    log_avoidable_mortality = if_else(
-      avoidable_mortality_per_100k > 0,
-      log(avoidable_mortality_per_100k),
-      NA_real_
-    ),
-    log_preventable_mortality = if_else(
-      preventable_mortality_per_100k > 0,
-      log(preventable_mortality_per_100k),
-      NA_real_
-    ),
     log_treatable_mortality = if_else(
       treatable_mortality_per_100k > 0,
       log(treatable_mortality_per_100k),
@@ -462,9 +450,6 @@ transformed_secondary_vars <- c(
   "ratio_between",
   "log_mds_per_thou",
   "log_nurses_per_thou",
-  "log_premature_ncd_mortality",
-  "log_avoidable_mortality",
-  "log_preventable_mortality",
   "log_treatable_mortality"
 )
 
@@ -482,20 +467,12 @@ secondary_specs <- tribble(
   ~outcome_var, ~model_name, ~outcome_label, ~outcome_scale,
   "oop_pct_points", "out_of_pocket_model",
   "Out-of-pocket expenditure", "Percentage points",
-  "life_exp", "life_expectancy_model",
-  "Life expectancy at birth", "Years",
   "hosp_beds_per_thou", "hospital_beds_model",
   "Hospital beds", "Beds per 1,000 people",
   "log_mds_per_thou", "medical_doctors_model",
   "Medical doctors", "Log outcome",
   "log_nurses_per_thou", "nurses_midwives_model",
   "Nurses and midwives", "Log outcome",
-  "log_premature_ncd_mortality", "premature_ncd_mortality_model",
-  "Premature NCD mortality", "Log outcome",
-  "log_avoidable_mortality", "avoidable_mortality_model",
-  "Avoidable mortality", "Log outcome",
-  "log_preventable_mortality", "preventable_mortality_model",
-  "Preventable mortality", "Log outcome",
   "log_treatable_mortality", "treatable_mortality_model",
   "Treatable mortality", "Log outcome"
 )
@@ -655,7 +632,11 @@ analysis_sample_flow <- bind_rows(
     last_year = max(master_df$year)
   ),
   tibble(
-    stage = "Primary countries through 2023, excluding 2020-2021",
+    stage = paste(
+      "Primary countries through",
+      analysis_end_year,
+      "excluding 2020-2021"
+    ),
     rows = nrow(primary_df),
     countries = n_distinct(primary_df$code),
     first_year = min(primary_df$year),

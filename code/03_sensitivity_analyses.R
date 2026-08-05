@@ -1,7 +1,7 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # SENSITIVITY ANALYSES OF HEALTH AND DEFENCE SPENDING
 # Harry Rourke & Ethan Phillips
-# Last updated: 2026-07-27
+# Last updated: 2026-08-05
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # This script is independent of 02_analysis.R and can be run from a fresh session.
@@ -31,6 +31,7 @@ dir.create(results_dir, showWarnings = FALSE)
 excluded_primary_codes <- c("ISL", "LUX")
 excluded_analysis_years <- c(2020L, 2021L)
 current_non_nato_codes <- c("AUT", "CYP", "IRL", "MLT", "CHE")
+analysis_end_year <- max(master_df$year, na.rm = TRUE)
 
 
 # Create annual, lagged, cumulative, and alternative change measures
@@ -43,13 +44,6 @@ panel_df <- master_df %>%
     current_debt_10pp = government_debt_pct_gdp / 0.10,
     log2_gdp_percap = log2(gdp_percap),
     gdp_per_10k = gdp_percap / 10000,
-    gdp_growth_percent = if_else(
-      !is.na(gdp_current_usd) &
-        !is.na(lag(gdp_current_usd)) &
-        lag(gdp_current_usd) > 0,
-      100 * (gdp_current_usd / lag(gdp_current_usd) - 1),
-      NA_real_
-    ),
     health_change_pp = 100 * (health_pct_gdp - lag(health_pct_gdp)),
     defence_change_pp = 100 * (defence_pct_gdp - lag(defence_pct_gdp)),
     debt_change_pp = 100 * (
@@ -58,7 +52,7 @@ panel_df <- master_df %>%
     previous_debt_10pp = if_else(
       (year - 1L) %in% excluded_analysis_years,
       NA_real_,
-      lag(government_debt_pct_gdp) / 0.10
+      previous_government_debt_pct_gdp / 0.10
     ),
     debt_start_3yr_10pp = if_else(
       (year - 3L) %in% excluded_analysis_years,
@@ -147,7 +141,7 @@ panel_df <- master_df %>%
 # Use the primary sample to define common centring constants
 primary_df <- panel_df %>%
   filter(
-    year <= 2023,
+    year <= analysis_end_year,
     !year %in% excluded_analysis_years,
     !code %in% excluded_primary_codes
   )
@@ -161,8 +155,7 @@ centres <- c(
     primary_df$debt_start_3yr_10pp,
     na.rm = TRUE
   ),
-  gdp_per_10k = mean(primary_df$gdp_per_10k, na.rm = TRUE),
-  gdp_growth_percent = mean(primary_df$gdp_growth_percent, na.rm = TRUE)
+  gdp_per_10k = mean(primary_df$gdp_per_10k, na.rm = TRUE)
 )
 
 panel_df <- panel_df %>%
@@ -179,8 +172,6 @@ panel_df <- panel_df %>%
       debt_start_3yr_10pp - centres[["debt_start_3yr_10pp"]],
     gdp_per_10k_c =
       gdp_per_10k - centres[["gdp_per_10k"]],
-    gdp_growth_percent_c =
-      gdp_growth_percent - centres[["gdp_growth_percent"]],
     country = factor(country),
     system = relevel(factor(system), ref = "BEV"),
     year_factor = factor(year)
@@ -188,7 +179,7 @@ panel_df <- panel_df %>%
 
 primary_df <- panel_df %>%
   filter(
-    year <= 2023,
+    year <= analysis_end_year,
     !year %in% excluded_analysis_years,
     !code %in% excluded_primary_codes
   )
@@ -533,18 +524,6 @@ add_main_sensitivity(
 )
 
 add_main_sensitivity(
-  "adjust_for_gdp_growth",
-  "GDP growth instead of GDP per-capita level",
-  primary_df,
-  health_change_percent ~
-    defence_change_10pct * system +
-    defence_change_10pct * previous_debt_10pp_c +
-    gdp_growth_percent_c +
-    year_factor +
-    (1 | country)
-)
-
-add_main_sensitivity(
   "untransformed_gdp_per_capita",
   "GDP per capita in $10,000 units",
   primary_df,
@@ -571,7 +550,7 @@ add_main_sensitivity(
   "Restore Luxembourg while continuing to exclude Iceland",
   panel_df %>%
     filter(
-      year <= 2023,
+      year <= analysis_end_year,
       !year %in% excluded_analysis_years,
       code != "ISL"
     ),
@@ -579,12 +558,11 @@ add_main_sensitivity(
 )
 
 add_main_sensitivity(
-  "include_2024",
-  "Include available observations from 2024",
-  panel_df %>%
+  "exclude_2025",
+  "Exclude observations from 2025",
+  primary_df %>%
     filter(
-      !year %in% excluded_analysis_years,
-      !code %in% excluded_primary_codes
+      year < analysis_end_year
     ),
   full_formula
 )
@@ -721,21 +699,6 @@ secondary_df <- panel_df %>%
       log(nurses_per_thou),
       NA_real_
     ),
-    log_premature_ncd_mortality = if_else(
-      premature_ncd_mortality_pct > 0,
-      log(premature_ncd_mortality_pct),
-      NA_real_
-    ),
-    log_avoidable_mortality = if_else(
-      avoidable_mortality_per_100k > 0,
-      log(avoidable_mortality_per_100k),
-      NA_real_
-    ),
-    log_preventable_mortality = if_else(
-      preventable_mortality_per_100k > 0,
-      log(preventable_mortality_per_100k),
-      NA_real_
-    ),
     log_treatable_mortality = if_else(
       treatable_mortality_per_100k > 0,
       log(treatable_mortality_per_100k),
@@ -765,11 +728,6 @@ secondary_df <- panel_df %>%
       oop_pct_points - lag(oop_pct_points),
       NA_real_
     ),
-    change_life_exp = if_else(
-      valid_annual_comparison,
-      life_exp - lag(life_exp),
-      NA_real_
-    ),
     change_hosp_beds_per_thou = if_else(
       valid_annual_comparison,
       hosp_beds_per_thou - lag(hosp_beds_per_thou),
@@ -785,23 +743,6 @@ secondary_df <- panel_df %>%
       log_nurses_per_thou - lag(log_nurses_per_thou),
       NA_real_
     ),
-    change_log_premature_ncd_mortality = if_else(
-      valid_annual_comparison,
-      log_premature_ncd_mortality -
-        lag(log_premature_ncd_mortality),
-      NA_real_
-    ),
-    change_log_avoidable_mortality = if_else(
-      valid_annual_comparison,
-      log_avoidable_mortality - lag(log_avoidable_mortality),
-      NA_real_
-    ),
-    change_log_preventable_mortality = if_else(
-      valid_annual_comparison,
-      log_preventable_mortality -
-        lag(log_preventable_mortality),
-      NA_real_
-    ),
     change_log_treatable_mortality = if_else(
       valid_annual_comparison,
       log_treatable_mortality - lag(log_treatable_mortality),
@@ -810,7 +751,7 @@ secondary_df <- panel_df %>%
   ) %>%
   ungroup() %>%
   filter(
-    year <= 2023,
+    year <= analysis_end_year,
     !year %in% excluded_analysis_years,
     !code %in% excluded_primary_codes
   )
@@ -819,20 +760,12 @@ secondary_specs <- tribble(
   ~outcome_var, ~change_outcome_var, ~raw_outcome_var, ~outcome_label,
   "oop_pct_points", "change_oop_pct_points", "oop_logit",
   "Out-of-pocket expenditure",
-  "life_exp", "change_life_exp", NA, "Life expectancy at birth",
   "hosp_beds_per_thou", "change_hosp_beds_per_thou", NA,
   "Hospital beds",
   "log_mds_per_thou", "change_log_mds_per_thou", "mds_per_thou",
   "Medical doctors",
   "log_nurses_per_thou", "change_log_nurses_per_thou",
   "nurses_per_thou", "Nurses and midwives",
-  "log_premature_ncd_mortality",
-  "change_log_premature_ncd_mortality",
-  "premature_ncd_mortality_pct", "Premature NCD mortality",
-  "log_avoidable_mortality", "change_log_avoidable_mortality",
-  "avoidable_mortality_per_100k", "Avoidable mortality",
-  "log_preventable_mortality", "change_log_preventable_mortality",
-  "preventable_mortality_per_100k", "Preventable mortality",
   "log_treatable_mortality", "change_log_treatable_mortality",
   "treatable_mortality_per_100k", "Treatable mortality"
 )
@@ -1118,8 +1051,8 @@ secondary_sensitivity_results <- bind_rows(
     )
   )
 
-if (nrow(main_sensitivity_overview) != 19) {
-  stop("Expected 19 main sensitivity specifications.")
+if (nrow(main_sensitivity_overview) != 18) {
+  stop("Expected 18 main sensitivity specifications.")
 }
 
 if (any(!main_sensitivity_overview$converged)) {
@@ -1130,8 +1063,8 @@ if (n_distinct(leave_one_country_out$omitted_code) != 29) {
   stop("Expected 29 leave-one-country-out analyses.")
 }
 
-if (nrow(secondary_sensitivity_results) != 194) {
-  stop("Expected 194 secondary sensitivity coefficient rows.")
+if (nrow(secondary_sensitivity_results) != 108) {
+  stop("Expected 108 secondary sensitivity coefficient rows.")
 }
 
 

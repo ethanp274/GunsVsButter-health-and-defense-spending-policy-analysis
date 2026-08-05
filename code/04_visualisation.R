@@ -1,7 +1,7 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # VISUALISATION OF HEALTH AND DEFENSE SPENDING TRADEOFF
 # Harry Rourke & Ethan Phillips
-# Last updated: 2026-07-09
+# Last updated: 2026-08-05
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Load packages
@@ -21,10 +21,11 @@ dir.create(results_dir, showWarnings = FALSE)
 
 excluded_primary_codes <- c("ISL", "LUX")
 excluded_analysis_years <- c(2020L, 2021L)
+analysis_end_year <- max(master_df$year, na.rm = TRUE)
 
 plot_master_df <- master_df %>%
   filter(
-    year <= 2023,
+    year <= analysis_end_year,
     !code %in% excluded_primary_codes
   ) %>%
   mutate(

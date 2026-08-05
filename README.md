@@ -33,13 +33,12 @@ are used in the primary secondary models because most outcomes change slowly
 or are observed intermittently. Change-on-change models are retained as
 exploratory sensitivities.
 
-UHC service coverage remains available in the processed dataset but is
-deliberately excluded from all secondary analyses.
-
 ## Current study design
 
-The processing stage constructs a balanced framework of 31 countries and 25
-years (2000-2024), with unavailable source observations retained as `NA`.
+The processing stage constructs a balanced framework of 31 countries and 26
+years (2000-2025), with unavailable source observations retained as `NA`.
+Source observations from 1999 are read only to calculate the first retained
+year's changes and previous-year debt; 1999 is not included as an output row.
 There is no imputation or interpolation.
 
 The primary analysis:
@@ -49,6 +48,8 @@ The primary analysis:
   of COVID-19 on spending, GDP, debt, and health measures;
 - omits 2022 from the main model because its required previous-year debt value
   is from excluded 2021;
+- otherwise uses available outcome years from 2000 through 2025 subject to
+  complete-case requirements;
 - uses Beveridge systems as the reference group;
 - includes categorical year effects and a country random intercept;
 - adjusts for centred log2 GDP per capita; and
@@ -80,6 +81,11 @@ In the contemporaneous main model, health-spending change, defence-spending
 change, and GDP per capita are measured for outcome year `t`. Public debt is
 measured in `t - 1`.
 
+The 2000 change variables are calculated using source values from 1999 to
+2000. The processed output still begins at 2000, and the previous-year debt
+column allows the 2000 outcome to use debt from 1999 without retaining a 1999
+panel row.
+
 In lagged defence sensitivities, debt remains aligned to the health-spending
 decision:
 
@@ -100,14 +106,13 @@ and influential observations.
 The current secondary analyses cover:
 
 - out-of-pocket health expenditure;
-- life expectancy;
 - hospital beds;
 - physicians;
 - nurses and midwives;
-- premature non-communicable disease mortality;
-- avoidable mortality;
-- preventable mortality; and
 - treatable mortality.
+
+Doctor consultations and CT, MRI, and PET scans are retained as descriptive
+variables in the processed panel but are not currently modelled.
 
 The primary secondary models use within- and between-country components of the
 log2 health-to-defence spending ratio, system type, log2 GDP per capita,
@@ -120,22 +125,29 @@ lagged debt adjustment, and health and defence shares as separate exposures.
 The authoritative data inventory, units, mappings, and limitations are in
 [the raw-data dictionary](raw_data/data_dictionary.md).
 
-The seven current CSV inputs are:
+The current CSV inputs are:
 
 - `raw_data/SIPRI_defence_pct_gdp.csv`
-- `raw_data/WHO_health_spend_and_outcomes.csv`
-- `raw_data/WorldBank_gdp.csv`
-- `raw_data/WorldBank_gdp_per_capita.csv`
+- `raw_data/OECD_health_spending_pct_gdp.csv`
+- `raw_data/OECD_gdp_per_cap.csv`
 - `raw_data/IMF_debt_pct_gdp.csv`
-- `raw_data/OECD_mortality_per100k.csv`
+- `raw_data/OECD_beds_per_k.csv`
+- `raw_data/OECD_mds_per_k.csv`
+- `raw_data/OECD_rns_per_k.csv`
+- `raw_data/OECD_md_consults_per_person.csv`
+- `raw_data/OECD_oop_pct_health_spend.csv`
+- `raw_data/OECD_scans_per_k.csv`
+- `raw_data/OECD_treat_mortality_per_100k.csv`
 - `raw_data/oecd_europe_health_systems.csv`
 
 GDP-share and percentage-share variables are stored as proportions: `0.05`
-means 5%. GDP and GDP per capita are current US dollars. Missing values remain
-missing.
+means 5%. GDP per capita is PPP-converted OECD US dollars per person at current
+prices. Missing values remain missing.
 
-Original workbooks are retained under `raw_data/sources/` for provenance.
-Files under `deprecated/` are not pipeline inputs.
+Source workbooks and Numbers files are retained under `raw_data/sources/` and
+`raw_data/updated_sources_040826/` for provenance. The processing script reads
+the current CSV inputs listed above, not those workbook files directly. Files
+under `deprecated/` are not pipeline inputs.
 
 ## Running the pipeline
 

@@ -1,7 +1,8 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # RUN THE COMPLETE HEALTH AND DEFENCE SPENDING PIPELINE
 # Harry Rourke & Ethan Phillips
-# Last updated: 2026-07-27
+# Last updated: 2026-08-05
+# Final panel years: 2000-2025; 1999 is read only for first-year changes/debt
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Run this script from the repository root:

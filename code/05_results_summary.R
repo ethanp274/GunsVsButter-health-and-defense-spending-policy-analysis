@@ -1,7 +1,7 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # GENERATE A MARKDOWN SUMMARY OF ANALYSIS RESULTS
 # Harry Rourke & Ethan Phillips
-# Last updated: 2026-07-27
+# Last updated: 2026-08-05
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Run stages 02, 03, and 04 before this script so their outputs are current.
@@ -319,7 +319,7 @@ sensitivity_term_map <- tribble(
   "absolute_percentage_point_changes", "defence_change_pp",
   "current_nato_members", "defence_change_10pct",
   "restore_luxembourg", "defence_change_10pct",
-  "include_2024", "defence_change_10pct",
+  "exclude_2025", "defence_change_10pct",
   "exclude_financial_crisis", "defence_change_10pct",
   "winsorised_changes", "defence_change_10pct"
 )
@@ -548,7 +548,10 @@ report_lines <- c(
   "",
   "### Categorical year effects",
   "",
-  "These coefficients are the common year-level differences in relative health-spending change from the 2001 reference year in the fully adjusted model. They should be interpreted as adjustment for shared annual shocks, not as effects caused by the calendar year.",
+  sprintf(
+    "These coefficients are the common year-level differences in relative health-spending change from the %s reference year in the fully adjusted model. They should be interpreted as adjustment for shared annual shocks, not as effects caused by the calendar year.",
+    main_sample$first_year
+  ),
   "",
   markdown_table(year_effect_table),
   "",
@@ -560,7 +563,7 @@ report_lines <- c(
   "",
   "where $R$ is the log2 health-to-defence spending ratio. The within-country coefficient is the principal longitudinal association. A one-unit change in log2 ratio represents a doubling of the health-to-defence ratio.",
   "",
-  "The primary secondary models use outcome levels because beds, workforce, life expectancy, coverage, and mortality are slow-moving stocks or rates, often measured intermittently. Differencing them would discard information and can magnify measurement error. Change in the log ratio paired with year-on-year outcome change is therefore reported as a short-run sensitivity rather than mixed into the primary estimand.",
+  "The primary secondary models use outcome levels because out-of-pocket spending, beds, workforce, and treatable mortality are slow-moving measures, often observed intermittently. Differencing them would discard information and can magnify measurement error. Change in the log ratio paired with year-on-year outcome change is therefore reported as a short-run sensitivity rather than mixed into the primary estimand.",
   "",
   "For log-transformed outcomes, effects below are percentage changes per doubling of the ratio. Other outcomes retain the units shown.",
   "",
@@ -621,7 +624,10 @@ report_lines <- c(
   "- The models are associational and may retain residual confounding or reverse causation.",
   "- Health, defence, and debt measures share GDP-related denominators, so common economic shocks can create coupled movements.",
   "- A singular random-intercept fit indicates that the estimated between-country residual variance is effectively zero after included covariates.",
-  "- The GEE sensitivity estimates a population-average association with robust standard errors. With 29 country clusters, sandwich standard errors may still have limited small-sample accuracy.",
+  sprintf(
+    "- The GEE sensitivity estimates a population-average association with robust standard errors. With %s country clusters, sandwich standard errors may still have limited small-sample accuracy.",
+    main_sample$countries
+  ),
   "- Secondary analyses are exploratory and span outcomes with different observation schedules and sample sizes.",
   "- Annual differencing may reduce trend confounding but magnifies measurement error and is poorly suited to intermittently observed outcomes.",
   "",
