@@ -189,7 +189,8 @@ Rscript code/00_run_pipeline.R
 ```
 
 The master script runs every stage in a fresh R session and stops if a stage
-fails:
+fails. At startup, it checks the full package list below and installs any
+missing packages from CRAN:
 
 1. `code/01_data_processing.R`
 2. `code/02_analysis.R`

@@ -8,6 +8,62 @@
 # Run this script from the repository root:
 # Rscript code/00_run_pipeline.R
 
+# Check and install all packages used by the pipeline before running any stage.
+# This keeps a fresh R installation from failing part-way through the workflow.
+required_packages <- c(
+  "broom",
+  "broom.mixed",
+  "commonmark",
+  "dplyr",
+  "geepack",
+  "ggplot2",
+  "lme4",
+  "nlme",
+  "readr",
+  "readxl",
+  "tidyr"
+)
+
+missing_packages <- required_packages[
+  !vapply(
+    required_packages,
+    requireNamespace,
+    logical(1),
+    quietly = TRUE
+  )
+]
+
+if (length(missing_packages) > 0) {
+  cat(
+    "Installing missing R packages: ",
+    paste(missing_packages, collapse = ", "),
+    "\n",
+    sep = ""
+  )
+
+  install.packages(
+    missing_packages,
+    repos = "https://cloud.r-project.org",
+    dependencies = TRUE
+  )
+}
+
+still_missing <- required_packages[
+  !vapply(
+    required_packages,
+    requireNamespace,
+    logical(1),
+    quietly = TRUE
+  )
+]
+
+if (length(still_missing) > 0) {
+  stop(
+    "The following required R packages could not be installed: ",
+    paste(still_missing, collapse = ", ")
+  )
+}
+
 pipeline_steps <- c(
   "code/01_data_processing.R",
   "code/02_analysis.R",
