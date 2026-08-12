@@ -32,37 +32,19 @@ read_source_csv <- function(path) {
 
 defence_raw <- read_source_csv("raw_data/SIPRI_defence_pct_gdp.csv")
 health_raw <- read_source_csv("raw_data/OECD_health_spending_pct_gdp.csv")
-gdp_percap_raw <- read_source_csv("raw_data/OECD_gdp_per_cap.csv")
+gdp_percap_raw <- read_source_csv(
+  "raw_data/OECD_gdp_per_cap_updated.csv"
+)
 debt_raw <- read_source_csv("raw_data/IMF_debt_pct_gdp.csv")
 beds_raw <- read_source_csv("raw_data/OECD_beds_per_k.csv")
 who_beds_raw <- read_source_csv(
-  "raw_data/updated_sources_040826/20260731-WHO BEDS .csv"
-)
-in_person_consults_raw <- read_source_csv(
-  "raw_data/OECD_md_consults_per_person.csv"
+  "raw_data/20260731-WHO BEDS .csv"
 )
 physicians_raw <- read_source_csv("raw_data/OECD_mds_per_k.csv")
 nurses_raw <- read_source_csv("raw_data/OECD_rns_per_k.csv")
 oop_raw <- read_source_csv("raw_data/OECD_oop_pct_health_spend.csv")
-scans_raw <- read_source_csv("raw_data/OECD_scans_per_k.csv")
 treatable_mortality_raw <- read_source_csv(
   "raw_data/OECD_treat_mortality_per_100k.csv"
-)
-
-any_consults_path <- paste0(
-  "raw_data/updated_sources_040826/",
-  "20260731-OECD CONSULTS.xlsx"
-)
-
-if (!file.exists(any_consults_path)) {
-  stop("Required source file is missing: ", any_consults_path)
-}
-
-any_consults_raw <- read_excel(
-  any_consults_path,
-  sheet = "Table",
-  col_names = FALSE,
-  .name_repair = "minimal"
 )
 
 systems_df <- read_source_csv("raw_data/oecd_europe_health_systems.csv") %>%
@@ -74,8 +56,8 @@ systems_df <- read_source_csv("raw_data/oecd_europe_health_systems.csv") %>%
 
 
 # Validate the authoritative study-country list before using it for joins
-if (nrow(systems_df) != 31 || n_distinct(systems_df$code) != 31) {
-  stop("The study-country list must contain exactly 31 unique countries.")
+if (nrow(systems_df) != 30 || n_distinct(systems_df$code) != 30) {
+  stop("The study-country list must contain exactly 30 unique countries.")
 }
 
 if (any(!systems_df$system %in% c("BEV", "BIS"))) {
@@ -84,8 +66,9 @@ if (any(!systems_df$system %in% c("BEV", "BIS"))) {
 
 study_codes <- systems_df$code
 
+excluded_analysis_years <- c(2020L, 2021L)
 panel_years <- 2000:2025
-source_years <- (min(panel_years) - 1L):max(panel_years)
+source_years <- c((min(panel_years) - 1L), panel_years)
 
 
 # Helpers for the two source layouts
@@ -147,8 +130,7 @@ standardise_oecd_rows <- function(data, source_name) {
     ) %>%
     filter(
       code %in% study_codes,
-      year >= min(source_years),
-      year <= max(source_years)
+      year %in% source_years
     )
 }
 
@@ -332,71 +314,6 @@ nurses_df <- standardise_oecd_rows(
   ) %>%
   transmute(code, year, nurses_per_thou = value)
 
-# The current OECD CSV is explicitly restricted to in-person consultations.
-in_person_consults_df <- standardise_oecd_rows(
-  in_person_consults_raw,
-  "OECD in-person consultation data"
-) %>%
-  filter(
-    MEASURE == "CONSULT",
-    UNIT_MEASURE == "CN_PS",
-    OCCUPATION == "OC221",
-    CONSULTATION_TYPE == "CIP",
-    AGE == "_Z",
-    SEX == "_Z"
-  ) %>%
-  transmute(
-    code,
-    year,
-    in_person_consults_per_person = value
-  )
-
-# The workbook reports the broader doctor-consultation series across settings.
-any_consult_metadata <- trimws(as.character(any_consults_raw[[1]][1:4]))
-expected_any_consult_metadata <- c(
-  "Consultations",
-  "Measure: Consultations",
-  "Occupation: Medical doctors",
-  "Unit of measure: Consultations per person"
-)
-
-if (!identical(any_consult_metadata, expected_any_consult_metadata)) {
-  stop("The OECD any-consultation workbook metadata has changed.")
-}
-
-consult_country_lookup <- in_person_consults_raw %>%
-  transmute(
-    code = toupper(trimws(REF_AREA)),
-    source_country = trimws(`Reference area`)
-  ) %>%
-  distinct()
-
-any_consults_df <- reshape_oecd_excel_table(
-  any_consults_raw,
-  "OECD any-consultation data"
-) %>%
-  left_join(consult_country_lookup, by = "source_country")
-
-unmatched_consult_countries <- any_consults_df %>%
-  filter(!is.na(value), is.na(code)) %>%
-  distinct(source_country) %>%
-  pull(source_country)
-
-if (length(unmatched_consult_countries) > 0) {
-  stop(
-    "OECD any-consultation countries could not be matched: ",
-    paste(unmatched_consult_countries, collapse = ", ")
-  )
-}
-
-any_consults_df <- any_consults_df %>%
-  filter(code %in% study_codes, year %in% source_years) %>%
-  transmute(
-    code,
-    year,
-    any_consults_per_person = value
-  )
-
 oop_df <- standardise_oecd_rows(
   oop_raw,
   "OECD out-of-pocket data"
@@ -413,52 +330,6 @@ oop_df <- standardise_oecd_rows(
     year,
     oop_share_health_spend = value / 100
   )
-
-
-# Diagnostic scans contain multiple technologies and provider types. Retain
-# only total-provider CT and MRI examinations.
-scan_columns <- c(
-  "ct_scans_per_thou",
-  "mri_scans_per_thou"
-)
-
-scans_df <- standardise_oecd_rows(
-  scans_raw,
-  "OECD diagnostic-scan data"
-) %>%
-  filter(
-    MEASURE == "EXAM",
-    UNIT_MEASURE == "EXM_10P3PS",
-    PROVIDER == "_T"
-  ) %>%
-  mutate(
-    scan_variable = case_when(
-      HEALTH_FACILITY == "CT_SCAN" ~ "ct_scans_per_thou",
-      HEALTH_FACILITY == "MRI" ~ "mri_scans_per_thou",
-      TRUE ~ NA_character_
-    )
-  ) %>%
-  filter(!is.na(scan_variable)) %>%
-  select(code, year, scan_variable, value) %>%
-  pivot_wider(
-    names_from = scan_variable,
-    values_from = value
-  )
-
-for (column in setdiff(scan_columns, names(scans_df))) {
-  scans_df[[column]] <- NA_real_
-}
-
-scans_df <- scans_df %>%
-  select(code, year, all_of(scan_columns)) %>%
-  mutate(
-    ct_mri_scans_per_thou = if_else(
-      if_all(all_of(scan_columns), is.na),
-      NA_real_,
-      rowSums(across(all_of(scan_columns)), na.rm = TRUE)
-    )
-  )
-
 
 
 # The current OECD mortality extract contains the retained treatable outcome.
@@ -498,13 +369,7 @@ check_unique_keys(beds_who_df, "WHO hospital-bed data")
 check_unique_keys(beds_df, "Combined hospital-bed data")
 check_unique_keys(physicians_df, "OECD physician data")
 check_unique_keys(nurses_df, "OECD nurse data")
-check_unique_keys(
-  in_person_consults_df,
-  "OECD in-person consultation data"
-)
-check_unique_keys(any_consults_df, "OECD any-consultation data")
 check_unique_keys(oop_df, "OECD out-of-pocket data")
-check_unique_keys(scans_df, "OECD diagnostic-scan data")
 check_unique_keys(
   treatable_mortality_df,
   "OECD treatable-mortality data"
@@ -524,10 +389,7 @@ panel_df <- expand_grid(
   left_join(beds_df, by = c("code", "year")) %>%
   left_join(physicians_df, by = c("code", "year")) %>%
   left_join(nurses_df, by = c("code", "year")) %>%
-  left_join(in_person_consults_df, by = c("code", "year")) %>%
-  left_join(any_consults_df, by = c("code", "year")) %>%
   left_join(oop_df, by = c("code", "year")) %>%
-  left_join(scans_df, by = c("code", "year")) %>%
   left_join(treatable_mortality_df, by = c("code", "year"))
 
 
@@ -591,12 +453,7 @@ master_df <- panel_df %>%
     hosp_beds_source,
     mds_per_thou,
     nurses_per_thou,
-    in_person_consults_per_person,
-    any_consults_per_person,
     oop_share_health_spend,
-    ct_scans_per_thou,
-    mri_scans_per_thou,
-    ct_mri_scans_per_thou,
     treatable_mortality_per_100k,
     change_def_gdp,
     change_health_gdp,
@@ -606,12 +463,12 @@ master_df <- panel_df %>%
 
 
 # Stop with a clear error if the finalized panel is not structurally valid.
-if (n_distinct(master_df$code) != 31) {
-  stop("The finalized panel must contain exactly 31 countries.")
+if (n_distinct(master_df$code) != 30) {
+  stop("The finalized panel must contain exactly 30 countries.")
 }
 
-if (nrow(master_df) != 31 * length(panel_years)) {
-  stop("The finalized panel must contain 806 country-year rows.")
+if (nrow(master_df) != 30 * length(panel_years)) {
+  stop("The finalized panel must contain 780 country-year rows.")
 }
 
 if (any(range(master_df$year) != c(min(panel_years), max(panel_years)))) {
@@ -672,12 +529,7 @@ nonnegative_columns <- c(
   "hosp_beds_per_thou",
   "mds_per_thou",
   "nurses_per_thou",
-  "in_person_consults_per_person",
-  "any_consults_per_person",
   "oop_share_health_spend",
-  "ct_scans_per_thou",
-  "mri_scans_per_thou",
-  "ct_mri_scans_per_thou",
   "treatable_mortality_per_100k"
 )
 

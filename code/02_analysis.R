@@ -10,6 +10,7 @@ suppressPackageStartupMessages({
   library(broom)
   library(broom.mixed)
   library(dplyr)
+  library(geepack)
   library(lme4)
   library(readr)
   library(tidyr)
@@ -25,8 +26,6 @@ master_df <- read_csv(
 
 results_dir <- "results"
 dir.create(results_dir, showWarnings = FALSE)
-
-excluded_primary_codes <- c("ISL", "LUX")
 excluded_analysis_years <- c(2020L, 2021L)
 analysis_end_year <- max(master_df$year, na.rm = TRUE)
 
@@ -45,8 +44,7 @@ primary_df <- master_df %>%
   ungroup() %>%
   filter(
     year <= analysis_end_year,
-    !year %in% excluded_analysis_years,
-    !code %in% excluded_primary_codes
+    !year %in% excluded_analysis_years
   ) %>%
   mutate(
     country = factor(country),
@@ -108,16 +106,15 @@ main_data <- primary_df[
 ] %>%
   droplevels()
 
-if (nrow(main_data) != 607 ||
-    n_distinct(main_data$country) != 28 ||
+if (nrow(main_data) == 0 ||
+    n_distinct(main_data$country) == 0 ||
     min(main_data$year) != 2000 ||
     max(main_data$year) != 2025 ||
     any(main_data$year %in% excluded_analysis_years)) {
   stop(
     paste(
-      "The expected main-analysis sample is 607 rows from 28 countries,",
-      "covering 2000-2025 with 2020-2021 excluded and 2022 unavailable",
-      "because its previous-year debt value is from excluded 2021."
+      "The main-analysis sample must be non-empty, cover 2000-2025,",
+      "and exclude 2020-2021."
     )
   )
 }
@@ -163,12 +160,27 @@ main_model_5 <- lmer(
   REML = FALSE
 )
 
+main_model_6_population_average_gee <- geepack::geeglm(
+  health_change_percent ~
+    defence_change_10pct * system +
+    defence_change_10pct * previous_debt_10pp_c +
+    log2_gdp_percap_c +
+    year_factor,
+  data = main_data %>% arrange(country, year),
+  id = country,
+  waves = year,
+  family = gaussian(link = "identity"),
+  corstr = "ar1",
+  std.err = "san.se"
+)
+
 main_models <- list(
   model_1_unadjusted = main_model_1,
   model_2_country_random_intercept = main_model_2,
   model_3_system_moderation = main_model_3,
   model_4_debt_moderation = main_model_4,
-  model_5_fully_adjusted = main_model_5
+  model_5_fully_adjusted = main_model_5,
+  model_6_population_average_gee = main_model_6_population_average_gee
 )
 
 main_model_descriptions <- c(
@@ -181,12 +193,18 @@ main_model_descriptions <- c(
   model_4_debt_moderation =
     "Health-system and public-debt moderation",
   model_5_fully_adjusted =
-    "Fully adjusted with GDP per capita and year effects"
+    "Fully adjusted with GDP per capita and year effects",
+  model_6_population_average_gee =
+    "Final population-average GEE with country clusters and AR(1) working correlation"
 )
 
 
 # Helpers create consistent, readable result tables
 model_converged <- function(model) {
+  if (inherits(model, "geeglm")) {
+    return(model$geese$error == 0)
+  }
+
   if (!inherits(model, "merMod")) {
     return(TRUE)
   }
@@ -217,18 +235,30 @@ summarise_model <- function(model, model_name, description, model_data) {
   tibble(
     model = model_name,
     description,
-    model_type = if_else(
-      inherits(model_object, "merMod"),
-      "Linear mixed model",
-      "Pooled linear model"
+    model_type = case_when(
+      inherits(model_object, "merMod") ~ "Linear mixed model",
+      inherits(model_object, "geeglm") ~ "Population-average GEE",
+      TRUE ~ "Pooled linear model"
     ),
     observations = nobs(model_object),
     countries = n_distinct(model_data$country),
     first_year = min(model_data$year),
     last_year = max(model_data$year),
-    aic = AIC(model_object),
-    bic = BIC(model_object),
-    residual_sd = sigma(model_object),
+    aic = if (inherits(model_object, "geeglm")) {
+      NA_real_
+    } else {
+      AIC(model_object)
+    },
+    bic = if (inherits(model_object, "geeglm")) {
+      NA_real_
+    } else {
+      BIC(model_object)
+    },
+    residual_sd = if (inherits(model_object, "geeglm")) {
+      NA_real_
+    } else {
+      sigma(model_object)
+    },
     country_variance = country_variance(model_object),
     converged = model_converged(model_object),
     singular_fit = if (inherits(model_object, "merMod")) {
@@ -468,12 +498,12 @@ secondary_specs <- tribble(
   "oop_health_spend_pct_points", "out_of_pocket_model",
   "Out-of-pocket share of health expenditure",
   "Percentage points of current health expenditure",
-  "hosp_beds_per_thou", "hospital_beds_model",
-  "Hospital beds", "Beds per 1,000 people",
-  "log_mds_per_thou", "medical_doctors_model",
-  "Medical doctors", "Log outcome",
   "log_nurses_per_thou", "nurses_midwives_model",
   "Nurses and midwives", "Log outcome",
+  "log_mds_per_thou", "medical_doctors_model",
+  "Medical doctors", "Log outcome",
+  "hosp_beds_per_thou", "hospital_beds_model",
+  "Hospital beds", "Beds per 1,000 people",
   "log_treatable_mortality", "treatable_mortality_model",
   "Treatable mortality", "Log outcome"
 )
@@ -652,11 +682,107 @@ analysis_sample_flow <- bind_rows(
   )
 )
 
+# Report the country-level contribution to the common complete-case sample.
+# Include countries with zero observations so the table covers the full
+# authoritative study-country list.
+country_sample_counts <- primary_df %>%
+  count(country, code, system, name = "panel_observations") %>%
+  left_join(
+    main_data %>%
+      group_by(country, code, system) %>%
+      summarise(
+        included_observations = n(),
+        included_years = paste(sort(year), collapse = ", "),
+        .groups = "drop"
+      ),
+    by = c("country", "code", "system")
+  ) %>%
+  mutate(
+    included_observations = coalesce(included_observations, 0L),
+    excluded_observations = panel_observations - included_observations,
+    included_years = replace_na(included_years, "")
+  ) %>%
+  arrange(code)
+
+if (sum(country_sample_counts$included_observations) != nrow(main_data)) {
+  stop("Country-level included observations do not sum to the main sample.")
+}
+
+# Build Table 1 from the primary-analysis panel. Values are country-year
+# descriptive statistics, stratified by health-system type and pooled overall.
+table1_specs <- tribble(
+  ~variable, ~label, ~unit, ~scale, ~digits,
+  "health_pct_gdp", "Government health spending", "% GDP", 100, 2,
+  "defence_pct_gdp", "Defence spending", "% GDP", 100, 2,
+  "gdp_percap", "GDP per capita", "PPP US$ per person", 1, 0,
+  "government_debt_pct_gdp", "Government debt", "% GDP", 100, 2,
+  "previous_government_debt_pct_gdp", "Previous-year government debt", "% GDP", 100, 2,
+  "change_health_gdp", "Annual health-spending change", "% relative change", 100, 2,
+  "change_def_gdp", "Annual defence-spending change", "% relative change", 100, 2,
+  "health_def_ratio", "Health-to-defence spending ratio", "ratio", 1, 2,
+  "oop_share_health_spend", "Out-of-pocket spending", "% current health expenditure", 100, 2,
+  "nurses_per_thou", "Nurses and midwives", "per 1,000 people", 1, 2,
+  "mds_per_thou", "Physicians", "per 1,000 people", 1, 2,
+  "hosp_beds_per_thou", "Hospital beds", "per 1,000 people", 1, 2,
+  "treatable_mortality_per_100k", "Treatable mortality", "per 100,000 people", 1, 1
+)
+
+table1_groups <- list(
+  BIS = primary_df %>% filter(system == "BIS"),
+  BEV = primary_df %>% filter(system == "BEV"),
+  Total = primary_df
+)
+
+table1_descriptive_statistics <- bind_rows(
+  lapply(names(table1_groups), function(group_name) {
+    group_data <- table1_groups[[group_name]]
+
+    bind_rows(
+      lapply(seq_len(nrow(table1_specs)), function(i) {
+        specification <- table1_specs[i, ]
+        values <- group_data[[specification$variable]]
+        values <- values[!is.na(values)]
+
+        tibble(
+          variable = specification$variable,
+          label = specification$label,
+          unit = specification$unit,
+          group = group_name,
+          nonmissing_n = length(values),
+          mean = if (length(values) > 0) {
+            mean(values) * specification$scale
+          } else {
+            NA_real_
+          },
+          sd = if (length(values) > 1) {
+            sd(values) * specification$scale
+          } else {
+            NA_real_
+          },
+          digits = specification$digits
+        )
+      })
+    )
+  })
+)
+
+write_csv(
+  table1_descriptive_statistics,
+  file.path(results_dir, "table1_descriptive_statistics.csv"),
+  na = ""
+)
+
 
 # Save machine-readable outputs
 write_csv(
   analysis_sample_flow,
   file.path(results_dir, "analysis_sample_flow.csv"),
+  na = ""
+)
+
+write_csv(
+  country_sample_counts,
+  file.path(results_dir, "main_country_sample_counts.csv"),
   na = ""
 )
 
@@ -716,8 +842,8 @@ summary_lines <- c(
     min(main_data$year),
     max(main_data$year)
   ),
-  "Iceland and Luxembourg are excluded from the primary analysis.",
-  "All primary and secondary analyses exclude observations from 2020 and 2021.",
+  "Iceland is absent from the authoritative study-country source; Luxembourg is included in all analyses.",
+  "COVID years 2020 and 2021 are excluded from the primary analysis; they are retained in the processed panel for the explicit main-model sensitivity.",
   "The main models also omit 2022 because its previous-year debt value is from excluded 2021.",
   "The headline model includes country random intercepts and categorical year effects.",
   sprintf(

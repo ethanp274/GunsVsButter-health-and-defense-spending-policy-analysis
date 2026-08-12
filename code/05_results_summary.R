@@ -20,6 +20,8 @@ html_output_file <- file.path(results_dir, "results_summary.html")
 # Check that every required result and figure is available
 required_files <- c(
   "analysis_sample_flow.csv",
+  "main_country_sample_counts.csv",
+  "table1_descriptive_statistics.csv",
   "main_model_overview.csv",
   "main_model_coefficients.csv",
   "main_interaction_slopes.csv",
@@ -48,6 +50,16 @@ if (length(missing_files) > 0) {
 # Load the machine-readable results
 sample_flow <- read_csv(
   file.path(results_dir, "analysis_sample_flow.csv"),
+  show_col_types = FALSE
+)
+
+country_sample_counts <- read_csv(
+  file.path(results_dir, "main_country_sample_counts.csv"),
+  show_col_types = FALSE
+)
+
+table1_descriptive_statistics <- read_csv(
+  file.path(results_dir, "table1_descriptive_statistics.csv"),
   show_col_types = FALSE
 )
 
@@ -183,14 +195,16 @@ main_equations <- tibble(
     "model_2_country_random_intercept",
     "model_3_system_moderation",
     "model_4_debt_moderation",
-    "model_5_fully_adjusted"
+    "model_5_fully_adjusted",
+    "model_6_population_average_gee"
   ),
   equation = c(
     "$\\Delta H_{it}=\\beta_0+\\beta_1\\Delta D_{it}+\\epsilon_{it}$",
     "$\\Delta H_{it}=\\beta_0+\\beta_1\\Delta D_{it}+u_i+\\epsilon_{it}$",
     "$\\Delta H_{it}=\\beta_0+\\beta_1\\Delta D_{it}+\\beta_2S_i+\\beta_3(\\Delta D_{it}\\times S_i)+u_i+\\epsilon_{it}$",
     "$\\Delta H_{it}=\\beta_0+\\beta_1\\Delta D_{it}+\\beta_2S_i+\\beta_3(\\Delta D_{it}\\times S_i)+\\beta_4B_{i,t-1}+\\beta_5(\\Delta D_{it}\\times B_{i,t-1})+u_i+\\epsilon_{it}$",
-    "$\\Delta H_{it}=\\beta_0+\\beta_1\\Delta D_{it}+\\beta_2S_i+\\beta_3(\\Delta D_{it}\\times S_i)+\\beta_4B_{i,t-1}+\\beta_5(\\Delta D_{it}\\times B_{i,t-1})+\\beta_6\\log_2(GDPpc_{it})+\\gamma_t+u_i+\\epsilon_{it}$"
+    "$\\Delta H_{it}=\\beta_0+\\beta_1\\Delta D_{it}+\\beta_2S_i+\\beta_3(\\Delta D_{it}\\times S_i)+\\beta_4B_{i,t-1}+\\beta_5(\\Delta D_{it}\\times B_{i,t-1})+\\beta_6\\log_2(GDPpc_{it})+\\gamma_t+u_i+\\epsilon_{it}$",
+    "$E(\\Delta H_{it})=\\beta_0+\\beta_1\\Delta D_{it}+\\beta_2S_i+\\beta_3(\\Delta D_{it}\\times S_i)+\\beta_4B_{i,t-1}+\\beta_5(\\Delta D_{it}\\times B_{i,t-1})+\\beta_6\\log_2(GDPpc_{it})+\\gamma_t+\\epsilon_{it}$ (country-clustered AR(1) working correlation)"
   )
 )
 
@@ -316,10 +330,11 @@ sensitivity_term_map <- tribble(
   "cumulative_3_year_change", "defence_change_3yr_10pct",
   "country_fixed_effects", "defence_change_10pct",
   "gls_ar1", "defence_change_10pct",
-  "gee_ar1", "defence_change_10pct",
   "absolute_percentage_point_changes", "defence_change_pp",
-  "current_nato_members", "defence_change_10pct",
-  "restore_luxembourg", "defence_change_10pct",
+  "nato_members_only", "defence_change_10pct",
+  "oecd_members_only", "defence_change_10pct",
+  "exclude_greece", "defence_change_10pct",
+  "include_covid_years", "defence_change_10pct",
   "exclude_2025", "defence_change_10pct",
   "exclude_financial_crisis", "defence_change_10pct",
   "winsorised_changes", "defence_change_10pct"
@@ -485,6 +500,82 @@ year_effect_table <- bind_rows(
 ) %>%
   arrange(Year)
 
+country_sample_table <- country_sample_counts %>%
+  transmute(
+    Country = country,
+    Code = code,
+    System = system,
+    `Panel years` = panel_observations,
+    `Included observations` = included_observations,
+    `Excluded observations` = excluded_observations,
+    `Included years` = included_years
+  )
+
+table1_country_counts <- country_sample_counts %>%
+  distinct(code, system) %>%
+  count(system, name = "countries")
+
+table1_country_n <- setNames(
+  table1_country_counts$countries,
+  table1_country_counts$system
+)
+
+format_table1_cell <- function(mean, sd, nonmissing_n, digits) {
+  if (is.na(mean)) {
+    return("Not available")
+  }
+
+  sd_text <- if (is.na(sd)) {
+    "NA"
+  } else {
+    formatC(sd, format = "f", digits = digits)
+  }
+
+  paste0(
+    formatC(mean, format = "f", digits = digits),
+    " (",
+    sd_text,
+    "); n=",
+    nonmissing_n
+  )
+}
+
+table1_report <- table1_descriptive_statistics %>%
+  mutate(
+    value = mapply(
+      format_table1_cell,
+      mean,
+      sd,
+      nonmissing_n,
+      digits
+    )
+  ) %>%
+  select(label, unit, group, value) %>%
+  pivot_wider(
+    names_from = group,
+    values_from = value
+  ) %>%
+  rename(
+    Variable = label,
+    Unit = unit
+  )
+
+names(table1_report)[names(table1_report) == "BIS"] <- paste0(
+  "BIS (n=",
+  table1_country_n[["BIS"]],
+  ")"
+)
+names(table1_report)[names(table1_report) == "BEV"] <- paste0(
+  "BEV (n=",
+  table1_country_n[["BEV"]],
+  ")"
+)
+names(table1_report)[names(table1_report) == "Total"] <- paste0(
+  "Total (N=",
+  sum(table1_country_counts$countries),
+  ")"
+)
+
 report_lines <- c(
   "# Health and Defence Spending: Results Summary",
   "",
@@ -495,12 +586,22 @@ report_lines <- c(
   "## Analysis sample",
   "",
   sprintf(
-    "The main analysis includes **%s observations from %s countries during %s-%s**. Iceland and Luxembourg are excluded, 2020-2021 are excluded, and 2022 is unavailable because its previous-year debt value comes from excluded 2021.",
+    "The main analysis includes **%s observations from %s countries during %s-%s**. Iceland is absent from the authoritative study-country source, Luxembourg is included in all analyses, and COVID years 2020-2021 are excluded from the primary analysis. They are retained in the processed panel for the explicit main-model sensitivity. 2022 is unavailable in the primary model because its previous-year debt value comes from excluded 2021.",
     main_sample$rows,
     main_sample$countries,
     main_sample$first_year,
     main_sample$last_year
   ),
+  "",
+  "The table below reports the country-level contribution to the common complete-case main-model sample. Included years satisfy all main-model requirements; panel years are the 24 primary-analysis years after excluding 2020 and 2021.",
+  "",
+  markdown_table(country_sample_table),
+  "",
+  "### Table 1. Descriptive statistics of the primary-analysis panel",
+  "",
+  "Values are mean (standard deviation); n is the number of non-missing country-year observations. Statistics use the 24 primary-analysis years and exclude 2020 and 2021.",
+  "",
+  markdown_table(table1_report),
   "",
   sprintf(
     "The headline model uses categorical year effects and a country random intercept. Its estimated country variance is **%s** and its singular-fit status is **%s**.",
@@ -546,6 +647,8 @@ report_lines <- c(
   "### Conditional defence slopes",
   "",
   markdown_table(main_slope_table),
+  "",
+  "The final model in the sequential sequence is a population-average GEE using the same fully adjusted fixed-effects terms, country clusters, an AR(1) working correlation, and sandwich standard errors. It is reported as a main model rather than as a robustness sensitivity.",
   "",
   "### Categorical year effects",
   "",
@@ -628,7 +731,7 @@ report_lines <- c(
   "- Health, defence, and debt measures share GDP-related denominators, so common economic shocks can create coupled movements.",
   "- A singular random-intercept fit indicates that the estimated between-country residual variance is effectively zero after included covariates.",
   sprintf(
-    "- The GEE sensitivity estimates a population-average association with robust standard errors. With %s country clusters, sandwich standard errors may still have limited small-sample accuracy.",
+    "- The final GEE estimates a population-average association with robust standard errors. With %s country clusters, sandwich standard errors may still have limited small-sample accuracy.",
     main_sample$countries
   ),
   "- Secondary analyses are exploratory and span outcomes with different observation schedules and sample sizes.",

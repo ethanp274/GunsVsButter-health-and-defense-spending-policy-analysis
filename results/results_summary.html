@@ -9,12 +9,404 @@
 </head>
 <body>
 <h1>Health and Defence Spending: Results Summary</h1>
-<p>Generated: 2026-08-05</p>
+<p>Generated: 2026-08-12</p>
 <blockquote>
 <p>These analyses estimate associations and do not establish causation.</p>
 </blockquote>
 <h2>Analysis sample</h2>
-<p>The main analysis includes <strong>607 observations from 28 countries during 2000-2025</strong>. Iceland and Luxembourg are excluded, 2020-2021 are excluded, and 2022 is unavailable because its previous-year debt value comes from excluded 2021.</p>
+<p>The main analysis includes <strong>648 observations from 30 countries during 2000-2025</strong>. Iceland is absent from the authoritative study-country source, Luxembourg is included in all analyses, and COVID years 2020-2021 are excluded from the primary analysis. They are retained in the processed panel for the explicit main-model sensitivity. 2022 is unavailable in the primary model because its previous-year debt value comes from excluded 2021.</p>
+<p>The table below reports the country-level contribution to the common complete-case main-model sample. Included years satisfy all main-model requirements; panel years are the 24 primary-analysis years after excluding 2020 and 2021.</p>
+<table>
+<thead>
+<tr>
+<th>Country</th>
+<th>Code</th>
+<th>System</th>
+<th>Panel years</th>
+<th>Included observations</th>
+<th>Excluded observations</th>
+<th>Included years</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Austria</td>
+<td>AUT</td>
+<td>BIS</td>
+<td>24</td>
+<td>23</td>
+<td>1</td>
+<td>2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025</td>
+</tr>
+<tr>
+<td>Belgium</td>
+<td>BEL</td>
+<td>BIS</td>
+<td>24</td>
+<td>23</td>
+<td>1</td>
+<td>2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025</td>
+</tr>
+<tr>
+<td>Bulgaria</td>
+<td>BGR</td>
+<td>BIS</td>
+<td>24</td>
+<td>18</td>
+<td>6</td>
+<td>2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024</td>
+</tr>
+<tr>
+<td>Switzerland</td>
+<td>CHE</td>
+<td>BIS</td>
+<td>24</td>
+<td>23</td>
+<td>1</td>
+<td>2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025</td>
+</tr>
+<tr>
+<td>Cyprus</td>
+<td>CYP</td>
+<td>BEV</td>
+<td>24</td>
+<td>18</td>
+<td>6</td>
+<td>2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024</td>
+</tr>
+<tr>
+<td>Czechia</td>
+<td>CZE</td>
+<td>BIS</td>
+<td>24</td>
+<td>23</td>
+<td>1</td>
+<td>2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025</td>
+</tr>
+<tr>
+<td>Germany</td>
+<td>DEU</td>
+<td>BIS</td>
+<td>24</td>
+<td>23</td>
+<td>1</td>
+<td>2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025</td>
+</tr>
+<tr>
+<td>Denmark</td>
+<td>DNK</td>
+<td>BEV</td>
+<td>24</td>
+<td>23</td>
+<td>1</td>
+<td>2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025</td>
+</tr>
+<tr>
+<td>Spain</td>
+<td>ESP</td>
+<td>BEV</td>
+<td>24</td>
+<td>23</td>
+<td>1</td>
+<td>2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025</td>
+</tr>
+<tr>
+<td>Estonia</td>
+<td>EST</td>
+<td>BIS</td>
+<td>24</td>
+<td>23</td>
+<td>1</td>
+<td>2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025</td>
+</tr>
+<tr>
+<td>Finland</td>
+<td>FIN</td>
+<td>BEV</td>
+<td>24</td>
+<td>23</td>
+<td>1</td>
+<td>2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025</td>
+</tr>
+<tr>
+<td>France</td>
+<td>FRA</td>
+<td>BIS</td>
+<td>24</td>
+<td>23</td>
+<td>1</td>
+<td>2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025</td>
+</tr>
+<tr>
+<td>United Kingdom</td>
+<td>GBR</td>
+<td>BEV</td>
+<td>24</td>
+<td>23</td>
+<td>1</td>
+<td>2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025</td>
+</tr>
+<tr>
+<td>Greece</td>
+<td>GRC</td>
+<td>BEV</td>
+<td>24</td>
+<td>23</td>
+<td>1</td>
+<td>2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025</td>
+</tr>
+<tr>
+<td>Croatia</td>
+<td>HRV</td>
+<td>BIS</td>
+<td>24</td>
+<td>18</td>
+<td>6</td>
+<td>2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024</td>
+</tr>
+<tr>
+<td>Hungary</td>
+<td>HUN</td>
+<td>BIS</td>
+<td>24</td>
+<td>23</td>
+<td>1</td>
+<td>2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025</td>
+</tr>
+<tr>
+<td>Ireland</td>
+<td>IRL</td>
+<td>BEV</td>
+<td>24</td>
+<td>23</td>
+<td>1</td>
+<td>2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025</td>
+</tr>
+<tr>
+<td>Italy</td>
+<td>ITA</td>
+<td>BEV</td>
+<td>24</td>
+<td>23</td>
+<td>1</td>
+<td>2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025</td>
+</tr>
+<tr>
+<td>Lithuania</td>
+<td>LTU</td>
+<td>BIS</td>
+<td>24</td>
+<td>22</td>
+<td>2</td>
+<td>2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025</td>
+</tr>
+<tr>
+<td>Luxembourg</td>
+<td>LUX</td>
+<td>BIS</td>
+<td>24</td>
+<td>23</td>
+<td>1</td>
+<td>2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025</td>
+</tr>
+<tr>
+<td>Latvia</td>
+<td>LVA</td>
+<td>BEV</td>
+<td>24</td>
+<td>22</td>
+<td>2</td>
+<td>2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025</td>
+</tr>
+<tr>
+<td>Malta</td>
+<td>MLT</td>
+<td>BEV</td>
+<td>24</td>
+<td>4</td>
+<td>20</td>
+<td>2017, 2018, 2019, 2023</td>
+</tr>
+<tr>
+<td>Netherlands</td>
+<td>NLD</td>
+<td>BIS</td>
+<td>24</td>
+<td>23</td>
+<td>1</td>
+<td>2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025</td>
+</tr>
+<tr>
+<td>Norway</td>
+<td>NOR</td>
+<td>BEV</td>
+<td>24</td>
+<td>23</td>
+<td>1</td>
+<td>2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025</td>
+</tr>
+<tr>
+<td>Poland</td>
+<td>POL</td>
+<td>BIS</td>
+<td>24</td>
+<td>23</td>
+<td>1</td>
+<td>2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025</td>
+</tr>
+<tr>
+<td>Portugal</td>
+<td>PRT</td>
+<td>BEV</td>
+<td>24</td>
+<td>23</td>
+<td>1</td>
+<td>2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025</td>
+</tr>
+<tr>
+<td>Romania</td>
+<td>ROU</td>
+<td>BIS</td>
+<td>24</td>
+<td>18</td>
+<td>6</td>
+<td>2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024</td>
+</tr>
+<tr>
+<td>Slovakia</td>
+<td>SVK</td>
+<td>BIS</td>
+<td>24</td>
+<td>23</td>
+<td>1</td>
+<td>2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025</td>
+</tr>
+<tr>
+<td>Slovenia</td>
+<td>SVN</td>
+<td>BIS</td>
+<td>24</td>
+<td>22</td>
+<td>2</td>
+<td>2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025</td>
+</tr>
+<tr>
+<td>Sweden</td>
+<td>SWE</td>
+<td>BEV</td>
+<td>24</td>
+<td>23</td>
+<td>1</td>
+<td>2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025</td>
+</tr>
+</tbody>
+</table>
+<h3>Table 1. Descriptive statistics of the primary-analysis panel</h3>
+<p>Values are mean (standard deviation); n is the number of non-missing country-year observations. Statistics use the 24 primary-analysis years and exclude 2020 and 2021.</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Unit</th>
+<th>BIS (n=17)</th>
+<th>BEV (n=13)</th>
+<th>Total (N=30)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Government health spending</td>
+<td>% GDP</td>
+<td>6.07 (1.64); n=396</td>
+<td>6.27 (1.67); n=290</td>
+<td>6.16 (1.66); n=686</td>
+</tr>
+<tr>
+<td>Defence spending</td>
+<td>% GDP</td>
+<td>1.44 (0.59); n=408</td>
+<td>1.55 (0.69); n=312</td>
+<td>1.49 (0.64); n=720</td>
+</tr>
+<tr>
+<td>GDP per capita</td>
+<td>PPP US$ per person</td>
+<td>38439 (24499); n=407</td>
+<td>41371 (20831); n=312</td>
+<td>39711 (23010); n=719</td>
+</tr>
+<tr>
+<td>Government debt</td>
+<td>% GDP</td>
+<td>49.72 (26.25); n=391</td>
+<td>69.70 (38.41); n=299</td>
+<td>58.38 (33.56); n=690</td>
+</tr>
+<tr>
+<td>Previous-year government debt</td>
+<td>% GDP</td>
+<td>49.87 (26.46); n=408</td>
+<td>69.50 (38.37); n=312</td>
+<td>58.37 (33.58); n=720</td>
+</tr>
+<tr>
+<td>Annual health-spending change</td>
+<td>% relative change</td>
+<td>0.77 (5.46); n=391</td>
+<td>0.95 (6.35); n=287</td>
+<td>0.85 (5.85); n=678</td>
+</tr>
+<tr>
+<td>Annual defence-spending change</td>
+<td>% relative change</td>
+<td>1.54 (12.31); n=408</td>
+<td>0.95 (10.98); n=312</td>
+<td>1.28 (11.75); n=720</td>
+</tr>
+<tr>
+<td>Health-to-defence spending ratio</td>
+<td>ratio</td>
+<td>5.26 (3.03); n=396</td>
+<td>5.05 (3.71); n=290</td>
+<td>5.17 (3.33); n=686</td>
+</tr>
+<tr>
+<td>Out-of-pocket spending</td>
+<td>% current health expenditure</td>
+<td>19.32 (8.27); n=386</td>
+<td>23.08 (10.14); n=280</td>
+<td>20.90 (9.28); n=666</td>
+</tr>
+<tr>
+<td>Nurses and midwives</td>
+<td>per 1,000 people</td>
+<td>8.06 (2.99); n=339</td>
+<td>7.82 (3.58); n=252</td>
+<td>7.96 (3.26); n=591</td>
+</tr>
+<tr>
+<td>Physicians</td>
+<td>per 1,000 people</td>
+<td>3.40 (0.75); n=353</td>
+<td>3.55 (0.73); n=240</td>
+<td>3.46 (0.75); n=593</td>
+</tr>
+<tr>
+<td>Hospital beds</td>
+<td>per 1,000 people</td>
+<td>6.26 (1.29); n=386</td>
+<td>4.08 (1.43); n=291</td>
+<td>5.32 (1.73); n=677</td>
+</tr>
+<tr>
+<td>Treatable mortality</td>
+<td>per 100,000 people</td>
+<td>116.0 (53.7); n=372</td>
+<td>86.8 (43.7); n=208</td>
+<td>105.5 (52.2); n=580</td>
+</tr>
+</tbody>
+</table>
 <p>The headline model uses categorical year effects and a country random intercept. Its estimated country variance is <strong>0.000000</strong> and its singular-fit status is <strong>TRUE</strong>.</p>
 <h2>Primary analysis</h2>
 <h3>Model sequence</h3>
@@ -33,52 +425,60 @@
 <tr>
 <td>Pooled unadjusted association</td>
 <td>$\Delta H_{it}=\beta_0+\beta_1\Delta D_{it}+\epsilon_{it}$</td>
-<td>607</td>
-<td>28</td>
+<td>648</td>
+<td>30</td>
 <td>2000-2025</td>
 <td></td>
 </tr>
 <tr>
 <td>Country random intercept</td>
 <td>$\Delta H_{it}=\beta_0+\beta_1\Delta D_{it}+u_i+\epsilon_{it}$</td>
-<td>607</td>
-<td>28</td>
+<td>648</td>
+<td>30</td>
 <td>2000-2025</td>
 <td>TRUE</td>
 </tr>
 <tr>
 <td>Country random intercept and health-system moderation</td>
 <td>$\Delta H_{it}=\beta_0+\beta_1\Delta D_{it}+\beta_2S_i+\beta_3(\Delta D_{it}\times S_i)+u_i+\epsilon_{it}$</td>
-<td>607</td>
-<td>28</td>
+<td>648</td>
+<td>30</td>
 <td>2000-2025</td>
 <td>TRUE</td>
 </tr>
 <tr>
 <td>Health-system and public-debt moderation</td>
 <td>$\Delta H_{it}=\beta_0+\beta_1\Delta D_{it}+\beta_2S_i+\beta_3(\Delta D_{it}\times S_i)+\beta_4B_{i,t-1}+\beta_5(\Delta D_{it}\times B_{i,t-1})+u_i+\epsilon_{it}$</td>
-<td>607</td>
-<td>28</td>
+<td>648</td>
+<td>30</td>
 <td>2000-2025</td>
 <td>TRUE</td>
 </tr>
 <tr>
 <td>Fully adjusted with GDP per capita and year effects</td>
 <td>$\Delta H_{it}=\beta_0+\beta_1\Delta D_{it}+\beta_2S_i+\beta_3(\Delta D_{it}\times S_i)+\beta_4B_{i,t-1}+\beta_5(\Delta D_{it}\times B_{i,t-1})+\beta_6\log_2(GDPpc_{it})+\gamma_t+u_i+\epsilon_{it}$</td>
-<td>607</td>
-<td>28</td>
+<td>648</td>
+<td>30</td>
 <td>2000-2025</td>
 <td>TRUE</td>
+</tr>
+<tr>
+<td>Final population-average GEE with country clusters and AR(1) working correlation</td>
+<td>$E(\Delta H_{it})=\beta_0+\beta_1\Delta D_{it}+\beta_2S_i+\beta_3(\Delta D_{it}\times S_i)+\beta_4B_{i,t-1}+\beta_5(\Delta D_{it}\times B_{i,t-1})+\beta_6\log_2(GDPpc_{it})+\gamma_t+\epsilon_{it}$ (country-clustered AR(1) working correlation)</td>
+<td>648</td>
+<td>30</td>
+<td>2000-2025</td>
+<td></td>
 </tr>
 </tbody>
 </table>
 <p>Here, $\Delta H$ is relative health-spending change, $\Delta D$ is relative defence-spending change, $S$ is health-system type, $B_{i,t-1}$ is previous-year public debt as a share of GDP, $\gamma_t$ denotes categorical year effects, and $u_i$ is the country random intercept.</p>
 <h3>Key headline findings</h3>
 <ul>
-<li>In Beveridge countries at average previous-year debt, a 10% relative increase in defence spending was associated with a <strong>0.866 [0.263, 1.469]</strong> percentage-point relative change in health spending.</li>
-<li>The defence-change slope difference for Bismarck systems was <strong>-0.231 [-0.943, 0.480]</strong>.</li>
-<li>The defence-by-previous-year-debt interaction was <strong>0.054 [-0.056, 0.164]</strong>.</li>
-<li>The coefficient for a doubling of GDP per capita was <strong>0.890 [0.121, 1.658]</strong>.</li>
+<li>In Beveridge countries at average previous-year debt, a 10% relative increase in defence spending was associated with a <strong>0.772 [0.197, 1.346]</strong> percentage-point relative change in health spending.</li>
+<li>The defence-change slope difference for Bismarck systems was <strong>-0.146 [-0.857, 0.564]</strong>.</li>
+<li>The defence-by-previous-year-debt interaction was <strong>0.044 [-0.066, 0.153]</strong>.</li>
+<li>The coefficient for a doubling of GDP per capita was <strong>0.325 [-0.316, 0.966]</strong>.</li>
 </ul>
 <p>Estimates are shown as coefficient [95% confidence interval]. Year-dummy coefficients are omitted from the compact table.</p>
 <table>
@@ -90,48 +490,54 @@
 <th>model_3_system_moderation</th>
 <th>model_4_debt_moderation</th>
 <th>model_5_fully_adjusted</th>
+<th>model_6_population_average_gee</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>Defence change, per 10% relative increase</td>
-<td>0.900 [0.516, 1.285]</td>
-<td>0.900 [0.518, 1.283]</td>
-<td>1.109 [0.491, 1.726]</td>
-<td>1.076 [0.457, 1.695]</td>
-<td>0.866 [0.263, 1.469]</td>
+<td>0.883 [0.515, 1.252]</td>
+<td>0.883 [0.516, 1.250]</td>
+<td>1.166 [0.567, 1.764]</td>
+<td>1.037 [0.439, 1.634]</td>
+<td>0.772 [0.197, 1.346]</td>
+<td>0.772 [-0.121, 1.664]</td>
 </tr>
 <tr>
 <td>Bismarck-style health system</td>
 <td></td>
 <td></td>
-<td>-0.322 [-1.217, 0.573]</td>
-<td>-0.452 [-1.341, 0.436]</td>
-<td>-0.148 [-0.979, 0.682]</td>
+<td>-0.318 [-1.183, 0.546]</td>
+<td>-0.819 [-1.718, 0.080]</td>
+<td>-0.557 [-1.376, 0.262]</td>
+<td>-0.558 [-1.157, 0.042]</td>
 </tr>
 <tr>
 <td>Defence change x Bismarck system</td>
 <td></td>
 <td></td>
-<td>-0.338 [-1.125, 0.448]</td>
-<td>-0.258 [-1.040, 0.524]</td>
-<td>-0.231 [-0.943, 0.480]</td>
+<td>-0.448 [-1.205, 0.310]</td>
+<td>-0.190 [-0.976, 0.595]</td>
+<td>-0.146 [-0.857, 0.564]</td>
+<td>-0.145 [-1.150, 0.860]</td>
 </tr>
 <tr>
 <td>Previous-year public debt, per 10 percentage points of GDP</td>
 <td></td>
 <td></td>
 <td></td>
-<td>-0.218 [-0.347, -0.089]</td>
-<td>-0.160 [-0.282, -0.036]</td>
+<td>-0.225 [-0.355, -0.095]</td>
+<td>-0.135 [-0.259, -0.011]</td>
+<td>-0.135 [-0.230, -0.041]</td>
 </tr>
 <tr>
 <td>Defence change x previous-year public debt</td>
 <td></td>
 <td></td>
 <td></td>
-<td>0.077 [-0.041, 0.195]</td>
-<td>0.054 [-0.056, 0.164]</td>
+<td>0.076 [-0.042, 0.194]</td>
+<td>0.044 [-0.066, 0.153]</td>
+<td>0.044 [-0.080, 0.168]</td>
 </tr>
 <tr>
 <td>GDP per capita, per doubling</td>
@@ -139,7 +545,8 @@
 <td></td>
 <td></td>
 <td></td>
-<td>0.890 [0.121, 1.658]</td>
+<td>0.325 [-0.316, 0.966]</td>
+<td>0.325 [-0.421, 1.071]</td>
 </tr>
 </tbody>
 </table>
@@ -157,41 +564,42 @@
 <tr>
 <td>BEV</td>
 <td>25%</td>
-<td>37.97</td>
-<td>0.751 [0.143, 1.359]</td>
+<td>37.00</td>
+<td>0.681 [0.072, 1.290]</td>
 </tr>
 <tr>
 <td>BIS</td>
 <td>25%</td>
-<td>37.97</td>
-<td>0.519 [0.043, 0.996]</td>
+<td>37.00</td>
+<td>0.534 [0.087, 0.982]</td>
 </tr>
 <tr>
 <td>BEV</td>
 <td>50%</td>
-<td>51.13</td>
-<td>0.822 [0.228, 1.416]</td>
+<td>50.10</td>
+<td>0.738 [0.161, 1.315]</td>
 </tr>
 <tr>
 <td>BIS</td>
 <td>50%</td>
-<td>51.13</td>
-<td>0.590 [0.117, 1.064]</td>
+<td>50.10</td>
+<td>0.592 [0.126, 1.057]</td>
 </tr>
 <tr>
 <td>BEV</td>
 <td>75%</td>
-<td>77.81</td>
-<td>0.966 [0.296, 1.635]</td>
+<td>75.76</td>
+<td>0.850 [0.235, 1.465]</td>
 </tr>
 <tr>
 <td>BIS</td>
 <td>75%</td>
-<td>77.81</td>
-<td>0.734 [0.144, 1.324]</td>
+<td>75.76</td>
+<td>0.704 [0.097, 1.311]</td>
 </tr>
 </tbody>
 </table>
+<p>The final model in the sequential sequence is a population-average GEE using the same fully adjusted fixed-effects terms, country clusters, an AR(1) working correlation, and sandwich standard errors. It is reported as a main model rather than as a robustness sensitivity.</p>
 <h3>Categorical year effects</h3>
 <p>These coefficients are the common year-level differences in relative health-spending change from the 2000 reference year in the fully adjusted model. They should be interpreted as adjustment for shared annual shocks, not as effects caused by the calendar year.</p>
 <table>
@@ -208,91 +616,91 @@
 </tr>
 <tr>
 <td>2001</td>
-<td>2.419 [-0.433, 5.272]</td>
+<td>2.788 [-0.014, 5.590]</td>
 </tr>
 <tr>
 <td>2002</td>
-<td>3.321 [0.460, 6.181]</td>
+<td>3.675 [0.871, 6.480]</td>
 </tr>
 <tr>
 <td>2003</td>
-<td>2.734 [-0.118, 5.586]</td>
+<td>2.974 [0.177, 5.771]</td>
 </tr>
 <tr>
 <td>2004</td>
-<td>-1.138 [-3.913, 1.638]</td>
+<td>-0.590 [-3.295, 2.115]</td>
 </tr>
 <tr>
 <td>2005</td>
-<td>0.490 [-2.286, 3.267]</td>
+<td>1.043 [-1.662, 3.747]</td>
 </tr>
 <tr>
 <td>2006</td>
-<td>-1.408 [-4.193, 1.377]</td>
+<td>-1.187 [-3.897, 1.523]</td>
 </tr>
 <tr>
 <td>2007</td>
-<td>-1.349 [-4.141, 1.442]</td>
+<td>-0.776 [-3.489, 1.938]</td>
 </tr>
 <tr>
 <td>2008</td>
-<td>3.776 [0.970, 6.582]</td>
+<td>4.212 [1.488, 6.937]</td>
 </tr>
 <tr>
 <td>2009</td>
-<td>8.252 [5.449, 11.055]</td>
+<td>8.610 [5.887, 11.332]</td>
 </tr>
 <tr>
 <td>2010</td>
-<td>-0.525 [-3.326, 2.276]</td>
+<td>-0.243 [-2.964, 2.477]</td>
 </tr>
 <tr>
 <td>2011</td>
-<td>-2.249 [-5.055, 0.557]</td>
+<td>-2.531 [-5.256, 0.195]</td>
 </tr>
 <tr>
 <td>2012</td>
-<td>-1.048 [-3.857, 1.760]</td>
+<td>-0.819 [-3.549, 1.911]</td>
 </tr>
 <tr>
 <td>2013</td>
-<td>0.164 [-2.652, 2.981]</td>
+<td>0.231 [-2.508, 2.970]</td>
 </tr>
 <tr>
 <td>2014</td>
-<td>-1.175 [-3.998, 1.648]</td>
+<td>-0.579 [-3.323, 2.165]</td>
 </tr>
 <tr>
 <td>2015</td>
-<td>-1.496 [-4.330, 1.337]</td>
+<td>-0.950 [-3.706, 1.805]</td>
 </tr>
 <tr>
 <td>2016</td>
-<td>0.137 [-2.715, 2.989]</td>
+<td>0.725 [-2.043, 3.493]</td>
 </tr>
 <tr>
 <td>2017</td>
-<td>-2.607 [-5.443, 0.230]</td>
+<td>-1.842 [-4.596, 0.911]</td>
 </tr>
 <tr>
 <td>2018</td>
-<td>-0.736 [-3.596, 2.125]</td>
+<td>0.065 [-2.705, 2.835]</td>
 </tr>
 <tr>
 <td>2019</td>
-<td>1.263 [-1.649, 4.176]</td>
+<td>2.045 [-0.766, 4.856]</td>
 </tr>
 <tr>
 <td>2023</td>
-<td>-2.917 [-5.943, 0.109]</td>
+<td>-2.017 [-4.912, 0.879]</td>
 </tr>
 <tr>
 <td>2024</td>
-<td>1.919 [-1.155, 4.993]</td>
+<td>3.125 [0.188, 6.062]</td>
 </tr>
 <tr>
 <td>2025</td>
-<td>-1.486 [-4.721, 1.749]</td>
+<td>-0.264 [-3.371, 2.844]</td>
 </tr>
 </tbody>
 </table>
@@ -319,47 +727,47 @@
 <tr>
 <td>Out-of-pocket share of health expenditure</td>
 <td>Percentage points of current health expenditure</td>
-<td>622</td>
-<td>28</td>
+<td>666</td>
+<td>30</td>
 <td>2000-2025</td>
-<td>-3.128 [-3.991, -2.265]</td>
-<td>-5.664 [-9.457, -1.871]</td>
-</tr>
-<tr>
-<td>Hospital beds</td>
-<td>Beds per 1,000 people</td>
-<td>610</td>
-<td>28</td>
-<td>2000-2025</td>
-<td>0.249 [0.094, 0.405]</td>
-<td>-0.171 [-0.783, 0.442]</td>
-</tr>
-<tr>
-<td>Medical doctors</td>
-<td>Log outcome</td>
-<td>530</td>
-<td>28</td>
-<td>2000-2025</td>
-<td>7.610 [5.366, 9.902]</td>
-<td>1.795 [-6.588, 10.931]</td>
+<td>-2.830 [-3.638, -2.022]</td>
+<td>-5.319 [-8.867, -1.770]</td>
 </tr>
 <tr>
 <td>Nurses and midwives</td>
 <td>Log outcome</td>
-<td>522</td>
-<td>27</td>
+<td>563</td>
+<td>29</td>
 <td>2000-2025</td>
-<td>6.161 [3.364, 9.034]</td>
-<td>44.180 [24.793, 66.580]</td>
+<td>5.918 [3.111, 8.803]</td>
+<td>44.595 [26.675, 65.049]</td>
+</tr>
+<tr>
+<td>Medical doctors</td>
+<td>Log outcome</td>
+<td>573</td>
+<td>30</td>
+<td>2000-2025</td>
+<td>6.322 [4.182, 8.506]</td>
+<td>0.716 [-7.070, 9.154]</td>
+</tr>
+<tr>
+<td>Hospital beds</td>
+<td>Beds per 1,000 people</td>
+<td>650</td>
+<td>30</td>
+<td>2000-2025</td>
+<td>0.240 [0.093, 0.387]</td>
+<td>-0.449 [-0.994, 0.096]</td>
 </tr>
 <tr>
 <td>Treatable mortality</td>
 <td>Log outcome</td>
-<td>533</td>
-<td>26</td>
+<td>574</td>
+<td>28</td>
 <td>2000-2024</td>
-<td>-1.033 [-3.053, 1.029]</td>
-<td>-34.152 [-45.278, -20.764]</td>
+<td>-0.375 [-2.304, 1.592]</td>
+<td>-36.205 [-45.559, -25.242]</td>
 </tr>
 </tbody>
 </table>
@@ -379,23 +787,23 @@
 <tbody>
 <tr>
 <td>One-year lag of defence change</td>
-<td>586</td>
-<td>28</td>
-<td>0.369 [-0.294, 1.033]</td>
+<td>626</td>
+<td>30</td>
+<td>0.356 [-0.266, 0.978]</td>
 <td>TRUE</td>
 </tr>
 <tr>
 <td>Two-year lag of defence change</td>
-<td>534</td>
-<td>28</td>
-<td>0.982 [0.298, 1.665]</td>
+<td>571</td>
+<td>30</td>
+<td>0.846 [0.205, 1.487]</td>
 <td>TRUE</td>
 </tr>
 <tr>
 <td>Three-year lag of defence change</td>
-<td>483</td>
-<td>28</td>
-<td>-0.068 [-0.871, 0.735]</td>
+<td>517</td>
+<td>30</td>
+<td>-0.059 [-0.821, 0.702]</td>
 <td>TRUE</td>
 </tr>
 </tbody>
@@ -415,77 +823,84 @@
 <tbody>
 <tr>
 <td>Three-year cumulative changes with debt at the start of the period</td>
-<td>503</td>
-<td>28</td>
-<td>1.415 [0.817, 2.013]</td>
+<td>537</td>
+<td>30</td>
+<td>1.262 [0.700, 1.823]</td>
 <td>FALSE</td>
 </tr>
 <tr>
 <td>Country and year fixed effects</td>
-<td>607</td>
-<td>28</td>
-<td>0.855 [0.202, 1.507]</td>
+<td>648</td>
+<td>30</td>
+<td>0.770 [0.153, 1.386]</td>
 <td></td>
 </tr>
 <tr>
 <td>Generalized least squares with country-specific AR(1) correlation</td>
-<td>607</td>
-<td>28</td>
-<td>0.867 [0.251, 1.484]</td>
-<td></td>
-</tr>
-<tr>
-<td>GEE with country clusters, AR(1) working correlation, and robust standard errors</td>
-<td>607</td>
-<td>28</td>
-<td>0.865 [-0.111, 1.841]</td>
+<td>648</td>
+<td>30</td>
+<td>0.771 [0.182, 1.359]</td>
 <td></td>
 </tr>
 <tr>
 <td>Absolute percentage-point changes in GDP shares</td>
-<td>586</td>
-<td>28</td>
-<td>0.141 [-0.065, 0.348]</td>
+<td>626</td>
+<td>30</td>
+<td>0.112 [-0.072, 0.297]</td>
 <td>TRUE</td>
 </tr>
 <tr>
-<td>Current NATO members only</td>
-<td>516</td>
-<td>23</td>
-<td>0.358 [-0.294, 1.010]</td>
+<td>NATO members only</td>
+<td>557</td>
+<td>25</td>
+<td>0.351 [-0.262, 0.965]</td>
 <td>TRUE</td>
 </tr>
 <tr>
-<td>Restore Luxembourg while continuing to exclude Iceland</td>
-<td>630</td>
+<td>OECD members only</td>
+<td>572</td>
+<td>25</td>
+<td>0.728 [0.178, 1.278]</td>
+<td>TRUE</td>
+</tr>
+<tr>
+<td>Exclude Greece</td>
+<td>625</td>
 <td>29</td>
-<td>0.814 [0.212, 1.415]</td>
+<td>0.797 [0.195, 1.400]</td>
+<td>TRUE</td>
+</tr>
+<tr>
+<td>Include 2020 and 2021 COVID years and restore 2022 debt alignment</td>
+<td>738</td>
+<td>30</td>
+<td>0.907 [0.307, 1.507]</td>
 <td>TRUE</td>
 </tr>
 <tr>
 <td>Exclude observations from 2025</td>
-<td>583</td>
-<td>28</td>
-<td>1.325 [0.639, 2.012]</td>
+<td>623</td>
+<td>30</td>
+<td>1.152 [0.509, 1.795]</td>
 <td>TRUE</td>
 </tr>
 <tr>
 <td>Exclude 2008 to 2010</td>
-<td>526</td>
-<td>28</td>
-<td>0.801 [0.166, 1.437]</td>
+<td>561</td>
+<td>30</td>
+<td>0.696 [0.083, 1.308]</td>
 <td>TRUE</td>
 </tr>
 <tr>
 <td>Health and defence changes winsorised at the 1st and 99th percentiles</td>
-<td>607</td>
-<td>28</td>
-<td>0.870 [0.319, 1.422]</td>
+<td>648</td>
+<td>30</td>
+<td>0.827 [0.294, 1.360]</td>
 <td>TRUE</td>
 </tr>
 </tbody>
 </table>
-<p>Across leave-one-country-out analyses, the headline defence coefficient ranged from <strong>0.479 to 1.049</strong>. The full range of lower and upper confidence limits was <strong>-0.137 to 1.708</strong>.</p>
+<p>Across leave-one-country-out analyses, the headline defence coefficient ranged from <strong>0.465 to 0.978</strong>. The full range of lower and upper confidence limits was <strong>-0.135 to 1.613</strong>.</p>
 <h3>Lagged secondary associations</h3>
 <p>These are within-country model-scale coefficients [95% confidence interval] for lagged log2 spending ratios.</p>
 <table>
@@ -500,33 +915,33 @@
 <tbody>
 <tr>
 <td>Out-of-pocket share of health expenditure</td>
-<td>-2.588 [-3.499, -1.678]</td>
-<td>-1.528 [-2.531, -0.524]</td>
-<td>-1.535 [-2.681, -0.389]</td>
-</tr>
-<tr>
-<td>Hospital beds</td>
-<td>0.255 [0.090, 0.421]</td>
-<td>0.012 [-0.185, 0.209]</td>
-<td>0.186 [-0.001, 0.373]</td>
-</tr>
-<tr>
-<td>Medical doctors</td>
-<td>0.063 [0.040, 0.086]</td>
-<td>0.047 [0.019, 0.075]</td>
-<td>0.034 [0.005, 0.063]</td>
+<td>-2.314 [-3.162, -1.465]</td>
+<td>-1.251 [-2.173, -0.329]</td>
+<td>-1.426 [-2.482, -0.369]</td>
 </tr>
 <tr>
 <td>Nurses and midwives</td>
-<td>0.052 [0.024, 0.081]</td>
-<td>0.033 [-0.004, 0.070]</td>
-<td>0.032 [-0.005, 0.069]</td>
+<td>0.049 [0.021, 0.078]</td>
+<td>0.031 [-0.004, 0.065]</td>
+<td>0.027 [-0.007, 0.062]</td>
+</tr>
+<tr>
+<td>Medical doctors</td>
+<td>0.051 [0.029, 0.073]</td>
+<td>0.043 [0.017, 0.069]</td>
+<td>0.037 [0.010, 0.064]</td>
+</tr>
+<tr>
+<td>Hospital beds</td>
+<td>0.238 [0.083, 0.393]</td>
+<td>-0.011 [-0.192, 0.171]</td>
+<td>0.169 [-0.004, 0.342]</td>
 </tr>
 <tr>
 <td>Treatable mortality</td>
-<td>0.001 [-0.020, 0.022]</td>
-<td>-0.017 [-0.039, 0.004]</td>
-<td>-0.012 [-0.033, 0.009]</td>
+<td>0.006 [-0.014, 0.026]</td>
+<td>-0.014 [-0.034, 0.007]</td>
+<td>-0.006 [-0.027, 0.015]</td>
 </tr>
 </tbody>
 </table>
@@ -545,42 +960,42 @@
 <tbody>
 <tr>
 <td>Out-of-pocket share of health expenditure</td>
-<td>-2.291 [-3.186, -1.396]</td>
-<td>1.180 [0.126, 2.234]</td>
-<td>-0.425 [-1.698, 0.848]</td>
-<td>0.115 [-0.878, 1.108]</td>
-</tr>
-<tr>
-<td>Hospital beds</td>
-<td>-0.014 [-0.113, 0.085]</td>
-<td>0.041 [-0.079, 0.161]</td>
-<td>0.048 [-0.085, 0.182]</td>
-<td>-0.026 [-0.142, 0.090]</td>
-</tr>
-<tr>
-<td>Medical doctors</td>
-<td>0.015 [-0.004, 0.034]</td>
-<td>-0.016 [-0.038, 0.006]</td>
-<td>0.032 [0.006, 0.058]</td>
-<td>-0.010 [-0.030, 0.011]</td>
+<td>-1.947 [-2.768, -1.126]</td>
+<td>0.794 [-0.148, 1.736]</td>
+<td>-0.269 [-1.380, 0.841]</td>
+<td>-0.033 [-0.920, 0.855]</td>
 </tr>
 <tr>
 <td>Nurses and midwives</td>
-<td>0.010 [-0.010, 0.031]</td>
-<td>0.008 [-0.017, 0.033]</td>
-<td>-0.014 [-0.043, 0.015]</td>
-<td>-0.019 [-0.044, 0.007]</td>
+<td>0.008 [-0.012, 0.028]</td>
+<td>0.014 [-0.010, 0.038]</td>
+<td>-0.006 [-0.031, 0.020]</td>
+<td>-0.011 [-0.034, 0.012]</td>
+</tr>
+<tr>
+<td>Medical doctors</td>
+<td>0.012 [-0.005, 0.029]</td>
+<td>-0.016 [-0.036, 0.003]</td>
+<td>0.022 [-0.001, 0.044]</td>
+<td>0.010 [-0.008, 0.028]</td>
+</tr>
+<tr>
+<td>Hospital beds</td>
+<td>-0.023 [-0.114, 0.068]</td>
+<td>0.055 [-0.053, 0.163]</td>
+<td>0.022 [-0.097, 0.140]</td>
+<td>-0.003 [-0.107, 0.101]</td>
 </tr>
 <tr>
 <td>Treatable mortality</td>
-<td>0.006 [-0.013, 0.024]</td>
-<td>-0.001 [-0.022, 0.020]</td>
-<td>0.008 [-0.015, 0.031]</td>
-<td>-0.014 [-0.037, 0.009]</td>
+<td>0.004 [-0.017, 0.024]</td>
+<td>-0.009 [-0.032, 0.014]</td>
+<td>0.019 [-0.005, 0.044]</td>
+<td>0.007 [-0.017, 0.032]</td>
 </tr>
 </tbody>
 </table>
-<p>Across the remaining change-on-change models, 3 of 20 95% confidence intervals excluded zero. Directions and timing varied across outcomes, so these results do not indicate a consistent short-run pattern.</p>
+<p>Across the remaining change-on-change models, 1 of 20 95% confidence intervals excluded zero. Directions and timing varied across outcomes, so these results do not indicate a consistent short-run pattern.</p>
 <h2>Descriptive figures</h2>
 <h3>Health-to-defence spending ratio</h3>
 <p><img src="health_def_ratio_timeseries.png" alt="Health-to-defence spending ratio over time" /></p>
@@ -591,7 +1006,7 @@
 <li>The models are associational and may retain residual confounding or reverse causation.</li>
 <li>Health, defence, and debt measures share GDP-related denominators, so common economic shocks can create coupled movements.</li>
 <li>A singular random-intercept fit indicates that the estimated between-country residual variance is effectively zero after included covariates.</li>
-<li>The GEE sensitivity estimates a population-average association with robust standard errors. With 28 country clusters, sandwich standard errors may still have limited small-sample accuracy.</li>
+<li>The final GEE estimates a population-average association with robust standard errors. With 30 country clusters, sandwich standard errors may still have limited small-sample accuracy.</li>
 <li>Secondary analyses are exploratory and span outcomes with different observation schedules and sample sizes.</li>
 <li>Annual differencing may reduce trend confounding but magnifies measurement error and is poorly suited to intermittently observed outcomes.</li>
 </ul>

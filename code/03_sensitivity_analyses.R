@@ -10,7 +10,6 @@ suppressPackageStartupMessages({
   library(broom)
   library(broom.mixed)
   library(dplyr)
-  library(geepack)
   library(lme4)
   library(nlme)
   library(readr)
@@ -28,9 +27,15 @@ master_df <- read_csv(
 results_dir <- "results"
 dir.create(results_dir, showWarnings = FALSE)
 
-excluded_primary_codes <- c("ISL", "LUX")
 excluded_analysis_years <- c(2020L, 2021L)
 current_non_nato_codes <- c("AUT", "CYP", "IRL", "MLT", "CHE")
+# Current OECD members represented in the 30-country study-country source.
+# Iceland is absent from that source.
+oecd_member_codes <- c(
+  "AUT", "BEL", "CZE", "DNK", "EST", "FIN", "FRA", "DEU", "GRC",
+  "HUN", "IRL", "ITA", "LVA", "LTU", "LUX", "NLD", "NOR", "POL",
+  "PRT", "SVK", "SVN", "ESP", "SWE", "CHE", "GBR"
+)
 analysis_end_year <- max(master_df$year, na.rm = TRUE)
 
 
@@ -142,8 +147,7 @@ panel_df <- master_df %>%
 primary_df <- panel_df %>%
   filter(
     year <= analysis_end_year,
-    !year %in% excluded_analysis_years,
-    !code %in% excluded_primary_codes
+    !year %in% excluded_analysis_years
   )
 
 centres <- c(
@@ -180,8 +184,7 @@ panel_df <- panel_df %>%
 primary_df <- panel_df %>%
   filter(
     year <= analysis_end_year,
-    !year %in% excluded_analysis_years,
-    !code %in% excluded_primary_codes
+    !year %in% excluded_analysis_years
   )
 
 
@@ -189,12 +192,6 @@ primary_df <- panel_df %>%
 model_status <- function(model) {
   if (inherits(model, "error")) {
     return(conditionMessage(model))
-  }
-
-  if (inherits(model, "geeglm") && model$geese$error != 0) {
-    return(
-      paste("GEE fitting error code:", model$geese$error)
-    )
   }
 
   if (inherits(model, "merMod")) {
@@ -295,16 +292,6 @@ fit_sensitivity_model <- function(
           ),
           method = "ML"
         )
-      } else if (model_type == "gee_ar1") {
-        geepack::geeglm(
-          formula,
-          data = model_data,
-          id = country,
-          waves = year,
-          family = gaussian(link = "identity"),
-          corstr = "ar1",
-          std.err = "san.se"
-        )
       } else {
         stop("Unknown model type: ", model_type)
       }
@@ -327,8 +314,6 @@ fit_sensitivity_model <- function(
     } else if (inherits(model_object, "merMod")) {
       optimizer_code <- model_object@optinfo$conv$opt
       is.null(optimizer_code) || all(optimizer_code == 0)
-    } else if (inherits(model_object, "geeglm")) {
-      model_object$geese$error == 0
     } else {
       TRUE
     },
@@ -458,22 +443,6 @@ add_main_sensitivity(
   model_type = "gls_ar1"
 )
 
-add_main_sensitivity(
-  "gee_ar1",
-  paste(
-    "GEE with country clusters, AR(1) working correlation,",
-    "and robust standard errors"
-  ),
-  primary_df,
-  health_change_percent ~
-    defence_change_10pct * system +
-    defence_change_10pct * previous_debt_10pp_c +
-    log2_gdp_percap_c +
-    year_factor,
-  model_type = "gee_ar1"
-)
-
-
 # Test alternative change measures and adjustments
 add_main_sensitivity(
   "absolute_percentage_point_changes",
@@ -538,22 +507,44 @@ add_main_sensitivity(
 
 # Test alternative country and year samples
 add_main_sensitivity(
-  "current_nato_members",
-  "Current NATO members only",
+  "nato_members_only",
+  "NATO members only",
   primary_df %>%
     filter(!code %in% current_non_nato_codes),
   full_formula
 )
 
 add_main_sensitivity(
-  "restore_luxembourg",
-  "Restore Luxembourg while continuing to exclude Iceland",
-  panel_df %>%
-    filter(
-      year <= analysis_end_year,
-      !year %in% excluded_analysis_years,
-      code != "ISL"
-    ),
+  "oecd_members_only",
+  "OECD members only",
+  primary_df %>%
+    filter(code %in% oecd_member_codes),
+  full_formula
+)
+
+add_main_sensitivity(
+  "exclude_greece",
+  "Exclude Greece",
+  primary_df %>%
+    filter(code != "GRC"),
+  full_formula
+)
+
+# Include the pandemic years as an explicit main-model sensitivity. The
+# primary models and ordinary sensitivities continue to exclude 2020-2021.
+# Here, previous-year debt is restored for all years so 2021 uses 2020 debt and
+# 2022 uses 2021 debt.
+covid_included_df <- panel_df %>%
+  mutate(
+    previous_debt_10pp = previous_government_debt_pct_gdp / 0.10,
+    previous_debt_10pp_c =
+      previous_debt_10pp - centres[["previous_debt_10pp"]]
+  )
+
+add_main_sensitivity(
+  "include_covid_years",
+  "Include 2020 and 2021 COVID years and restore 2022 debt alignment",
+  covid_included_df,
   full_formula
 )
 
@@ -578,7 +569,7 @@ add_main_sensitivity(
 
 # Define NATO membership using accession years
 nato_join_years <- c(
-  BEL = 1949, DNK = 1949, FRA = 1949, ISL = 1949, ITA = 1949,
+  BEL = 1949, DNK = 1949, FRA = 1949, ITA = 1949,
   LUX = 1949, NLD = 1949, NOR = 1949, PRT = 1949, GBR = 1949,
   GRC = 1952, DEU = 1955, ESP = 1982,
   CZE = 1999, HUN = 1999, POL = 1999,
@@ -752,8 +743,7 @@ secondary_df <- panel_df %>%
   ungroup() %>%
   filter(
     year <= analysis_end_year,
-    !year %in% excluded_analysis_years,
-    !code %in% excluded_primary_codes
+    !year %in% excluded_analysis_years
   )
 
 secondary_specs <- tribble(
@@ -761,12 +751,12 @@ secondary_specs <- tribble(
   "oop_health_spend_pct_points", "change_oop_health_spend_pct_points",
   "oop_share_health_spend_logit",
   "Out-of-pocket share of health expenditure",
-  "hosp_beds_per_thou", "change_hosp_beds_per_thou", NA,
-  "Hospital beds",
-  "log_mds_per_thou", "change_log_mds_per_thou", "mds_per_thou",
-  "Medical doctors",
   "log_nurses_per_thou", "change_log_nurses_per_thou",
   "nurses_per_thou", "Nurses and midwives",
+  "log_mds_per_thou", "change_log_mds_per_thou", "mds_per_thou",
+  "Medical doctors",
+  "hosp_beds_per_thou", "change_hosp_beds_per_thou", NA,
+  "Hospital beds",
   "log_treatable_mortality", "change_log_treatable_mortality",
   "treatable_mortality_per_100k", "Treatable mortality"
 )
@@ -1052,16 +1042,16 @@ secondary_sensitivity_results <- bind_rows(
     )
   )
 
-if (nrow(main_sensitivity_overview) != 18) {
-  stop("Expected 18 main sensitivity specifications.")
+if (nrow(main_sensitivity_overview) != 19) {
+  stop("Expected 19 main sensitivity specifications.")
 }
 
 if (any(!main_sensitivity_overview$converged)) {
   stop("At least one main sensitivity model failed to converge.")
 }
 
-if (n_distinct(leave_one_country_out$omitted_code) != 29) {
-  stop("Expected 29 leave-one-country-out analyses.")
+if (n_distinct(leave_one_country_out$omitted_code) != 30) {
+  stop("Expected 30 leave-one-country-out analyses.")
 }
 
 if (nrow(secondary_sensitivity_results) != 108) {

@@ -38,14 +38,19 @@ the code before relying on an old estimate.
 
 Preserve these decisions unless the user explicitly changes them:
 
-- The processed panel covers 31 countries and 2000-2025. Source values from
-  1999 are used only to calculate the first retained year's changes and
+- The processed panel covers 30 countries and 2000-2025. Primary analyses,
+  plots, and standard descriptive outputs exclude 2020 and 2021; an explicit
+  main sensitivity includes them. Source values from 1999 are used only to calculate
+  the first retained year's changes and
   previous-year debt; 1999 is not an output panel year.
 - Raw missing observations remain `NA`; do not impute or interpolate.
 - Health and defence spending are shares of GDP, stored as proportions.
 - Health spending as a share of total government spending is not used.
-- The main analysis excludes Iceland and Luxembourg.
-- All analyses and plots exclude 2020 and 2021.
+- All countries in the authoritative study-country source are included,
+  including Luxembourg; Iceland is absent from that source.
+- COVID years 2020 and 2021 are excluded from primary analyses, plots, and
+  standard descriptive outputs; they are included only in the explicit main
+  sensitivity.
 - The main model also lacks 2022 because previous-year debt would come from
   excluded 2021.
 - The main outcome is relative annual health-spending change.
@@ -60,6 +65,9 @@ Preserve these decisions unless the user explicitly changes them:
 - Secondary primary models use the within-/between-country decomposition of
   the log2 health-to-defence ratio against outcome levels.
 - Change-on-change secondary models are sensitivities.
+- Secondary outcomes are restricted to out-of-pocket spending as a share of
+  current health expenditure, nurses, physicians, hospital beds, and treatable
+  mortality.
 - UHC is removed from the revised processed data and all analyses.
 - Interpret every model as associational, not causal.
 
@@ -85,12 +93,16 @@ without an explicit methodological decision from the user.
 - `code/00_run_pipeline.R`: runs the full pipeline.
 - `code/01_data_processing.R`: reads the current raw CSV inputs and creates
   the clean panel.
-- `code/02_analysis.R`: fits the five main models and primary secondary models.
+- `code/02_analysis.R`: fits the six main models and primary secondary models.
 - `code/03_sensitivity_analyses.R`: fits main and secondary robustness checks.
 - `code/04_visualisation.R`: generates descriptive figures.
 - `code/05_results_summary.R`: regenerates the Markdown results report.
 - `raw_data/data_dictionary.md`: authoritative data inventory and units.
 - `processed_data/primary_analysis.csv`: generated analysis dataset.
+- `results/main_country_sample_counts.csv`: generated country-level main-sample
+  observation counts and included years.
+- `results/table1_descriptive_statistics.csv`: generated retained-panel
+  descriptive statistics by health-system type and overall.
 - `results/results_summary.md`: generated human-readable results.
 
 `raw_data/sources/` contains provenance workbooks. `deprecated/` contains
@@ -110,8 +122,9 @@ the current CSV inputs without explicit instruction.
 - Centre continuous moderators before interactions.
 - Keep categorical year effects as factors.
 - Do not suppress singularity or convergence diagnostics.
-- Treat the country-clustered GEE as a population-average sensitivity, not as
-  a substitute for the prespecified headline mixed model.
+- Treat the country-clustered GEE as the final population-average model in the
+  sequential main-model sequence; retain the mixed model's diagnostics and
+  interpretation as the headline random-intercept specification.
 - Do not manually type estimates into the report generator.
 - Do not edit raw CSVs or source workbooks unless the user explicitly requests
   a data correction.
@@ -129,16 +142,28 @@ Rscript code/00_run_pipeline.R
 Then check:
 
 - every stage exits successfully;
-- the processed data still contain 31 countries, 806 rows, and years
-  2000-2025;
+- the processed data still contain 30 countries, 780 rows, and years
+  2000-2025; primary-analysis outputs exclude 2020 and 2021;
 - the 2000 change variables use 1999 source values while the output panel
   begins in 2000;
 - the main model uses the intended countries, years, timing, and complete-case
   sample;
+- country-level included-observation counts sum to the common main-model
+  sample and list the actual included years;
+- Table 1 statistics use the retained panel, exclude 2020 and 2021, and report
+  BIS, BEV, and total values with non-missing observation counts;
 - 2020 and 2021 do not appear as fitted year effects;
 - previous-year debt is correctly aligned within country;
 - lagged defence models use debt at `t - 1` relative to health change at `t`;
 - no UHC secondary model or result has reappeared;
+- the main model sequence contains the final population-average GEE, while
+  GEE is absent from the sensitivity-analysis output;
+- Greece-excluded, NATO-only, and OECD-only sensitivities are present;
+- the secondary results contain only the five prespecified outcomes;
+- 2020 and 2021 are absent from primary fitted samples but present in the
+  explicit include-COVID main sensitivity;
+- Iceland is absent from `raw_data/oecd_europe_health_systems.csv` and the
+  processed panel;
 - transformations contain no infinite values;
 - convergence and singularity status remain visible;
 - `results/results_summary.md` contains current equations, samples, year

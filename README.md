@@ -35,17 +35,21 @@ exploratory sensitivities.
 
 ## Current study design
 
-The processing stage constructs a balanced framework of 31 countries and 26
+The processing stage constructs a balanced framework of 30 countries and 26
 years (2000-2025), with unavailable source observations retained as `NA`.
+The primary analysis and standard descriptive outputs exclude 2020 and 2021;
+an explicit main-model sensitivity includes them.
 Source observations from 1999 are read only to calculate the first retained
 year's changes and previous-year debt; 1999 is not included as an output row.
 There is no imputation or interpolation.
 
 The primary analysis:
 
-- excludes Iceland and Luxembourg;
-- excludes observations from 2020 and 2021 because of the exceptional effects
-  of COVID-19 on spending, GDP, debt, and health measures;
+- includes all countries in the authoritative study-country source, including
+  Luxembourg; Iceland is absent from that source;
+- excludes 2020 and 2021 from the primary analysis because of the exceptional
+  effects of COVID-19 on spending, GDP, debt, and health measures; the years
+  remain in the processed panel for the explicit main-model sensitivity;
 - omits 2022 from the main model because its required previous-year debt value
   is from excluded 2021;
 - otherwise uses available outcome years from 2000 through 2025 subject to
@@ -71,9 +75,11 @@ Relative health-spending change is expressed as a percentage change. Defence
 change is scaled so its coefficient represents a 10% relative increase.
 
 The fitted country random-intercept variance is currently effectively zero,
-so the headline mixed model is singular. This is reported transparently.
-Country fixed-effects, generalized least-squares AR(1), and population-average
-GEE models are included as sensitivities.
+so the headline mixed model is singular. This is reported transparently. The
+sequential model-building sequence ends with a population-average GEE using
+country clusters, AR(1) working correlation, and robust standard errors.
+Country fixed-effects and generalized least-squares AR(1) models remain
+sensitivities.
 
 ## Temporal alignment
 
@@ -97,24 +103,24 @@ For example, if defence spending changes from 2001 to 2002 and health spending
 changes from 2002 to 2003, the one-year lag model uses debt from 2002.
 
 The sensitivity script tests one-, two-, and three-year defence lags. It also
-tests alternative samples, debt specifications, country and residual
-structures, absolute changes, cumulative changes, NATO membership definitions,
+tests exclusion of Greece, inclusion of COVID years 2020 and 2021 with the
+corresponding 2022 debt alignment, NATO-only and OECD-only samples, alternative
+debt specifications, country and residual
+structures, absolute changes, cumulative changes, historical NATO membership,
 and influential observations.
 
 ## Secondary outcomes
 
-The current secondary analyses cover:
+The current secondary analyses are restricted to:
 
 - household out-of-pocket payments as a share of current health expenditure;
-- hospital beds;
-- physicians;
 - nurses and midwives;
+- physicians;
+- hospital beds;
 - treatable mortality.
 
-Any-setting and in-person doctor consultations are retained as separate
-descriptive variables. CT and MRI examinations are retained separately and as
-a combined CT-plus-MRI total; PET examinations are excluded. These descriptive
-variables are not currently modelled.
+Consultation and diagnostic-scan source files are retained for provenance but
+are not included as processed secondary outcomes or modelled variables.
 
 The primary secondary models use within- and between-country components of the
 log2 health-to-defence spending ratio, system type, log2 GDP per capita,
@@ -131,16 +137,13 @@ The current source inputs are:
 
 - `raw_data/SIPRI_defence_pct_gdp.csv`
 - `raw_data/OECD_health_spending_pct_gdp.csv`
-- `raw_data/OECD_gdp_per_cap.csv`
+- `raw_data/OECD_gdp_per_cap_updated.csv`
 - `raw_data/IMF_debt_pct_gdp.csv`
 - `raw_data/OECD_beds_per_k.csv`
 - `raw_data/updated_sources_040826/20260731-WHO BEDS .csv`
 - `raw_data/OECD_mds_per_k.csv`
 - `raw_data/OECD_rns_per_k.csv`
-- `raw_data/OECD_md_consults_per_person.csv`
-- `raw_data/updated_sources_040826/20260731-OECD CONSULTS.xlsx`
 - `raw_data/OECD_oop_pct_health_spend.csv`
-- `raw_data/OECD_scans_per_k.csv`
 - `raw_data/OECD_treat_mortality_per_100k.csv`
 - `raw_data/oecd_europe_health_systems.csv`
 
@@ -212,6 +215,14 @@ The processing stage writes:
 
 The downstream stages write machine-readable model summaries, diagnostics,
 sensitivity results, and figures under `results/`.
+
+The generated report also includes a country-level table of primary-analysis
+panel years,
+included complete-case observations, excluded observations, and the specific
+included years: `results/main_country_sample_counts.csv`.
+
+It also includes generated Table 1 descriptive statistics by health-system type
+and overall: `results/table1_descriptive_statistics.csv`.
 
 The main human-readable output is:
 

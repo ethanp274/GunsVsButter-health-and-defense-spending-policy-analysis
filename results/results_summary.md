@@ -1,12 +1,67 @@
 # Health and Defence Spending: Results Summary
 
-Generated: 2026-08-05
+Generated: 2026-08-12
 
 > These analyses estimate associations and do not establish causation.
 
 ## Analysis sample
 
-The main analysis includes **607 observations from 28 countries during 2000-2025**. Iceland and Luxembourg are excluded, 2020-2021 are excluded, and 2022 is unavailable because its previous-year debt value comes from excluded 2021.
+The main analysis includes **648 observations from 30 countries during 2000-2025**. Iceland is absent from the authoritative study-country source, Luxembourg is included in all analyses, and COVID years 2020-2021 are excluded from the primary analysis. They are retained in the processed panel for the explicit main-model sensitivity. 2022 is unavailable in the primary model because its previous-year debt value comes from excluded 2021.
+
+The table below reports the country-level contribution to the common complete-case main-model sample. Included years satisfy all main-model requirements; panel years are the 24 primary-analysis years after excluding 2020 and 2021.
+
+| Country | Code | System | Panel years | Included observations | Excluded observations | Included years |
+| --- | --- | --- | --- | --- | --- | --- |
+| Austria | AUT | BIS | 24 | 23 | 1 | 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025 |
+| Belgium | BEL | BIS | 24 | 23 | 1 | 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025 |
+| Bulgaria | BGR | BIS | 24 | 18 | 6 | 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024 |
+| Switzerland | CHE | BIS | 24 | 23 | 1 | 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025 |
+| Cyprus | CYP | BEV | 24 | 18 | 6 | 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024 |
+| Czechia | CZE | BIS | 24 | 23 | 1 | 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025 |
+| Germany | DEU | BIS | 24 | 23 | 1 | 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025 |
+| Denmark | DNK | BEV | 24 | 23 | 1 | 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025 |
+| Spain | ESP | BEV | 24 | 23 | 1 | 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025 |
+| Estonia | EST | BIS | 24 | 23 | 1 | 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025 |
+| Finland | FIN | BEV | 24 | 23 | 1 | 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025 |
+| France | FRA | BIS | 24 | 23 | 1 | 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025 |
+| United Kingdom | GBR | BEV | 24 | 23 | 1 | 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025 |
+| Greece | GRC | BEV | 24 | 23 | 1 | 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025 |
+| Croatia | HRV | BIS | 24 | 18 | 6 | 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024 |
+| Hungary | HUN | BIS | 24 | 23 | 1 | 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025 |
+| Ireland | IRL | BEV | 24 | 23 | 1 | 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025 |
+| Italy | ITA | BEV | 24 | 23 | 1 | 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025 |
+| Lithuania | LTU | BIS | 24 | 22 | 2 | 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025 |
+| Luxembourg | LUX | BIS | 24 | 23 | 1 | 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025 |
+| Latvia | LVA | BEV | 24 | 22 | 2 | 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025 |
+| Malta | MLT | BEV | 24 | 4 | 20 | 2017, 2018, 2019, 2023 |
+| Netherlands | NLD | BIS | 24 | 23 | 1 | 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025 |
+| Norway | NOR | BEV | 24 | 23 | 1 | 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025 |
+| Poland | POL | BIS | 24 | 23 | 1 | 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025 |
+| Portugal | PRT | BEV | 24 | 23 | 1 | 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025 |
+| Romania | ROU | BIS | 24 | 18 | 6 | 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024 |
+| Slovakia | SVK | BIS | 24 | 23 | 1 | 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025 |
+| Slovenia | SVN | BIS | 24 | 22 | 2 | 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025 |
+| Sweden | SWE | BEV | 24 | 23 | 1 | 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2023, 2024, 2025 |
+
+### Table 1. Descriptive statistics of the primary-analysis panel
+
+Values are mean (standard deviation); n is the number of non-missing country-year observations. Statistics use the 24 primary-analysis years and exclude 2020 and 2021.
+
+| Variable | Unit | BIS (n=17) | BEV (n=13) | Total (N=30) |
+| --- | --- | --- | --- | --- |
+| Government health spending | % GDP | 6.07 (1.64); n=396 | 6.27 (1.67); n=290 | 6.16 (1.66); n=686 |
+| Defence spending | % GDP | 1.44 (0.59); n=408 | 1.55 (0.69); n=312 | 1.49 (0.64); n=720 |
+| GDP per capita | PPP US$ per person | 38439 (24499); n=407 | 41371 (20831); n=312 | 39711 (23010); n=719 |
+| Government debt | % GDP | 49.72 (26.25); n=391 | 69.70 (38.41); n=299 | 58.38 (33.56); n=690 |
+| Previous-year government debt | % GDP | 49.87 (26.46); n=408 | 69.50 (38.37); n=312 | 58.37 (33.58); n=720 |
+| Annual health-spending change | % relative change | 0.77 (5.46); n=391 | 0.95 (6.35); n=287 | 0.85 (5.85); n=678 |
+| Annual defence-spending change | % relative change | 1.54 (12.31); n=408 | 0.95 (10.98); n=312 | 1.28 (11.75); n=720 |
+| Health-to-defence spending ratio | ratio | 5.26 (3.03); n=396 | 5.05 (3.71); n=290 | 5.17 (3.33); n=686 |
+| Out-of-pocket spending | % current health expenditure | 19.32 (8.27); n=386 | 23.08 (10.14); n=280 | 20.90 (9.28); n=666 |
+| Nurses and midwives | per 1,000 people | 8.06 (2.99); n=339 | 7.82 (3.58); n=252 | 7.96 (3.26); n=591 |
+| Physicians | per 1,000 people | 3.40 (0.75); n=353 | 3.55 (0.73); n=240 | 3.46 (0.75); n=593 |
+| Hospital beds | per 1,000 people | 6.26 (1.29); n=386 | 4.08 (1.43); n=291 | 5.32 (1.73); n=677 |
+| Treatable mortality | per 100,000 people | 116.0 (53.7); n=372 | 86.8 (43.7); n=208 | 105.5 (52.2); n=580 |
 
 The headline model uses categorical year effects and a country random intercept. Its estimated country variance is **0.000000** and its singular-fit status is **TRUE**.
 
@@ -16,42 +71,45 @@ The headline model uses categorical year effects and a country random intercept.
 
 | Model | Equation | N | Countries | Years | Singular fit |
 | --- | --- | --- | --- | --- | --- |
-| Pooled unadjusted association | $\Delta H_{it}=\beta_0+\beta_1\Delta D_{it}+\epsilon_{it}$ | 607 | 28 | 2000-2025 |  |
-| Country random intercept | $\Delta H_{it}=\beta_0+\beta_1\Delta D_{it}+u_i+\epsilon_{it}$ | 607 | 28 | 2000-2025 | TRUE |
-| Country random intercept and health-system moderation | $\Delta H_{it}=\beta_0+\beta_1\Delta D_{it}+\beta_2S_i+\beta_3(\Delta D_{it}\times S_i)+u_i+\epsilon_{it}$ | 607 | 28 | 2000-2025 | TRUE |
-| Health-system and public-debt moderation | $\Delta H_{it}=\beta_0+\beta_1\Delta D_{it}+\beta_2S_i+\beta_3(\Delta D_{it}\times S_i)+\beta_4B_{i,t-1}+\beta_5(\Delta D_{it}\times B_{i,t-1})+u_i+\epsilon_{it}$ | 607 | 28 | 2000-2025 | TRUE |
-| Fully adjusted with GDP per capita and year effects | $\Delta H_{it}=\beta_0+\beta_1\Delta D_{it}+\beta_2S_i+\beta_3(\Delta D_{it}\times S_i)+\beta_4B_{i,t-1}+\beta_5(\Delta D_{it}\times B_{i,t-1})+\beta_6\log_2(GDPpc_{it})+\gamma_t+u_i+\epsilon_{it}$ | 607 | 28 | 2000-2025 | TRUE |
+| Pooled unadjusted association | $\Delta H_{it}=\beta_0+\beta_1\Delta D_{it}+\epsilon_{it}$ | 648 | 30 | 2000-2025 |  |
+| Country random intercept | $\Delta H_{it}=\beta_0+\beta_1\Delta D_{it}+u_i+\epsilon_{it}$ | 648 | 30 | 2000-2025 | TRUE |
+| Country random intercept and health-system moderation | $\Delta H_{it}=\beta_0+\beta_1\Delta D_{it}+\beta_2S_i+\beta_3(\Delta D_{it}\times S_i)+u_i+\epsilon_{it}$ | 648 | 30 | 2000-2025 | TRUE |
+| Health-system and public-debt moderation | $\Delta H_{it}=\beta_0+\beta_1\Delta D_{it}+\beta_2S_i+\beta_3(\Delta D_{it}\times S_i)+\beta_4B_{i,t-1}+\beta_5(\Delta D_{it}\times B_{i,t-1})+u_i+\epsilon_{it}$ | 648 | 30 | 2000-2025 | TRUE |
+| Fully adjusted with GDP per capita and year effects | $\Delta H_{it}=\beta_0+\beta_1\Delta D_{it}+\beta_2S_i+\beta_3(\Delta D_{it}\times S_i)+\beta_4B_{i,t-1}+\beta_5(\Delta D_{it}\times B_{i,t-1})+\beta_6\log_2(GDPpc_{it})+\gamma_t+u_i+\epsilon_{it}$ | 648 | 30 | 2000-2025 | TRUE |
+| Final population-average GEE with country clusters and AR(1) working correlation | $E(\Delta H_{it})=\beta_0+\beta_1\Delta D_{it}+\beta_2S_i+\beta_3(\Delta D_{it}\times S_i)+\beta_4B_{i,t-1}+\beta_5(\Delta D_{it}\times B_{i,t-1})+\beta_6\log_2(GDPpc_{it})+\gamma_t+\epsilon_{it}$ (country-clustered AR(1) working correlation) | 648 | 30 | 2000-2025 |  |
 
 Here, $\Delta H$ is relative health-spending change, $\Delta D$ is relative defence-spending change, $S$ is health-system type, $B_{i,t-1}$ is previous-year public debt as a share of GDP, $\gamma_t$ denotes categorical year effects, and $u_i$ is the country random intercept.
 
 ### Key headline findings
 
-- In Beveridge countries at average previous-year debt, a 10% relative increase in defence spending was associated with a **0.866 [0.263, 1.469]** percentage-point relative change in health spending.
-- The defence-change slope difference for Bismarck systems was **-0.231 [-0.943, 0.480]**.
-- The defence-by-previous-year-debt interaction was **0.054 [-0.056, 0.164]**.
-- The coefficient for a doubling of GDP per capita was **0.890 [0.121, 1.658]**.
+- In Beveridge countries at average previous-year debt, a 10% relative increase in defence spending was associated with a **0.772 [0.197, 1.346]** percentage-point relative change in health spending.
+- The defence-change slope difference for Bismarck systems was **-0.146 [-0.857, 0.564]**.
+- The defence-by-previous-year-debt interaction was **0.044 [-0.066, 0.153]**.
+- The coefficient for a doubling of GDP per capita was **0.325 [-0.316, 0.966]**.
 
 Estimates are shown as coefficient [95% confidence interval]. Year-dummy coefficients are omitted from the compact table.
 
-| Term | model_1_unadjusted | model_2_country_random_intercept | model_3_system_moderation | model_4_debt_moderation | model_5_fully_adjusted |
-| --- | --- | --- | --- | --- | --- |
-| Defence change, per 10% relative increase | 0.900 [0.516, 1.285] | 0.900 [0.518, 1.283] | 1.109 [0.491, 1.726] | 1.076 [0.457, 1.695] | 0.866 [0.263, 1.469] |
-| Bismarck-style health system |  |  | -0.322 [-1.217, 0.573] | -0.452 [-1.341, 0.436] | -0.148 [-0.979, 0.682] |
-| Defence change x Bismarck system |  |  | -0.338 [-1.125, 0.448] | -0.258 [-1.040, 0.524] | -0.231 [-0.943, 0.480] |
-| Previous-year public debt, per 10 percentage points of GDP |  |  |  | -0.218 [-0.347, -0.089] | -0.160 [-0.282, -0.036] |
-| Defence change x previous-year public debt |  |  |  | 0.077 [-0.041, 0.195] | 0.054 [-0.056, 0.164] |
-| GDP per capita, per doubling |  |  |  |  | 0.890 [0.121, 1.658] |
+| Term | model_1_unadjusted | model_2_country_random_intercept | model_3_system_moderation | model_4_debt_moderation | model_5_fully_adjusted | model_6_population_average_gee |
+| --- | --- | --- | --- | --- | --- | --- |
+| Defence change, per 10% relative increase | 0.883 [0.515, 1.252] | 0.883 [0.516, 1.250] | 1.166 [0.567, 1.764] | 1.037 [0.439, 1.634] | 0.772 [0.197, 1.346] | 0.772 [-0.121, 1.664] |
+| Bismarck-style health system |  |  | -0.318 [-1.183, 0.546] | -0.819 [-1.718, 0.080] | -0.557 [-1.376, 0.262] | -0.558 [-1.157, 0.042] |
+| Defence change x Bismarck system |  |  | -0.448 [-1.205, 0.310] | -0.190 [-0.976, 0.595] | -0.146 [-0.857, 0.564] | -0.145 [-1.150, 0.860] |
+| Previous-year public debt, per 10 percentage points of GDP |  |  |  | -0.225 [-0.355, -0.095] | -0.135 [-0.259, -0.011] | -0.135 [-0.230, -0.041] |
+| Defence change x previous-year public debt |  |  |  | 0.076 [-0.042, 0.194] | 0.044 [-0.066, 0.153] | 0.044 [-0.080, 0.168] |
+| GDP per capita, per doubling |  |  |  |  | 0.325 [-0.316, 0.966] | 0.325 [-0.421, 1.071] |
 
 ### Conditional defence slopes
 
 | System | Debt-level percentile | Previous-year debt (% GDP) | Defence slope [95% CI] |
 | --- | --- | --- | --- |
-| BEV | 25% | 37.97 | 0.751 [0.143, 1.359] |
-| BIS | 25% | 37.97 | 0.519 [0.043, 0.996] |
-| BEV | 50% | 51.13 | 0.822 [0.228, 1.416] |
-| BIS | 50% | 51.13 | 0.590 [0.117, 1.064] |
-| BEV | 75% | 77.81 | 0.966 [0.296, 1.635] |
-| BIS | 75% | 77.81 | 0.734 [0.144, 1.324] |
+| BEV | 25% | 37.00 | 0.681 [0.072, 1.290] |
+| BIS | 25% | 37.00 | 0.534 [0.087, 0.982] |
+| BEV | 50% | 50.10 | 0.738 [0.161, 1.315] |
+| BIS | 50% | 50.10 | 0.592 [0.126, 1.057] |
+| BEV | 75% | 75.76 | 0.850 [0.235, 1.465] |
+| BIS | 75% | 75.76 | 0.704 [0.097, 1.311] |
+
+The final model in the sequential sequence is a population-average GEE using the same fully adjusted fixed-effects terms, country clusters, an AR(1) working correlation, and sandwich standard errors. It is reported as a main model rather than as a robustness sensitivity.
 
 ### Categorical year effects
 
@@ -60,28 +118,28 @@ These coefficients are the common year-level differences in relative health-spen
 | Year | Effect [95% CI] |
 | --- | --- |
 | 2000 | 0.000 (reference) |
-| 2001 | 2.419 [-0.433, 5.272] |
-| 2002 | 3.321 [0.460, 6.181] |
-| 2003 | 2.734 [-0.118, 5.586] |
-| 2004 | -1.138 [-3.913, 1.638] |
-| 2005 | 0.490 [-2.286, 3.267] |
-| 2006 | -1.408 [-4.193, 1.377] |
-| 2007 | -1.349 [-4.141, 1.442] |
-| 2008 | 3.776 [0.970, 6.582] |
-| 2009 | 8.252 [5.449, 11.055] |
-| 2010 | -0.525 [-3.326, 2.276] |
-| 2011 | -2.249 [-5.055, 0.557] |
-| 2012 | -1.048 [-3.857, 1.760] |
-| 2013 | 0.164 [-2.652, 2.981] |
-| 2014 | -1.175 [-3.998, 1.648] |
-| 2015 | -1.496 [-4.330, 1.337] |
-| 2016 | 0.137 [-2.715, 2.989] |
-| 2017 | -2.607 [-5.443, 0.230] |
-| 2018 | -0.736 [-3.596, 2.125] |
-| 2019 | 1.263 [-1.649, 4.176] |
-| 2023 | -2.917 [-5.943, 0.109] |
-| 2024 | 1.919 [-1.155, 4.993] |
-| 2025 | -1.486 [-4.721, 1.749] |
+| 2001 | 2.788 [-0.014, 5.590] |
+| 2002 | 3.675 [0.871, 6.480] |
+| 2003 | 2.974 [0.177, 5.771] |
+| 2004 | -0.590 [-3.295, 2.115] |
+| 2005 | 1.043 [-1.662, 3.747] |
+| 2006 | -1.187 [-3.897, 1.523] |
+| 2007 | -0.776 [-3.489, 1.938] |
+| 2008 | 4.212 [1.488, 6.937] |
+| 2009 | 8.610 [5.887, 11.332] |
+| 2010 | -0.243 [-2.964, 2.477] |
+| 2011 | -2.531 [-5.256, 0.195] |
+| 2012 | -0.819 [-3.549, 1.911] |
+| 2013 | 0.231 [-2.508, 2.970] |
+| 2014 | -0.579 [-3.323, 2.165] |
+| 2015 | -0.950 [-3.706, 1.805] |
+| 2016 | 0.725 [-2.043, 3.493] |
+| 2017 | -1.842 [-4.596, 0.911] |
+| 2018 | 0.065 [-2.705, 2.835] |
+| 2019 | 2.045 [-0.766, 4.856] |
+| 2023 | -2.017 [-4.912, 0.879] |
+| 2024 | 3.125 [0.188, 6.062] |
+| 2025 | -0.264 [-3.371, 2.844] |
 
 ## Secondary analyses
 
@@ -99,11 +157,11 @@ For log-transformed outcomes, effects below are percentage changes per doubling 
 
 | Outcome | Scale | N | Countries | Years | Within-country effect [95% CI] | Between-country effect [95% CI] |
 | --- | --- | --- | --- | --- | --- | --- |
-| Out-of-pocket share of health expenditure | Percentage points of current health expenditure | 622 | 28 | 2000-2025 | -3.128 [-3.991, -2.265] | -5.664 [-9.457, -1.871] |
-| Hospital beds | Beds per 1,000 people | 610 | 28 | 2000-2025 | 0.249 [0.094, 0.405] | -0.171 [-0.783, 0.442] |
-| Medical doctors | Log outcome | 530 | 28 | 2000-2025 | 7.610 [5.366, 9.902] | 1.795 [-6.588, 10.931] |
-| Nurses and midwives | Log outcome | 522 | 27 | 2000-2025 | 6.161 [3.364, 9.034] | 44.180 [24.793, 66.580] |
-| Treatable mortality | Log outcome | 533 | 26 | 2000-2024 | -1.033 [-3.053, 1.029] | -34.152 [-45.278, -20.764] |
+| Out-of-pocket share of health expenditure | Percentage points of current health expenditure | 666 | 30 | 2000-2025 | -2.830 [-3.638, -2.022] | -5.319 [-8.867, -1.770] |
+| Nurses and midwives | Log outcome | 563 | 29 | 2000-2025 | 5.918 [3.111, 8.803] | 44.595 [26.675, 65.049] |
+| Medical doctors | Log outcome | 573 | 30 | 2000-2025 | 6.322 [4.182, 8.506] | 0.716 [-7.070, 9.154] |
+| Hospital beds | Beds per 1,000 people | 650 | 30 | 2000-2025 | 0.240 [0.093, 0.387] | -0.449 [-0.994, 0.096] |
+| Treatable mortality | Log outcome | 574 | 28 | 2000-2024 | -0.375 [-2.304, 1.592] | -36.205 [-45.559, -25.242] |
 
 ## Notable sensitivity analyses
 
@@ -113,9 +171,9 @@ These models estimate whether defence-spending change predicts health-spending c
 
 | Sensitivity | N | Countries | Focal estimate [95% CI] | Singular fit |
 | --- | --- | --- | --- | --- |
-| One-year lag of defence change | 586 | 28 | 0.369 [-0.294, 1.033] | TRUE |
-| Two-year lag of defence change | 534 | 28 | 0.982 [0.298, 1.665] | TRUE |
-| Three-year lag of defence change | 483 | 28 | -0.068 [-0.871, 0.735] | TRUE |
+| One-year lag of defence change | 626 | 30 | 0.356 [-0.266, 0.978] | TRUE |
+| Two-year lag of defence change | 571 | 30 | 0.846 [0.205, 1.487] | TRUE |
+| Three-year lag of defence change | 517 | 30 | -0.059 [-0.821, 0.702] | TRUE |
 
 ### Other notable sensitivities
 
@@ -123,18 +181,19 @@ The focal estimates below correspond to the defence-change term used by each spe
 
 | Sensitivity | N | Countries | Focal estimate [95% CI] | Singular fit |
 | --- | --- | --- | --- | --- |
-| Three-year cumulative changes with debt at the start of the period | 503 | 28 | 1.415 [0.817, 2.013] | FALSE |
-| Country and year fixed effects | 607 | 28 | 0.855 [0.202, 1.507] |  |
-| Generalized least squares with country-specific AR(1) correlation | 607 | 28 | 0.867 [0.251, 1.484] |  |
-| GEE with country clusters, AR(1) working correlation, and robust standard errors | 607 | 28 | 0.865 [-0.111, 1.841] |  |
-| Absolute percentage-point changes in GDP shares | 586 | 28 | 0.141 [-0.065, 0.348] | TRUE |
-| Current NATO members only | 516 | 23 | 0.358 [-0.294, 1.010] | TRUE |
-| Restore Luxembourg while continuing to exclude Iceland | 630 | 29 | 0.814 [0.212, 1.415] | TRUE |
-| Exclude observations from 2025 | 583 | 28 | 1.325 [0.639, 2.012] | TRUE |
-| Exclude 2008 to 2010 | 526 | 28 | 0.801 [0.166, 1.437] | TRUE |
-| Health and defence changes winsorised at the 1st and 99th percentiles | 607 | 28 | 0.870 [0.319, 1.422] | TRUE |
+| Three-year cumulative changes with debt at the start of the period | 537 | 30 | 1.262 [0.700, 1.823] | FALSE |
+| Country and year fixed effects | 648 | 30 | 0.770 [0.153, 1.386] |  |
+| Generalized least squares with country-specific AR(1) correlation | 648 | 30 | 0.771 [0.182, 1.359] |  |
+| Absolute percentage-point changes in GDP shares | 626 | 30 | 0.112 [-0.072, 0.297] | TRUE |
+| NATO members only | 557 | 25 | 0.351 [-0.262, 0.965] | TRUE |
+| OECD members only | 572 | 25 | 0.728 [0.178, 1.278] | TRUE |
+| Exclude Greece | 625 | 29 | 0.797 [0.195, 1.400] | TRUE |
+| Include 2020 and 2021 COVID years and restore 2022 debt alignment | 738 | 30 | 0.907 [0.307, 1.507] | TRUE |
+| Exclude observations from 2025 | 623 | 30 | 1.152 [0.509, 1.795] | TRUE |
+| Exclude 2008 to 2010 | 561 | 30 | 0.696 [0.083, 1.308] | TRUE |
+| Health and defence changes winsorised at the 1st and 99th percentiles | 648 | 30 | 0.827 [0.294, 1.360] | TRUE |
 
-Across leave-one-country-out analyses, the headline defence coefficient ranged from **0.479 to 1.049**. The full range of lower and upper confidence limits was **-0.137 to 1.708**.
+Across leave-one-country-out analyses, the headline defence coefficient ranged from **0.465 to 0.978**. The full range of lower and upper confidence limits was **-0.135 to 1.613**.
 
 ### Lagged secondary associations
 
@@ -142,11 +201,11 @@ These are within-country model-scale coefficients [95% confidence interval] for 
 
 | Outcome | 1-year lag | 3-year lag | 5-year lag |
 | --- | --- | --- | --- |
-| Out-of-pocket share of health expenditure | -2.588 [-3.499, -1.678] | -1.528 [-2.531, -0.524] | -1.535 [-2.681, -0.389] |
-| Hospital beds | 0.255 [0.090, 0.421] | 0.012 [-0.185, 0.209] | 0.186 [-0.001, 0.373] |
-| Medical doctors | 0.063 [0.040, 0.086] | 0.047 [0.019, 0.075] | 0.034 [0.005, 0.063] |
-| Nurses and midwives | 0.052 [0.024, 0.081] | 0.033 [-0.004, 0.070] | 0.032 [-0.005, 0.069] |
-| Treatable mortality | 0.001 [-0.020, 0.022] | -0.017 [-0.039, 0.004] | -0.012 [-0.033, 0.009] |
+| Out-of-pocket share of health expenditure | -2.314 [-3.162, -1.465] | -1.251 [-2.173, -0.329] | -1.426 [-2.482, -0.369] |
+| Nurses and midwives | 0.049 [0.021, 0.078] | 0.031 [-0.004, 0.065] | 0.027 [-0.007, 0.062] |
+| Medical doctors | 0.051 [0.029, 0.073] | 0.043 [0.017, 0.069] | 0.037 [0.010, 0.064] |
+| Hospital beds | 0.238 [0.083, 0.393] | -0.011 [-0.192, 0.171] | 0.169 [-0.004, 0.342] |
+| Treatable mortality | 0.006 [-0.014, 0.026] | -0.014 [-0.034, 0.007] | -0.006 [-0.027, 0.015] |
 
 ### Change-on-change secondary associations
 
@@ -154,13 +213,13 @@ These sensitivity models relate within-country change in the log2 spending ratio
 
 | Outcome | Same year | 1-year lag | 3-year lag | 5-year lag |
 | --- | --- | --- | --- | --- |
-| Out-of-pocket share of health expenditure | -2.291 [-3.186, -1.396] | 1.180 [0.126, 2.234] | -0.425 [-1.698, 0.848] | 0.115 [-0.878, 1.108] |
-| Hospital beds | -0.014 [-0.113, 0.085] | 0.041 [-0.079, 0.161] | 0.048 [-0.085, 0.182] | -0.026 [-0.142, 0.090] |
-| Medical doctors | 0.015 [-0.004, 0.034] | -0.016 [-0.038, 0.006] | 0.032 [0.006, 0.058] | -0.010 [-0.030, 0.011] |
-| Nurses and midwives | 0.010 [-0.010, 0.031] | 0.008 [-0.017, 0.033] | -0.014 [-0.043, 0.015] | -0.019 [-0.044, 0.007] |
-| Treatable mortality | 0.006 [-0.013, 0.024] | -0.001 [-0.022, 0.020] | 0.008 [-0.015, 0.031] | -0.014 [-0.037, 0.009] |
+| Out-of-pocket share of health expenditure | -1.947 [-2.768, -1.126] | 0.794 [-0.148, 1.736] | -0.269 [-1.380, 0.841] | -0.033 [-0.920, 0.855] |
+| Nurses and midwives | 0.008 [-0.012, 0.028] | 0.014 [-0.010, 0.038] | -0.006 [-0.031, 0.020] | -0.011 [-0.034, 0.012] |
+| Medical doctors | 0.012 [-0.005, 0.029] | -0.016 [-0.036, 0.003] | 0.022 [-0.001, 0.044] | 0.010 [-0.008, 0.028] |
+| Hospital beds | -0.023 [-0.114, 0.068] | 0.055 [-0.053, 0.163] | 0.022 [-0.097, 0.140] | -0.003 [-0.107, 0.101] |
+| Treatable mortality | 0.004 [-0.017, 0.024] | -0.009 [-0.032, 0.014] | 0.019 [-0.005, 0.044] | 0.007 [-0.017, 0.032] |
 
-Across the remaining change-on-change models, 3 of 20 95% confidence intervals excluded zero. Directions and timing varied across outcomes, so these results do not indicate a consistent short-run pattern.
+Across the remaining change-on-change models, 1 of 20 95% confidence intervals excluded zero. Directions and timing varied across outcomes, so these results do not indicate a consistent short-run pattern.
 
 ## Descriptive figures
 
@@ -177,7 +236,7 @@ Across the remaining change-on-change models, 3 of 20 95% confidence intervals e
 - The models are associational and may retain residual confounding or reverse causation.
 - Health, defence, and debt measures share GDP-related denominators, so common economic shocks can create coupled movements.
 - A singular random-intercept fit indicates that the estimated between-country residual variance is effectively zero after included covariates.
-- The GEE sensitivity estimates a population-average association with robust standard errors. With 28 country clusters, sandwich standard errors may still have limited small-sample accuracy.
+- The final GEE estimates a population-average association with robust standard errors. With 30 country clusters, sandwich standard errors may still have limited small-sample accuracy.
 - Secondary analyses are exploratory and span outcomes with different observation schedules and sample sizes.
 - Annual differencing may reduce trend confounding but magnifies measurement error and is poorly suited to intermittently observed outcomes.
 

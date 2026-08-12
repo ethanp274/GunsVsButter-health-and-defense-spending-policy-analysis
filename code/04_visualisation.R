@@ -19,24 +19,13 @@ master_df <- read_csv("processed_data/primary_analysis.csv", na = c(""), show_co
 results_dir <- "results"
 dir.create(results_dir, showWarnings = FALSE)
 
-excluded_primary_codes <- c("ISL", "LUX")
 excluded_analysis_years <- c(2020L, 2021L)
 analysis_end_year <- max(master_df$year, na.rm = TRUE)
 
 plot_master_df <- master_df %>%
   filter(
     year <= analysis_end_year,
-    !code %in% excluded_primary_codes
-  ) %>%
-  mutate(
-    across(
-      c(health_def_ratio, health_pct_gdp, defence_pct_gdp),
-      ~ if_else(
-        year %in% excluded_analysis_years,
-        NA_real_,
-        .x
-      )
-    )
+    !year %in% excluded_analysis_years
   )
 
 
