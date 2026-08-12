@@ -74,12 +74,11 @@ health spending change ~
 Relative health-spending change is expressed as a percentage change. Defence
 change is scaled so its coefficient represents a 10% relative increase.
 
-The fitted country random-intercept variance is currently effectively zero,
-so the headline mixed model is singular. This is reported transparently. The
-sequential model-building sequence ends with a population-average GEE using
-country clusters, AR(1) working correlation, and robust standard errors.
-Country fixed-effects and generalized least-squares AR(1) models remain
-sensitivities.
+The sequential model-building sequence includes random-intercept mixed models
+and ends with a population-average GEE using country clusters, an AR(1)
+working correlation, and robust standard errors. Mixed-model singularity and
+other convergence diagnostics are reported in the generated results. Country
+fixed-effects and generalized least-squares AR(1) models remain sensitivities.
 
 ## Temporal alignment
 
@@ -119,9 +118,6 @@ The current secondary analyses are restricted to:
 - hospital beds;
 - treatable mortality.
 
-Consultation and diagnostic-scan source files are retained for provenance but
-are not included as processed secondary outcomes or modelled variables.
-
 The primary secondary models use within- and between-country components of the
 log2 health-to-defence spending ratio, system type, log2 GDP per capita,
 categorical year effects, and a country random intercept. Sensitivities examine
@@ -140,7 +136,7 @@ The current source inputs are:
 - `raw_data/OECD_gdp_per_cap_updated.csv`
 - `raw_data/IMF_debt_pct_gdp.csv`
 - `raw_data/OECD_beds_per_k.csv`
-- `raw_data/updated_sources_040826/20260731-WHO BEDS .csv`
+- `raw_data/20260731-WHO BEDS .csv`
 - `raw_data/OECD_mds_per_k.csv`
 - `raw_data/OECD_rns_per_k.csv`
 - `raw_data/OECD_oop_pct_health_spend.csv`
@@ -157,9 +153,8 @@ current prices. Missing values remain missing.
 Hospital beds use OECD as the primary source. WHO beds are converted from per
 10,000 to per 1,000 people and used only where the corresponding OECD value is
 missing; both component values and the selected source are retained in the
-processed panel. The consultation CSV supplies the in-person series, while the
-OECD workbook supplies the broader any-setting series. The two consultation
-definitions remain separate and are not used to fill one another.
+processed panel. Consultation and diagnostic-scan extracts are retained only
+as provenance and are not read by the current pipeline.
 
 Other source workbooks and Numbers files under `raw_data/sources/` and
 `raw_data/updated_sources_040826/` are retained for provenance but are not read
@@ -171,6 +166,19 @@ current health expenditure. The workbook
 out-of-pocket payments as a share of GDP, is retained as an optional alternative
 source. The two measures have different denominators and must not be combined
 or used to fill one another's missing observations.
+
+## Data availability and citation
+
+The dataset combines source series published by SIPRI, the OECD, the IMF, and
+WHO. Original source organisations and their underlying series should be
+cited alongside this repository. The raw extracts and provenance files are
+included where available, but third-party licensing and redistribution terms
+apply; this repository does not assert a blanket licence over those data.
+
+The repository was last reviewed and the pipeline was last regenerated on
+12 August 2026. Original source-download dates are not consistently recorded
+in the current provenance files. A repository-level citation record and code
+licence should be added before archival or public release.
 
 ## Running the pipeline
 
@@ -248,21 +256,3 @@ machine-readable outputs; estimates should not be edited manually.
 - Multiple secondary outcomes and lag combinations are exploratory and should
   be interpreted as a pattern of evidence rather than isolated significance
   tests.
-
-## Historical dissertation proposal
-
-The local file
-[MGHL DISSERTATION PROPOSAL DEFENCEHEALTH.docx](<MGHL DISSERTATION PROPOSAL DEFENCEHEALTH.docx>)
-records the original dissertation proposal and remains useful for the broad
-"guns versus butter" motivation and dissertation context.
-
-It is not the current methods specification. In particular, the proposal
-described external conflict exposure, UCDP data, a two-way fixed-effects
-design, and a different set of research questions. Those elements are not the
-implemented headline analysis. The current scripts, this README, the data
-dictionary, and the generated results summary supersede the proposal whenever
-they differ.
-
-## Repository guidance
-
-Practical instructions for future coding agents are in [AGENTS.md](AGENTS.md).

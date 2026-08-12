@@ -23,7 +23,7 @@ are retained for provenance and are not read directly.
 | --- | ---: | --- |
 | `IMF_debt_pct_gdp.csv` | 384 x 78 | Wide IMF general government debt as a share of GDP. |
 | `OECD_beds_per_k.csv` | 1,225 x 40 | Long OECD hospital beds, per 1,000 people. |
-| `updated_sources_040826/20260731-WHO BEDS .csv` | 704 x 34 | Long WHO hospital beds, per 10,000 people; used only to supplement missing OECD values. |
+| `../20260731-WHO BEDS .csv` | 704 x 34 | Long WHO hospital beds, per 10,000 people; used only to supplement missing OECD values. |
 | `OECD_gdp_per_cap_updated.csv` | 913 x 44 | Long OECD GDP per capita in PPP-converted US dollars per person at current prices; updated extract includes Croatia. |
 | `OECD_health_spending_pct_gdp.csv` | 1,488 x 46 | Long OECD government/compulsory health spending as a percentage of GDP. |
 | `OECD_md_consults_per_person.csv` | 957 x 56 | Long OECD in-person medical-doctor consultations per person. |
@@ -140,6 +140,8 @@ to the health-change outcome year.
 Additional source workbooks and Numbers files are retained under
 `raw_data/sources/` and `raw_data/updated_sources_040826/`. They document the
 source downloads and exports used to create or update the current CSV inputs.
-The WHO beds CSV and OECD consultations workbook are direct pipeline inputs.
-The OOP workbook in `updated_sources_040826/` is an explicitly retained
-alternative; the primary OOP input remains `OECD_oop_pct_health_spend.csv`.
+The WHO beds CSV is a direct pipeline input. The OECD consultations workbook
+and diagnostic-scan extracts are provenance-only files; they are not read by
+the current pipeline. The OOP workbook in `updated_sources_040826/` is an
+explicitly retained alternative; the primary OOP input remains
+`OECD_oop_pct_health_spend.csv`.

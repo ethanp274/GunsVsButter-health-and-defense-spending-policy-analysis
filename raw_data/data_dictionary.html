@@ -1,244 +1,104 @@
-<!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="UTF-8">
-            <title>Data Dictionary</title>
-            <style>
-/* From extension vscode.github */
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
-
-.vscode-dark img[src$=\#gh-light-mode-only],
-.vscode-light img[src$=\#gh-dark-mode-only],
-.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
-.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
-	display: none;
-}
-
-</style>
-            
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
-<style>
-            body {
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
-                font-size: 14px;
-                line-height: 1.6;
-            }
-        </style>
-        <style>
-.task-list-item {
-    list-style-type: none;
-}
-
-.task-list-item-checkbox {
-    margin-left: -20px;
-    vertical-align: middle;
-    pointer-events: none;
-}
-</style>
-<style>
-:root {
-  --color-note: #0969da;
-  --color-tip: #1a7f37;
-  --color-warning: #9a6700;
-  --color-severe: #bc4c00;
-  --color-caution: #d1242f;
-  --color-important: #8250df;
-}
-
-</style>
-<style>
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-note: #2f81f7;
-    --color-tip: #3fb950;
-    --color-warning: #d29922;
-    --color-severe: #db6d28;
-    --color-caution: #f85149;
-    --color-important: #a371f7;
-  }
-}
-
-</style>
-<style>
-.markdown-alert {
-  padding: 0.5rem 1rem;
-  margin-bottom: 16px;
-  color: inherit;
-  border-left: .25em solid #888;
-}
-
-.markdown-alert>:first-child {
-  margin-top: 0
-}
-
-.markdown-alert>:last-child {
-  margin-bottom: 0
-}
-
-.markdown-alert .markdown-alert-title {
-  display: flex;
-  font-weight: 500;
-  align-items: center;
-  line-height: 1
-}
-
-.markdown-alert .markdown-alert-title .octicon {
-  margin-right: 0.5rem;
-  display: inline-block;
-  overflow: visible !important;
-  vertical-align: text-bottom;
-  fill: currentColor;
-}
-
-.markdown-alert.markdown-alert-note {
-  border-left-color: var(--color-note);
-}
-
-.markdown-alert.markdown-alert-note .markdown-alert-title {
-  color: var(--color-note);
-}
-
-.markdown-alert.markdown-alert-important {
-  border-left-color: var(--color-important);
-}
-
-.markdown-alert.markdown-alert-important .markdown-alert-title {
-  color: var(--color-important);
-}
-
-.markdown-alert.markdown-alert-warning {
-  border-left-color: var(--color-warning);
-}
-
-.markdown-alert.markdown-alert-warning .markdown-alert-title {
-  color: var(--color-warning);
-}
-
-.markdown-alert.markdown-alert-tip {
-  border-left-color: var(--color-tip);
-}
-
-.markdown-alert.markdown-alert-tip .markdown-alert-title {
-  color: var(--color-tip);
-}
-
-.markdown-alert.markdown-alert-caution {
-  border-left-color: var(--color-caution);
-}
-
-.markdown-alert.markdown-alert-caution .markdown-alert-title {
-  color: var(--color-caution);
-}
-
-</style>
-        
-        </head>
-        <body class="vscode-body vscode-light">
-            <span id="markdown-mermaid" aria-hidden="true" data-config="{&quot;darkModeTheme&quot;:&quot;vscode&quot;,&quot;lightModeTheme&quot;:&quot;vscode&quot;,&quot;maxTextSize&quot;:50000,&quot;clickDrag&quot;:&quot;alt&quot;,&quot;showControls&quot;:&quot;onHoverOrFocus&quot;,&quot;resizable&quot;:true,&quot;maxHeight&quot;:&quot;&quot;}"></span>
-				<h1 id="data-dictionary">Data Dictionary</h1>
+<h1>Data Dictionary</h1>
 <p>Project: Harry Rourke's MGHL thesis
 Prepared by: Ethan Phillips
 Last updated: 5 August 2026</p>
-<h2 id="purpose">Purpose</h2>
+<h2>Purpose</h2>
 <p>The current source inputs are combined by <code>code/01_data_processing.R</code> into a
-31-country panel covering 2000-2025. Source values from 1999 are used only as
+30-country panel covering 2000-2025. Source values from 1999 are used only as
 the prior-year input for the first retained year's changes and debt. The output
-has one row per country-year from 2000 through 2025; source observations that
-are unavailable remain <code>NA</code>.</p>
-<p>The pipeline reads the current CSV files plus the WHO beds CSV and OECD
-consultation workbook under <code>updated_sources_040826/</code>. Other workbooks and
-Numbers files are retained for provenance and are not read directly.</p>
-<h2 id="file-inventory">File inventory</h2>
+has one row per country-year; primary analyses and descriptive outputs exclude
+2020 and 2021, while a dedicated main sensitivity includes them. Source
+observations that are unavailable remain <code>NA</code>.</p>
+<p>The pipeline reads the current CSV files plus the WHO beds CSV. Other
+workbooks, consultation extracts, diagnostic-scan extracts, and Numbers files
+are retained for provenance and are not read directly.</p>
+<h2>File inventory</h2>
 <table>
 <thead>
 <tr>
 <th>File</th>
-<th style="text-align:right">Current shape</th>
+<th align="right">Current shape</th>
 <th>Layout and contents</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>IMF_debt_pct_gdp.csv</code></td>
-<td style="text-align:right">384 x 78</td>
+<td align="right">384 x 78</td>
 <td>Wide IMF general government debt as a share of GDP.</td>
 </tr>
 <tr>
 <td><code>OECD_beds_per_k.csv</code></td>
-<td style="text-align:right">1,225 x 40</td>
+<td align="right">1,225 x 40</td>
 <td>Long OECD hospital beds, per 1,000 people.</td>
 </tr>
 <tr>
-<td><code>updated_sources_040826/20260731-WHO BEDS .csv</code></td>
-<td style="text-align:right">704 x 34</td>
+<td><code>../20260731-WHO BEDS .csv</code></td>
+<td align="right">704 x 34</td>
 <td>Long WHO hospital beds, per 10,000 people; used only to supplement missing OECD values.</td>
 </tr>
 <tr>
-<td><code>OECD_gdp_per_cap.csv</code></td>
-<td style="text-align:right">1,132 x 44</td>
-<td>Long OECD GDP per capita in PPP-converted US dollars per person at current prices.</td>
+<td><code>OECD_gdp_per_cap_updated.csv</code></td>
+<td align="right">913 x 44</td>
+<td>Long OECD GDP per capita in PPP-converted US dollars per person at current prices; updated extract includes Croatia.</td>
 </tr>
 <tr>
 <td><code>OECD_health_spending_pct_gdp.csv</code></td>
-<td style="text-align:right">1,488 x 46</td>
+<td align="right">1,488 x 46</td>
 <td>Long OECD government/compulsory health spending as a percentage of GDP.</td>
 </tr>
 <tr>
 <td><code>OECD_md_consults_per_person.csv</code></td>
-<td style="text-align:right">957 x 56</td>
+<td align="right">957 x 56</td>
 <td>Long OECD in-person medical-doctor consultations per person.</td>
 </tr>
 <tr>
 <td><code>updated_sources_040826/20260731-OECD CONSULTS.xlsx</code></td>
-<td style="text-align:right">31 x 13 on <code>Table</code></td>
+<td align="right">31 x 13 on <code>Table</code></td>
 <td>Wide OECD medical-doctor consultations per person across settings, with years 2015-2024.</td>
 </tr>
 <tr>
 <td><code>OECD_mds_per_k.csv</code></td>
-<td style="text-align:right">1,089 x 40</td>
+<td align="right">1,089 x 40</td>
 <td>Long OECD practicing physicians, per 1,000 people.</td>
 </tr>
 <tr>
 <td><code>OECD_oop_pct_health_spend.csv</code></td>
-<td style="text-align:right">1,447 x 46</td>
+<td align="right">1,447 x 46</td>
 <td>Long OECD household out-of-pocket expenditure as a percentage of current health expenditure.</td>
 </tr>
 <tr>
 <td><code>OECD_rns_per_k.csv</code></td>
-<td style="text-align:right">1,046 x 40</td>
+<td align="right">1,046 x 40</td>
 <td>Long OECD practicing nurses, per 1,000 people.</td>
 </tr>
 <tr>
 <td><code>OECD_scans_per_k.csv</code></td>
-<td style="text-align:right">4,902 x 56</td>
+<td align="right">4,902 x 56</td>
 <td>Long OECD CT, MRI, and PET examinations, per 1,000 people, with multiple provider series.</td>
 </tr>
 <tr>
 <td><code>OECD_treat_mortality_per_100k.csv</code></td>
-<td style="text-align:right">1,048 x 44</td>
+<td align="right">1,048 x 44</td>
 <td>Long OECD treatable mortality, per 100,000 people.</td>
 </tr>
 <tr>
 <td><code>SIPRI_defence_pct_gdp.csv</code></td>
-<td style="text-align:right">192 x 79</td>
+<td align="right">192 x 79</td>
 <td>Wide SIPRI military expenditure as a share of GDP.</td>
 </tr>
 <tr>
 <td><code>oecd_europe_health_systems.csv</code></td>
-<td style="text-align:right">31 x 3</td>
-<td>Authoritative study-country list and health-system classification.</td>
+<td align="right">30 x 3</td>
+<td>Authoritative study-country list and health-system classification; Iceland is not included.</td>
 </tr>
 </tbody>
 </table>
-<h2 id="standard-conventions">Standard conventions</h2>
+<h2>Standard conventions</h2>
 <ul>
-<li>The processed panel is limited to the 31 countries in
+<li>The processed panel is limited to the 30 countries in
 <code>oecd_europe_health_systems.csv</code> and years 2000-2025.</li>
-<li>Source years are read from 1999 through 2025 so that 2000 changes can be
+<li>Source values are read from 1999 through 2025 so that 2000 changes can be
 calculated from 1999-2000. The 1999 working row is not retained in the
 processed output.</li>
 <li>Country matching uses trimmed, upper-case three-letter codes. Country names
@@ -258,14 +118,14 @@ current prices.</li>
 rounded to no more than five decimal places. Proportion variables remain on
 the 0-1 scale.</li>
 </ul>
-<h2 id="study-countries-and-health-systems">Study countries and health systems</h2>
+<h2>Study countries and health systems</h2>
 <ul>
 <li><code>BEV</code>: Beveridge-style health system.</li>
 <li><code>BIS</code>: Bismarck-style health system.</li>
 </ul>
 <p>The country list supplies the canonical <code>country</code>, <code>code</code>, and <code>system</code> fields
 used in the processed dataset.</p>
-<h2 id="processed-variable-mapping">Processed-variable mapping</h2>
+<h2>Processed-variable mapping</h2>
 <table>
 <thead>
 <tr>
@@ -331,34 +191,9 @@ used in the processed dataset.</p>
 <td>Nurses per 1,000 people.</td>
 </tr>
 <tr>
-<td>OECD in-person medical-doctor consultations</td>
-<td><code>in_person_consults_per_person</code></td>
-<td>In-person consultations per person (<code>CONSULTATION_TYPE = CIP</code>). Descriptive panel variable; not currently modelled.</td>
-</tr>
-<tr>
-<td>OECD medical-doctor consultations across settings</td>
-<td><code>any_consults_per_person</code></td>
-<td>Broader consultations-per-person series from the 2015-2024 workbook. Kept separate from the in-person series and not currently modelled.</td>
-</tr>
-<tr>
 <td>OECD household out-of-pocket expenditure</td>
 <td><code>oop_share_health_spend</code></td>
 <td>Household out-of-pocket payments as a proportion of current health expenditure; source percentage divided by 100.</td>
-</tr>
-<tr>
-<td>OECD CT examinations, total provider</td>
-<td><code>ct_scans_per_thou</code></td>
-<td>Examinations per 1,000 people. Descriptive panel variable; not currently modelled.</td>
-</tr>
-<tr>
-<td>OECD MRI examinations, total provider</td>
-<td><code>mri_scans_per_thou</code></td>
-<td>Examinations per 1,000 people. Descriptive panel variable; not currently modelled.</td>
-</tr>
-<tr>
-<td>OECD CT plus MRI examinations, total provider</td>
-<td><code>ct_mri_scans_per_thou</code></td>
-<td>Sum of available CT and MRI examinations per 1,000 people; missing when both components are missing. PET is excluded.</td>
 </tr>
 <tr>
 <td>OECD treatable mortality</td>
@@ -370,7 +205,7 @@ used in the processed dataset.</p>
 <p>Life expectancy, UHC service coverage, premature non-communicable disease
 mortality, avoidable mortality, and preventable mortality are not included in
 the revised processed dataset or analyses.</p>
-<h3 id="optional-alternative-out-of-pocket-measure">Optional alternative out-of-pocket measure</h3>
+<h3>Optional alternative out-of-pocket measure</h3>
 <p><code>updated_sources_040826/02082026-OECD OOP.xlsx</code> reports household
 out-of-pocket payments as a percentage of GDP. It is retained for provenance
 and as an optional alternative analysis measure, but it is not read by the
@@ -379,7 +214,7 @@ separately as <code>oop_pct_gdp</code>, divided by 100 to form a proportion.</p>
 <p>The optional GDP-denominator measure must not be combined with
 <code>oop_share_health_spend</code> or used to fill its missing observations. The two
 series answer different questions because their denominators differ.</p>
-<h2 id="derived-variables">Derived variables</h2>
+<h2>Derived variables</h2>
 <p>The processing script also calculates:</p>
 <ul>
 <li><code>change_def_gdp</code>: relative year-on-year change in <code>defence_pct_gdp</code>.</li>
@@ -397,29 +232,24 @@ spending is missing or defence spending is not positive.</p>
 <p>Previous-year debt used for the main moderation analysis is stored explicitly
 as <code>previous_government_debt_pct_gdp</code>, so its timing remains explicit relative
 to the health-change outcome year.</p>
-<h2 id="coverage-limitations">Coverage limitations</h2>
+<h2>Coverage limitations</h2>
 <ul>
-<li>The clean panel remains a complete 806-row country-year framework even when
+<li>The clean panel remains a complete 780-row country-year framework even when
 source indicators are unavailable.</li>
 <li>The 1999 source year is used only for first-year change and debt
 calculations; it is not included as a processed panel year.</li>
 <li>OECD indicator coverage differs across countries and years. GDP per capita,
 beds, nurses, scans, and treatable mortality therefore contain some <code>NA</code>
 values in the panel. WHO adds hospital-bed values only where OECD is missing.</li>
-<li>The consultation definitions are not interchangeable. The in-person series
-has broader historical coverage; the any-setting workbook covers 2015-2024.</li>
-<li>Diagnostic-scan inputs contain CT, MRI, and PET series and multiple provider
-types. Processing retains only total-provider CT and MRI; PET is excluded.</li>
+<li>Consultation and diagnostic-scan inputs are retained as provenance only and
+are not part of the revised processed dataset or analyses.</li>
 </ul>
-<h2 id="source-provenance">Source provenance</h2>
+<h2>Source provenance</h2>
 <p>Additional source workbooks and Numbers files are retained under
 <code>raw_data/sources/</code> and <code>raw_data/updated_sources_040826/</code>. They document the
 source downloads and exports used to create or update the current CSV inputs.
-The WHO beds CSV and OECD consultations workbook are direct pipeline inputs.
-The OOP workbook in <code>updated_sources_040826/</code> is an explicitly retained
-alternative; the primary OOP input remains <code>OECD_oop_pct_health_spend.csv</code>.</p>
-
-            
-            
-        </body>
-        </html>
+The WHO beds CSV is a direct pipeline input. The OECD consultations workbook
+and diagnostic-scan extracts are provenance-only files; they are not read by
+the current pipeline. The OOP workbook in <code>updated_sources_040826/</code> is an
+explicitly retained alternative; the primary OOP input remains
+<code>OECD_oop_pct_health_spend.csv</code>.</p>
