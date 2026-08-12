@@ -1,9 +1,12 @@
+# GIT IGNORE
+
+## Data 
 ./raw_data/*
 ./processed_data/*
 ./NewData_270726/*
 ./deprecated/*
 
-
+## Data and output
 *.docx
 *.pdf
 *.xlsx
@@ -13,6 +16,15 @@
 *.zip
 *.txt
 *.numbers
-.Rproj.user
+
+## Agent files
+.codex_tmp
 .positai
+.agents
+
+## R Studio files
+.Rproj.user
+.RData
+.Rhistory
+
 
