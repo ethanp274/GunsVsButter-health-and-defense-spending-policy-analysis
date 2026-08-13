@@ -26,6 +26,7 @@ are retained for provenance and are not read directly.
 | `../20260731-WHO BEDS .csv` | 704 x 34 | Long WHO hospital beds, per 10,000 people; used only to supplement missing OECD values. |
 | `OECD_gdp_per_cap_updated.csv` | 913 x 44 | Long OECD GDP per capita in PPP-converted US dollars per person at current prices; updated extract includes Croatia. |
 | `OECD_health_spending_pct_gdp.csv` | 1,488 x 46 | Long OECD government/compulsory health spending as a percentage of GDP. |
+| `WHO_missing_health_spending_pct_gdp.csv` | 8 x 29 | Wide WHO government health spending as a percentage of GDP for countries with missing OECD values; used as a fill source rather than a replacement for OECD. |
 | `OECD_md_consults_per_person.csv` | 957 x 56 | Long OECD in-person medical-doctor consultations per person. |
 | `updated_sources_040826/20260731-OECD CONSULTS.xlsx` | 31 x 13 on `Table` | Wide OECD medical-doctor consultations per person across settings, with years 2015-2024. |
 | `OECD_mds_per_k.csv` | 1,089 x 40 | Long OECD practicing physicians, per 1,000 people. |
@@ -50,6 +51,9 @@ are retained for provenance and are not read directly.
   interpolate values.
 - OECD is the primary hospital-bed source. WHO values fill only country-years
   where OECD is missing; WHO values never overwrite OECD observations.
+- Health spending uses OECD as the primary source, but the WHO extract
+  `WHO_missing_health_spending_pct_gdp.csv` is used to fill country-years with
+  no OECD value. WHO values never overwrite an available OECD observation.
 - Health spending, defence spending, the out-of-pocket share of current health
   expenditure, and government debt are stored as proportions. For example,
   `0.05` means 5%.
@@ -73,7 +77,7 @@ used in the processed dataset.
 | Source series | Clean column | Unit and treatment |
 | --- | --- | --- |
 | SIPRI military expenditure as percentage of GDP | `defence_pct_gdp` | Proportion of GDP; source is already stored as a proportion. |
-| OECD government/compulsory health expenditure as percentage of GDP | `health_pct_gdp` | Proportion of GDP; source percentage divided by 100. |
+| OECD government/compulsory health expenditure as percentage of GDP | `health_pct_gdp` | Proportion of GDP; OECD value used where available, otherwise WHO fill value from `WHO_missing_health_spending_pct_gdp.csv`, both divided by 100. |
 | OECD GDP per capita, PPP converted | `gdp_percap` | PPP-converted US dollars per person at current prices. |
 | IMF general government debt | `government_debt_pct_gdp` | Proportion of GDP; source is already stored as a proportion. |
 | Previous-year IMF general government debt | `previous_government_debt_pct_gdp` | Current year's `t - 1` debt level; 2000 uses the 1999 source value. |

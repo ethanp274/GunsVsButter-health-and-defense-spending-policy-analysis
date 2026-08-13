@@ -204,9 +204,9 @@ main_equations <- tibble(
   equation = c(
     "$\\Delta H_{it}=\\beta_0+\\beta_1\\Delta D_{it}+\\epsilon_{it}$",
     "$\\Delta H_{it}=\\beta_0+\\beta_1\\Delta D_{it}+u_i+\\epsilon_{it}$",
-    "$\\Delta H_{it}=\\beta_0+\\beta_1\\Delta D_{it}+\\beta_2(\\Delta D_{it}\\times S_i)+u_i+\\epsilon_{it}$",
-    "$\\Delta H_{it}=\\beta_0+\\beta_1\\Delta D_{it}+\\beta_2(\\Delta D_{it}\\times S_i)+\\beta_3B_{i,t-1}+\\beta_4(\\Delta D_{it}\\times B_{i,t-1})+u_i+\\epsilon_{it}$",
-    "$\\Delta H_{it}=\\beta_0+\\beta_1\\Delta D_{it}+\\beta_2(\\Delta D_{it}\\times S_i)+\\beta_3B_{i,t-1}+\\beta_4(\\Delta D_{it}\\times B_{i,t-1})+\\beta_5\\log_2(GDPpc_{it})+\\gamma_t+u_i+\\epsilon_{it}$"
+    "$\\Delta H_{it}=\\beta_0+\\beta_1\\Delta D_{it}+\\beta_2S_i+\\beta_3(\\Delta D_{it}\\times S_i)+u_i+\\epsilon_{it}$",
+    "$\\Delta H_{it}=\\beta_0+\\beta_1\\Delta D_{it}+\\beta_2S_i+\\beta_3(\\Delta D_{it}\\times S_i)+\\beta_4B_{i,t-1}+\\beta_5(\\Delta D_{it}\\times B_{i,t-1})+u_i+\\epsilon_{it}$",
+    "$\\Delta H_{it}=\\beta_0+\\beta_1\\Delta D_{it}+\\beta_2S_i+\\beta_3(\\Delta D_{it}\\times S_i)+\\beta_4B_{i,t-1}+\\beta_5(\\Delta D_{it}\\times B_{i,t-1})+\\beta_6\\log_2(GDPpc_{it})+\\gamma_t+u_i+\\epsilon_{it}$"
   )
 )
 
@@ -225,6 +225,7 @@ main_model_table <- main_overview %>%
 # Show focal coefficients without filling the report with year dummies
 main_focal_terms <- c(
   "defence_change_10pct",
+  "systemBIS",
   "previous_debt_10pp_c",
   "log2_gdp_percap_c",
   "defence_change_10pct:systemBIS",
@@ -332,6 +333,7 @@ sensitivity_term_map <- tribble(
   "cumulative_3_year_change", "defence_change_3yr_10pct", "defence_change_3yr_10pct:systemBIS",
   "country_fixed_effects", "defence_change_10pct", "defence_change_10pct:systemBIS",
   "gls_ar1", "defence_change_10pct", "defence_change_10pct:systemBIS",
+  "gee_ar1", "defence_change_10pct", "defence_change_10pct:systemBIS",
   "absolute_percentage_point_changes", "defence_change_pp", "defence_change_pp:systemBIS",
   "nato_members_only", "defence_change_10pct", "defence_change_10pct:systemBIS",
   "oecd_members_only", "defence_change_10pct", "defence_change_10pct:systemBIS",
@@ -651,6 +653,11 @@ report_lines <- c(
     "- In Beveridge countries at average previous-year debt, a 10% relative increase in defence spending was associated with a **",
     get_main_term("defence_change_10pct"),
     "** percentage-point relative change in health spending."
+  ),
+  paste0(
+    "- The Bismarck-system fixed effect was **",
+    get_main_term("systemBIS"),
+    "**."
   ),
   paste0(
     "- The defence-change slope difference for Bismarck systems was **",

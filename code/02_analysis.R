@@ -135,7 +135,7 @@ main_model_2 <- lmer(
 
 main_model_3 <- lmer(
   health_change_percent ~
-    defence_change_10pct + defence_change_10pct:system +
+    defence_change_10pct * system +
     (1 | country),
   data = main_data,
   REML = FALSE
@@ -143,7 +143,7 @@ main_model_3 <- lmer(
 
 main_model_4 <- lmer(
   health_change_percent ~
-    defence_change_10pct + defence_change_10pct:system +
+    defence_change_10pct * system +
     defence_change_10pct * previous_debt_10pp_c +
     (1 | country),
   data = main_data,
@@ -152,7 +152,7 @@ main_model_4 <- lmer(
 
 main_model_5 <- lmer(
   health_change_percent ~
-    defence_change_10pct + defence_change_10pct:system +
+    defence_change_10pct * system +
     defence_change_10pct * previous_debt_10pp_c +
     log2_gdp_percap_c +
     year_factor +

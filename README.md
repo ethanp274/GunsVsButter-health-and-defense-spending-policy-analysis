@@ -139,6 +139,7 @@ The current source inputs are:
 
 - `raw_data/SIPRI_defence_pct_gdp.csv`
 - `raw_data/OECD_health_spending_pct_gdp.csv`
+- `raw_data/WHO_missing_health_spending_pct_gdp.csv`
 - `raw_data/OECD_gdp_per_cap_updated.csv`
 - `raw_data/IMF_debt_pct_gdp.csv`
 - `raw_data/OECD_beds_per_k.csv`
@@ -156,11 +157,14 @@ interpretations. Numeric output columns are rounded to no more than five
 decimal places. GDP per capita is PPP-converted OECD US dollars per person at
 current prices. Missing values remain missing.
 
-Hospital beds use OECD as the primary source. WHO beds are converted from per
-10,000 to per 1,000 people and used only where the corresponding OECD value is
-missing; both component values and the selected source are retained in the
-processed panel. Consultation and diagnostic-scan extracts are retained only
-as provenance and are not read by the current pipeline.
+Health spending uses OECD as the primary source. The WHO extract
+`raw_data/WHO_missing_health_spending_pct_gdp.csv` is used only to fill
+country-years where the OECD series is missing, and it never overwrites an
+existing OECD observation. WHO hospital beds are converted from per 10,000 to
+per 1,000 people and used only where the corresponding OECD value is missing;
+both component values and the selected source are retained in the processed
+panel. Consultation and diagnostic-scan extracts are retained only as
+provenance and are not read by the current pipeline.
 
 Other source workbooks and Numbers files under `raw_data/sources/` and
 `raw_data/updated_sources_040826/` are retained for provenance but are not read

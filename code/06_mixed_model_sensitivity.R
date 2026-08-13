@@ -69,7 +69,7 @@ main_data <- primary_df[complete.cases(primary_df[main_required_vars]), ] %>%
   droplevels()
 
 formula_main <- health_change_percent ~
-  defence_change_10pct + defence_change_10pct:system +
+  defence_change_10pct * system +
   defence_change_10pct * previous_debt_10pp_c +
   log2_gdp_percap_c +
   year_factor +

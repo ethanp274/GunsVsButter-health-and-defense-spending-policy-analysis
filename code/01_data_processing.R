@@ -34,6 +34,10 @@ read_source_csv <- function(path) {
 
 defence_raw <- read_source_csv("raw_data/SIPRI_defence_pct_gdp.csv")
 health_raw <- read_source_csv("raw_data/OECD_health_spending_pct_gdp.csv")
+health_who_raw <- read_source_csv(
+  "raw_data/WHO_missing_health_spending_pct_gdp.csv"
+) %>%
+  rename(code = Code)
 gdp_percap_raw <- read_source_csv(
   "raw_data/OECD_gdp_per_cap_updated.csv"
 )
@@ -193,8 +197,9 @@ debt_df <- reshape_wide_country_year(
 
 
 # Prepare government/compulsory health spending as a proportion of GDP.
-# The OECD source reports percentage points, so 7.0 becomes 0.07.
-health_df <- standardise_oecd_rows(
+# OECD is the primary source; the WHO extract fills country-years with no
+# OECD value, while preserving OECD observations where both are available.
+health_oecd_df <- standardise_oecd_rows(
   health_raw,
   "OECD health-spending data"
 ) %>%
@@ -205,8 +210,26 @@ health_df <- standardise_oecd_rows(
   transmute(
     code,
     year,
-    health_pct_gdp = value / 100
+    health_pct_gdp_oecd = value / 100
   )
+
+health_who_df <- reshape_wide_country_year(
+  health_who_raw,
+  "WHO health-spending data"
+) %>%
+  filter(code %in% study_codes, year %in% source_years) %>%
+  transmute(
+    code,
+    year,
+    health_pct_gdp_who = value / 100
+  )
+
+health_df <- health_oecd_df %>%
+  full_join(health_who_df, by = c("code", "year")) %>%
+  mutate(
+    health_pct_gdp = coalesce(health_pct_gdp_oecd, health_pct_gdp_who)
+  ) %>%
+  select(code, year, health_pct_gdp)
 
 
 # Prepare OECD GDP per capita. The source is PPP-converted US dollars per
@@ -363,7 +386,9 @@ check_unique_keys <- function(data, source_name) {
 }
 
 check_unique_keys(defence_df, "SIPRI defence data")
-check_unique_keys(health_df, "OECD health-spending data")
+check_unique_keys(health_oecd_df, "OECD health-spending data")
+check_unique_keys(health_who_df, "WHO health-spending data")
+check_unique_keys(health_df, "Combined health-spending data")
 check_unique_keys(gdp_percap_df, "OECD GDP-per-capita data")
 check_unique_keys(debt_df, "IMF government-debt data")
 check_unique_keys(beds_oecd_df, "OECD hospital-bed data")
