@@ -181,6 +181,8 @@ cited alongside this repository. The raw extracts and provenance files are
 included where available, but third-party licensing and redistribution terms
 apply; this repository does not assert a blanket licence over those data.
 
+This pipeline was edited with assistance from GPT-5.6 Luna (OpenAI) and MAI-Code-1.1-Flash (Microsoft).
+
 The repository was last reviewed and the pipeline was last regenerated on
 12 August 2026. Original source-download dates are not consistently recorded
 in the current provenance files. A repository-level citation record and code

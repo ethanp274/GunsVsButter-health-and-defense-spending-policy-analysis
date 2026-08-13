@@ -34,7 +34,9 @@ required_files <- c(
   "main_leave_one_country_out.csv",
   "secondary_sensitivity_results.csv",
   "health_def_ratio_timeseries.png",
-  "system_avg_spending_pct_gdp_timeseries.png"
+  "system_avg_spending_pct_gdp_timeseries.png",
+  "main_model_forest_plot.png",
+  "main_interaction_slopes_plot.png"
 )
 
 missing_files <- required_files[
@@ -673,6 +675,12 @@ report_lines <- c(
   "### Conditional defence slopes",
   "",
   markdown_table(main_slope_table),
+  "",
+  "### Model-output figures",
+  "",
+  "![Headline model forest plot](main_model_forest_plot.png)",
+  "",
+  "![Interaction slopes plot](main_interaction_slopes_plot.png)",
   "",
   "The GEE is retained as a robustness check in the sensitivity analyses rather than as a headline main model in the sequential sequence.",
   "",

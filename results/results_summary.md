@@ -107,6 +107,12 @@ Estimates are shown as coefficient [95% confidence interval]. Year-dummy coeffic
 | BEV | 75% | 75.76 | 0.888 [0.274, 1.501] |
 | BIS | 75% | 75.76 | 0.667 [0.062, 1.273] |
 
+### Model-output figures
+
+![Headline model forest plot](main_model_forest_plot.png)
+
+![Interaction slopes plot](main_interaction_slopes_plot.png)
+
 The GEE is retained as a robustness check in the sensitivity analyses rather than as a headline main model in the sequential sequence.
 
 ### Categorical year effects
