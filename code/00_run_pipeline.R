@@ -1,8 +1,10 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # RUN THE COMPLETE HEALTH AND DEFENCE SPENDING PIPELINE
 # Harry Rourke & Ethan Phillips
-# Last updated: 2026-08-05
-# Final panel years: 2000-2025; 1999 is read only for first-year changes/debt
+# Last updated: 2026-08-13
+# Core analysis years: 2000-2025; 1999 is read only for first-year changes/debt
+# Headline sequence: pooled -> random-intercept -> moderation -> fully adjusted
+# GEE and optimizer diagnostics remain sensitivity checks, not routine pipeline steps
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Run this script from the repository root:

@@ -1,7 +1,8 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # VISUALISATION OF HEALTH AND DEFENSE SPENDING TRADEOFF
 # Harry Rourke & Ethan Phillips
-# Last updated: 2026-08-05
+# Last updated: 2026-08-13
+# Figures use the retained primary-analysis panel excluding 2020 and 2021
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Load packages

@@ -1,7 +1,9 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # SENSITIVITY ANALYSES OF HEALTH AND DEFENCE SPENDING
 # Harry Rourke & Ethan Phillips
-# Last updated: 2026-08-05
+# Last updated: 2026-08-13
+# Includes lagged defence models, country and residual structures, sample filters,
+# debt/specification checks, and the population-average GEE robustness check
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # This script is independent of 02_analysis.R and can be run from a fresh session.

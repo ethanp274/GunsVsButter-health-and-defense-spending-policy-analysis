@@ -60,7 +60,7 @@ The primary analysis:
 - uses previous-year public debt, centred and scaled per 10 percentage points
   of GDP, as a moderator of defence-spending change.
 
-The fully adjusted model is:
+The headline model is the fully adjusted mixed model:
 
 ```text
 health spending change ~
@@ -74,11 +74,14 @@ health spending change ~
 Relative health-spending change is expressed as a percentage change. Defence
 change is scaled so its coefficient represents a 10% relative increase.
 
-The sequential model-building sequence includes random-intercept mixed models
-and ends with a population-average GEE using country clusters, an AR(1)
-working correlation, and robust standard errors. Mixed-model singularity and
-other convergence diagnostics are reported in the generated results. Country
-fixed-effects and generalized least-squares AR(1) models remain sensitivities.
+The main model sequence is five staged specifications: pooled, country
+random-intercept, health-system moderation, debt moderation, and the fully
+adjusted model above. The GEE is retained as a robustness check rather than a
+headline main-model specification. Country fixed-effects models and GLS/AR(1)
+specifications remain sensitivity analyses. A separate one-off optimizer and
+convergence check was also run to confirm that the observed mixed-model
+singularity was not an artefact of default `lme4` settings or a poorly chosen
+optimisation path; it is not incorporated into the standard pipeline.
 
 ## Temporal alignment
 
@@ -104,9 +107,12 @@ changes from 2002 to 2003, the one-year lag model uses debt from 2002.
 The sensitivity script tests one-, two-, and three-year defence lags. It also
 tests exclusion of Greece, inclusion of COVID years 2020 and 2021 with the
 corresponding 2022 debt alignment, NATO-only and OECD-only samples, alternative
-debt specifications, country and residual
-structures, absolute changes, cumulative changes, historical NATO membership,
-and influential observations.
+debt specifications, country and residual structures, absolute changes,
+cumulative changes, historical NATO membership, and influential observations.
+A separate one-off optimizer-sensitivity analysis was used to check a range of
+`lme4` optimizer choices, starting values, and convergence tolerances for
+model-rigour purposes; this check is not part of the routine analysis
+pipeline.
 
 ## Secondary outcomes
 
@@ -188,15 +194,22 @@ Run the complete workflow from the repository root:
 Rscript code/00_run_pipeline.R
 ```
 
-The master script runs every stage in a fresh R session and stops if a stage
-fails. At startup, it checks the full package list below and installs any
-missing packages from CRAN:
+The master script runs the core analysis workflow in a fresh R session and
+stops if a stage fails. At startup, it checks the full package list below and
+installs any missing packages from CRAN. The standard workflow includes the
+five core stages below and intentionally excludes the one-off optimizer check
+used only for model-diagnostics rigour:
 
 1. `code/01_data_processing.R`
 2. `code/02_analysis.R`
 3. `code/03_sensitivity_analyses.R`
 4. `code/04_visualisation.R`
 5. `code/05_results_summary.R`
+
+The auxiliary script `code/06_mixed_model_sensitivity.R` is a separate,
+non-routine robustness check for optimizer and convergence settings. It is kept
+outside the standard pipeline so future runs remain reproducible and
+stable.
 
 Required R packages are:
 
@@ -226,12 +239,16 @@ The downstream stages write machine-readable model summaries, diagnostics,
 sensitivity results, and figures under `results/`.
 
 The generated report also includes a country-level table of primary-analysis
-panel years,
-included complete-case observations, excluded observations, and the specific
-included years: `results/main_country_sample_counts.csv`.
+panel years, included complete-case observations, excluded observations, and
+the specific included years: `results/main_country_sample_counts.csv`.
 
 It also includes generated Table 1 descriptive statistics by health-system type
 and overall: `results/table1_descriptive_statistics.csv`.
+
+The one-off optimizer check produces supplementary files in `results/` for
+quality assurance, including the mixed-model optimiser comparisons and fixed
+effects under alternative settings, but these are not part of the routine
+analysis pipeline.
 
 The main human-readable output is:
 
