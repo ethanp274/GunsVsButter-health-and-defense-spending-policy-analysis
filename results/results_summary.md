@@ -1,6 +1,6 @@
 # Health and Defence Spending: Results Summary
 
-Generated: 2026-08-12
+Generated: 2026-08-13
 
 > These analyses estimate associations and do not establish causation.
 
@@ -73,43 +73,41 @@ The headline model uses categorical year effects and a country random intercept.
 | --- | --- | --- | --- | --- | --- |
 | Pooled unadjusted association | $\Delta H_{it}=\beta_0+\beta_1\Delta D_{it}+\epsilon_{it}$ | 648 | 30 | 2000-2025 |  |
 | Country random intercept | $\Delta H_{it}=\beta_0+\beta_1\Delta D_{it}+u_i+\epsilon_{it}$ | 648 | 30 | 2000-2025 | TRUE |
-| Country random intercept and health-system moderation | $\Delta H_{it}=\beta_0+\beta_1\Delta D_{it}+\beta_2S_i+\beta_3(\Delta D_{it}\times S_i)+u_i+\epsilon_{it}$ | 648 | 30 | 2000-2025 | TRUE |
-| Health-system and public-debt moderation | $\Delta H_{it}=\beta_0+\beta_1\Delta D_{it}+\beta_2S_i+\beta_3(\Delta D_{it}\times S_i)+\beta_4B_{i,t-1}+\beta_5(\Delta D_{it}\times B_{i,t-1})+u_i+\epsilon_{it}$ | 648 | 30 | 2000-2025 | TRUE |
-| Fully adjusted with GDP per capita and year effects | $\Delta H_{it}=\beta_0+\beta_1\Delta D_{it}+\beta_2S_i+\beta_3(\Delta D_{it}\times S_i)+\beta_4B_{i,t-1}+\beta_5(\Delta D_{it}\times B_{i,t-1})+\beta_6\log_2(GDPpc_{it})+\gamma_t+u_i+\epsilon_{it}$ | 648 | 30 | 2000-2025 | TRUE |
-| Final population-average GEE with country clusters and AR(1) working correlation | $E(\Delta H_{it})=\beta_0+\beta_1\Delta D_{it}+\beta_2S_i+\beta_3(\Delta D_{it}\times S_i)+\beta_4B_{i,t-1}+\beta_5(\Delta D_{it}\times B_{i,t-1})+\beta_6\log_2(GDPpc_{it})+\gamma_t+\epsilon_{it}$ (country-clustered AR(1) working correlation) | 648 | 30 | 2000-2025 |  |
+| Country random intercept and health-system moderation | $\Delta H_{it}=\beta_0+\beta_1\Delta D_{it}+\beta_2(\Delta D_{it}\times S_i)+u_i+\epsilon_{it}$ | 648 | 30 | 2000-2025 | TRUE |
+| Health-system and public-debt moderation | $\Delta H_{it}=\beta_0+\beta_1\Delta D_{it}+\beta_2(\Delta D_{it}\times S_i)+\beta_3B_{i,t-1}+\beta_4(\Delta D_{it}\times B_{i,t-1})+u_i+\epsilon_{it}$ | 648 | 30 | 2000-2025 | TRUE |
+| Fully adjusted with GDP per capita and year effects | $\Delta H_{it}=\beta_0+\beta_1\Delta D_{it}+\beta_2(\Delta D_{it}\times S_i)+\beta_3B_{i,t-1}+\beta_4(\Delta D_{it}\times B_{i,t-1})+\beta_5\log_2(GDPpc_{it})+\gamma_t+u_i+\epsilon_{it}$ | 648 | 30 | 2000-2025 | TRUE |
 
 Here, $\Delta H$ is relative health-spending change, $\Delta D$ is relative defence-spending change, $S$ is health-system type, $B_{i,t-1}$ is previous-year public debt as a share of GDP, $\gamma_t$ denotes categorical year effects, and $u_i$ is the country random intercept.
 
 ### Key headline findings
 
-- In Beveridge countries at average previous-year debt, a 10% relative increase in defence spending was associated with a **0.772 [0.197, 1.346]** percentage-point relative change in health spending.
-- The defence-change slope difference for Bismarck systems was **-0.146 [-0.857, 0.564]**.
-- The defence-by-previous-year-debt interaction was **0.044 [-0.066, 0.153]**.
-- The coefficient for a doubling of GDP per capita was **0.325 [-0.316, 0.966]**.
+- In Beveridge countries at average previous-year debt, a 10% relative increase in defence spending was associated with a **0.821 [0.250, 1.391]** percentage-point relative change in health spending.
+- The defence-change slope difference for Bismarck systems was **-0.220 [-0.924, 0.483]**.
+- The defence-by-previous-year-debt interaction was **0.037 [-0.072, 0.146]**.
+- The coefficient for a doubling of GDP per capita was **0.401 [-0.232, 1.033]**.
 
 Estimates are shown as coefficient [95% confidence interval]. Year-dummy coefficients are omitted from the compact table.
 
-| Term | model_1_unadjusted | model_2_country_random_intercept | model_3_system_moderation | model_4_debt_moderation | model_5_fully_adjusted | model_6_population_average_gee |
-| --- | --- | --- | --- | --- | --- | --- |
-| Defence change, per 10% relative increase | 0.883 [0.515, 1.252] | 0.883 [0.516, 1.250] | 1.166 [0.567, 1.764] | 1.037 [0.439, 1.634] | 0.772 [0.197, 1.346] | 0.772 [-0.121, 1.664] |
-| Bismarck-style health system |  |  | -0.318 [-1.183, 0.546] | -0.819 [-1.718, 0.080] | -0.557 [-1.376, 0.262] | -0.558 [-1.157, 0.042] |
-| Defence change x Bismarck system |  |  | -0.448 [-1.205, 0.310] | -0.190 [-0.976, 0.595] | -0.146 [-0.857, 0.564] | -0.145 [-1.150, 0.860] |
-| Previous-year public debt, per 10 percentage points of GDP |  |  |  | -0.225 [-0.355, -0.095] | -0.135 [-0.259, -0.011] | -0.135 [-0.230, -0.041] |
-| Defence change x previous-year public debt |  |  |  | 0.076 [-0.042, 0.194] | 0.044 [-0.066, 0.153] | 0.044 [-0.080, 0.168] |
-| GDP per capita, per doubling |  |  |  |  | 0.325 [-0.316, 0.966] | 0.325 [-0.421, 1.071] |
+| Term | model_1_unadjusted | model_2_country_random_intercept | model_3_system_moderation | model_4_debt_moderation | model_5_fully_adjusted |
+| --- | --- | --- | --- | --- | --- |
+| Defence change, per 10% relative increase | 0.883 [0.515, 1.252] | 0.883 [0.516, 1.250] | 1.182 [0.585, 1.780] | 1.096 [0.500, 1.691] | 0.821 [0.250, 1.391] |
+| Defence change x Bismarck system |  |  | -0.478 [-1.231, 0.275] | -0.297 [-1.075, 0.482] | -0.220 [-0.924, 0.483] |
+| Previous-year public debt, per 10 percentage points of GDP |  |  |  | -0.190 [-0.315, -0.065] | -0.109 [-0.227, 0.008] |
+| Defence change x previous-year public debt |  |  |  | 0.067 [-0.051, 0.185] | 0.037 [-0.072, 0.146] |
+| GDP per capita, per doubling |  |  |  |  | 0.401 [-0.232, 1.033] |
 
 ### Conditional defence slopes
 
 | System | Debt-level percentile | Previous-year debt (% GDP) | Defence slope [95% CI] |
 | --- | --- | --- | --- |
-| BEV | 25% | 37.00 | 0.681 [0.072, 1.290] |
-| BIS | 25% | 37.00 | 0.534 [0.087, 0.982] |
-| BEV | 50% | 50.10 | 0.738 [0.161, 1.315] |
-| BIS | 50% | 50.10 | 0.592 [0.126, 1.057] |
-| BEV | 75% | 75.76 | 0.850 [0.235, 1.465] |
-| BIS | 75% | 75.76 | 0.704 [0.097, 1.311] |
+| BEV | 25% | 37.00 | 0.743 [0.140, 1.346] |
+| BIS | 25% | 37.00 | 0.523 [0.075, 0.970] |
+| BEV | 50% | 50.10 | 0.792 [0.219, 1.364] |
+| BIS | 50% | 50.10 | 0.572 [0.106, 1.037] |
+| BEV | 75% | 75.76 | 0.888 [0.274, 1.501] |
+| BIS | 75% | 75.76 | 0.667 [0.062, 1.273] |
 
-The final model in the sequential sequence is a population-average GEE using the same fully adjusted fixed-effects terms, country clusters, an AR(1) working correlation, and sandwich standard errors. It is reported as a main model rather than as a robustness sensitivity.
+The GEE is retained as a robustness check in the sensitivity analyses rather than as a headline main model in the sequential sequence.
 
 ### Categorical year effects
 
@@ -118,28 +116,28 @@ These coefficients are the common year-level differences in relative health-spen
 | Year | Effect [95% CI] |
 | --- | --- |
 | 2000 | 0.000 (reference) |
-| 2001 | 2.788 [-0.014, 5.590] |
-| 2002 | 3.675 [0.871, 6.480] |
-| 2003 | 2.974 [0.177, 5.771] |
-| 2004 | -0.590 [-3.295, 2.115] |
-| 2005 | 1.043 [-1.662, 3.747] |
-| 2006 | -1.187 [-3.897, 1.523] |
-| 2007 | -0.776 [-3.489, 1.938] |
-| 2008 | 4.212 [1.488, 6.937] |
-| 2009 | 8.610 [5.887, 11.332] |
-| 2010 | -0.243 [-2.964, 2.477] |
-| 2011 | -2.531 [-5.256, 0.195] |
-| 2012 | -0.819 [-3.549, 1.911] |
-| 2013 | 0.231 [-2.508, 2.970] |
-| 2014 | -0.579 [-3.323, 2.165] |
-| 2015 | -0.950 [-3.706, 1.805] |
-| 2016 | 0.725 [-2.043, 3.493] |
-| 2017 | -1.842 [-4.596, 0.911] |
-| 2018 | 0.065 [-2.705, 2.835] |
-| 2019 | 2.045 [-0.766, 4.856] |
-| 2023 | -2.017 [-4.912, 0.879] |
-| 2024 | 3.125 [0.188, 6.062] |
-| 2025 | -0.264 [-3.371, 2.844] |
+| 2001 | 2.787 [-0.020, 5.593] |
+| 2002 | 3.656 [0.848, 6.464] |
+| 2003 | 2.967 [0.166, 5.767] |
+| 2004 | -0.607 [-3.315, 2.102] |
+| 2005 | 1.025 [-1.683, 3.732] |
+| 2006 | -1.216 [-3.930, 1.497] |
+| 2007 | -0.798 [-3.515, 1.919] |
+| 2008 | 4.173 [1.446, 6.901] |
+| 2009 | 8.566 [5.841, 11.292] |
+| 2010 | -0.306 [-3.029, 2.416] |
+| 2011 | -2.612 [-5.338, 0.115] |
+| 2012 | -0.914 [-3.644, 1.817] |
+| 2013 | 0.121 [-2.617, 2.859] |
+| 2014 | -0.698 [-3.441, 2.044] |
+| 2015 | -1.075 [-3.828, 1.678] |
+| 2016 | 0.591 [-2.174, 3.355] |
+| 2017 | -1.960 [-4.711, 0.792] |
+| 2018 | -0.061 [-2.829, 2.707] |
+| 2019 | 1.924 [-0.885, 4.734] |
+| 2023 | -2.196 [-5.084, 0.692] |
+| 2024 | 2.952 [0.022, 5.883] |
+| 2025 | -0.448 [-3.548, 2.652] |
 
 ## Secondary analyses
 
@@ -169,31 +167,31 @@ For log-transformed outcomes, effects below are percentage changes per doubling 
 
 These models estimate whether defence-spending change predicts health-spending change one, two, or three years later. For every lag, the debt moderator is measured in the year before the health-spending change outcome.
 
-| Sensitivity | N | Countries | Focal estimate [95% CI] | Singular fit |
-| --- | --- | --- | --- | --- |
-| One-year lag of defence change | 626 | 30 | 0.356 [-0.266, 0.978] | TRUE |
-| Two-year lag of defence change | 571 | 30 | 0.846 [0.205, 1.487] | TRUE |
-| Three-year lag of defence change | 517 | 30 | -0.059 [-0.821, 0.702] | TRUE |
+| Sensitivity | N | Countries | Defence effect [95% CI] | Defence x BIS interaction [95% CI] | Singular fit |
+| --- | --- | --- | --- | --- | --- |
+| One-year lag of defence change | 626 | 30 | 0.386 [-0.235, 1.007] | 0.429 [-0.379, 1.238] | TRUE |
+| Two-year lag of defence change | 571 | 30 | 0.851 [0.210, 1.493] | -0.751 [-1.618, 0.115] | TRUE |
+| Three-year lag of defence change | 517 | 30 | -0.079 [-0.841, 0.683] | 0.130 [-0.890, 1.151] | TRUE |
 
 ### Other notable sensitivities
 
-The focal estimates below correspond to the defence-change term used by each specification.
+The focal estimates below show the defence-change main effect and the defence-by-Bismarck interaction for each specification.
 
-| Sensitivity | N | Countries | Focal estimate [95% CI] | Singular fit |
-| --- | --- | --- | --- | --- |
-| Three-year cumulative changes with debt at the start of the period | 537 | 30 | 1.262 [0.700, 1.823] | FALSE |
-| Country and year fixed effects | 648 | 30 | 0.770 [0.153, 1.386] |  |
-| Generalized least squares with country-specific AR(1) correlation | 648 | 30 | 0.771 [0.182, 1.359] |  |
-| Absolute percentage-point changes in GDP shares | 626 | 30 | 0.112 [-0.072, 0.297] | TRUE |
-| NATO members only | 557 | 25 | 0.351 [-0.262, 0.965] | TRUE |
-| OECD members only | 572 | 25 | 0.728 [0.178, 1.278] | TRUE |
-| Exclude Greece | 625 | 29 | 0.797 [0.195, 1.400] | TRUE |
-| Include 2020 and 2021 COVID years and restore 2022 debt alignment | 738 | 30 | 0.907 [0.307, 1.507] | TRUE |
-| Exclude observations from 2025 | 623 | 30 | 1.152 [0.509, 1.795] | TRUE |
-| Exclude 2008 to 2010 | 561 | 30 | 0.696 [0.083, 1.308] | TRUE |
-| Health and defence changes winsorised at the 1st and 99th percentiles | 648 | 30 | 0.827 [0.294, 1.360] | TRUE |
+| Sensitivity | N | Countries | Defence effect [95% CI] | Defence x BIS interaction [95% CI] | Singular fit |
+| --- | --- | --- | --- | --- | --- |
+| Three-year cumulative changes with debt at the start of the period | 537 | 30 | 1.296 [0.734, 1.858] | -0.150 [-0.830, 0.531] | FALSE |
+| Country and year fixed effects | 648 | 30 | 0.770 [0.153, 1.386] | -0.267 [-1.020, 0.487] |  |
+| Generalized least squares with country-specific AR(1) correlation | 648 | 30 | 0.819 [0.234, 1.404] | -0.225 [-0.946, 0.496] |  |
+| Absolute percentage-point changes in GDP shares | 626 | 30 | 0.123 [-0.059, 0.305] | 0.164 [-0.080, 0.408] | TRUE |
+| NATO members only | 557 | 25 | 0.412 [-0.193, 1.016] | 0.075 [-0.646, 0.797] | TRUE |
+| OECD members only | 572 | 25 | 0.772 [0.226, 1.318] | 0.010 [-0.686, 0.707] | TRUE |
+| Exclude Greece | 625 | 29 | 0.844 [0.245, 1.443] | -0.207 [-0.910, 0.495] | TRUE |
+| Include 2020 and 2021 COVID years and restore 2022 debt alignment | 738 | 30 | 0.959 [0.363, 1.554] | -0.570 [-1.308, 0.169] | TRUE |
+| Exclude observations from 2025 | 623 | 30 | 1.193 [0.550, 1.835] | -0.562 [-1.367, 0.244] | TRUE |
+| Exclude 2008 to 2010 | 561 | 30 | 0.744 [0.136, 1.351] | -0.228 [-0.970, 0.513] | TRUE |
+| Health and defence changes winsorised at the 1st and 99th percentiles | 648 | 30 | 0.868 [0.338, 1.397] | -0.050 [-0.722, 0.623] | TRUE |
 
-Across leave-one-country-out analyses, the headline defence coefficient ranged from **0.465 to 0.978**. The full range of lower and upper confidence limits was **-0.135 to 1.613**.
+Across leave-one-country-out analyses, the headline defence coefficient ranged from **0.525 to 1.017**. The full range of lower and upper confidence limits was **-0.080 to 1.650**.
 
 ### Lagged secondary associations
 
@@ -236,7 +234,7 @@ Across the remaining change-on-change models, 1 of 20 95% confidence intervals e
 - The models are associational and may retain residual confounding or reverse causation.
 - Health, defence, and debt measures share GDP-related denominators, so common economic shocks can create coupled movements.
 - A singular random-intercept fit indicates that the estimated between-country residual variance is effectively zero after included covariates.
-- The final GEE estimates a population-average association with robust standard errors. With 30 country clusters, sandwich standard errors may still have limited small-sample accuracy.
+- The GEE is reported in the sensitivity section as a robust population-average check, not as the headline main-model specification.
 - Secondary analyses are exploratory and span outcomes with different observation schedules and sample sizes.
 - Annual differencing may reduce trend confounding but magnifies measurement error and is poorly suited to intermittently observed outcomes.
 

@@ -195,16 +195,14 @@ main_equations <- tibble(
     "model_2_country_random_intercept",
     "model_3_system_moderation",
     "model_4_debt_moderation",
-    "model_5_fully_adjusted",
-    "model_6_population_average_gee"
+    "model_5_fully_adjusted"
   ),
   equation = c(
     "$\\Delta H_{it}=\\beta_0+\\beta_1\\Delta D_{it}+\\epsilon_{it}$",
     "$\\Delta H_{it}=\\beta_0+\\beta_1\\Delta D_{it}+u_i+\\epsilon_{it}$",
-    "$\\Delta H_{it}=\\beta_0+\\beta_1\\Delta D_{it}+\\beta_2S_i+\\beta_3(\\Delta D_{it}\\times S_i)+u_i+\\epsilon_{it}$",
-    "$\\Delta H_{it}=\\beta_0+\\beta_1\\Delta D_{it}+\\beta_2S_i+\\beta_3(\\Delta D_{it}\\times S_i)+\\beta_4B_{i,t-1}+\\beta_5(\\Delta D_{it}\\times B_{i,t-1})+u_i+\\epsilon_{it}$",
-    "$\\Delta H_{it}=\\beta_0+\\beta_1\\Delta D_{it}+\\beta_2S_i+\\beta_3(\\Delta D_{it}\\times S_i)+\\beta_4B_{i,t-1}+\\beta_5(\\Delta D_{it}\\times B_{i,t-1})+\\beta_6\\log_2(GDPpc_{it})+\\gamma_t+u_i+\\epsilon_{it}$",
-    "$E(\\Delta H_{it})=\\beta_0+\\beta_1\\Delta D_{it}+\\beta_2S_i+\\beta_3(\\Delta D_{it}\\times S_i)+\\beta_4B_{i,t-1}+\\beta_5(\\Delta D_{it}\\times B_{i,t-1})+\\beta_6\\log_2(GDPpc_{it})+\\gamma_t+\\epsilon_{it}$ (country-clustered AR(1) working correlation)"
+    "$\\Delta H_{it}=\\beta_0+\\beta_1\\Delta D_{it}+\\beta_2(\\Delta D_{it}\\times S_i)+u_i+\\epsilon_{it}$",
+    "$\\Delta H_{it}=\\beta_0+\\beta_1\\Delta D_{it}+\\beta_2(\\Delta D_{it}\\times S_i)+\\beta_3B_{i,t-1}+\\beta_4(\\Delta D_{it}\\times B_{i,t-1})+u_i+\\epsilon_{it}$",
+    "$\\Delta H_{it}=\\beta_0+\\beta_1\\Delta D_{it}+\\beta_2(\\Delta D_{it}\\times S_i)+\\beta_3B_{i,t-1}+\\beta_4(\\Delta D_{it}\\times B_{i,t-1})+\\beta_5\\log_2(GDPpc_{it})+\\gamma_t+u_i+\\epsilon_{it}$"
   )
 )
 
@@ -223,7 +221,6 @@ main_model_table <- main_overview %>%
 # Show focal coefficients without filling the report with year dummies
 main_focal_terms <- c(
   "defence_change_10pct",
-  "systemBIS",
   "previous_debt_10pp_c",
   "log2_gdp_percap_c",
   "defence_change_10pct:systemBIS",
@@ -321,23 +318,24 @@ secondary_result_table <- secondary_overview %>%
   )
 
 
-# Pull the focal exposure estimate from selected main sensitivities
+# Pull the focal exposure estimates from selected main sensitivities, showing
+# both the defence-effect main term and the system interaction.
 sensitivity_term_map <- tribble(
-  ~model, ~term,
-  "lag_1_year", "lag_defence_1_10pct",
-  "lag_2_years", "lag_defence_2_10pct",
-  "lag_3_years", "lag_defence_3_10pct",
-  "cumulative_3_year_change", "defence_change_3yr_10pct",
-  "country_fixed_effects", "defence_change_10pct",
-  "gls_ar1", "defence_change_10pct",
-  "absolute_percentage_point_changes", "defence_change_pp",
-  "nato_members_only", "defence_change_10pct",
-  "oecd_members_only", "defence_change_10pct",
-  "exclude_greece", "defence_change_10pct",
-  "include_covid_years", "defence_change_10pct",
-  "exclude_2025", "defence_change_10pct",
-  "exclude_financial_crisis", "defence_change_10pct",
-  "winsorised_changes", "defence_change_10pct"
+  ~model, ~main_term, ~interaction_term,
+  "lag_1_year", "lag_defence_1_10pct", "lag_defence_1_10pct:systemBIS",
+  "lag_2_years", "lag_defence_2_10pct", "lag_defence_2_10pct:systemBIS",
+  "lag_3_years", "lag_defence_3_10pct", "lag_defence_3_10pct:systemBIS",
+  "cumulative_3_year_change", "defence_change_3yr_10pct", "defence_change_3yr_10pct:systemBIS",
+  "country_fixed_effects", "defence_change_10pct", "defence_change_10pct:systemBIS",
+  "gls_ar1", "defence_change_10pct", "defence_change_10pct:systemBIS",
+  "absolute_percentage_point_changes", "defence_change_pp", "defence_change_pp:systemBIS",
+  "nato_members_only", "defence_change_10pct", "defence_change_10pct:systemBIS",
+  "oecd_members_only", "defence_change_10pct", "defence_change_10pct:systemBIS",
+  "exclude_greece", "defence_change_10pct", "defence_change_10pct:systemBIS",
+  "include_covid_years", "defence_change_10pct", "defence_change_10pct:systemBIS",
+  "exclude_2025", "defence_change_10pct", "defence_change_10pct:systemBIS",
+  "exclude_financial_crisis", "defence_change_10pct", "defence_change_10pct:systemBIS",
+  "winsorised_changes", "defence_change_10pct", "defence_change_10pct:systemBIS"
 )
 
 notable_sensitivity_table <- sensitivity_term_map %>%
@@ -360,17 +358,43 @@ notable_sensitivity_table <- sensitivity_term_map %>%
         estimate,
         conf_low,
         conf_high
+      ) %>%
+      rename(
+        main_estimate = estimate,
+        main_conf_low = conf_low,
+        main_conf_high = conf_high
       ),
-    by = c("model", "term")
+    by = c("model" = "model", "main_term" = "term")
+  ) %>%
+  left_join(
+    main_sensitivity_coefficients %>%
+      select(
+        model,
+        term,
+        estimate,
+        conf_low,
+        conf_high
+      ) %>%
+      rename(
+        interaction_estimate = estimate,
+        interaction_conf_low = conf_low,
+        interaction_conf_high = conf_high
+      ),
+    by = c("model" = "model", "interaction_term" = "term")
   ) %>%
   transmute(
     Sensitivity = description,
     N = observations,
     Countries = countries,
-    `Focal estimate [95% CI]` = format_estimate_ci(
-      estimate,
-      conf_low,
-      conf_high
+    `Defence effect [95% CI]` = format_estimate_ci(
+      main_estimate,
+      main_conf_low,
+      main_conf_high
+    ),
+    `Defence x BIS interaction [95% CI]` = format_estimate_ci(
+      interaction_estimate,
+      interaction_conf_low,
+      interaction_conf_high
     ),
     `Singular fit` = singular_fit
   )
@@ -648,7 +672,7 @@ report_lines <- c(
   "",
   markdown_table(main_slope_table),
   "",
-  "The final model in the sequential sequence is a population-average GEE using the same fully adjusted fixed-effects terms, country clusters, an AR(1) working correlation, and sandwich standard errors. It is reported as a main model rather than as a robustness sensitivity.",
+  "The GEE is retained as a robustness check in the sensitivity analyses rather than as a headline main model in the sequential sequence.",
   "",
   "### Categorical year effects",
   "",
@@ -685,7 +709,7 @@ report_lines <- c(
   "",
   "### Other notable sensitivities",
   "",
-  "The focal estimates below correspond to the defence-change term used by each specification.",
+  "The focal estimates below show the defence-change main effect and the defence-by-Bismarck interaction for each specification.",
   "",
   markdown_table(other_notable_sensitivity_table),
   "",
@@ -730,10 +754,7 @@ report_lines <- c(
   "- The models are associational and may retain residual confounding or reverse causation.",
   "- Health, defence, and debt measures share GDP-related denominators, so common economic shocks can create coupled movements.",
   "- A singular random-intercept fit indicates that the estimated between-country residual variance is effectively zero after included covariates.",
-  sprintf(
-    "- The final GEE estimates a population-average association with robust standard errors. With %s country clusters, sandwich standard errors may still have limited small-sample accuracy.",
-    main_sample$countries
-  ),
+  "- The GEE is reported in the sensitivity section as a robust population-average check, not as the headline main-model specification.",
   "- Secondary analyses are exploratory and span outcomes with different observation schedules and sample sizes.",
   "- Annual differencing may reduce trend confounding but magnifies measurement error and is poorly suited to intermittently observed outcomes.",
   "",

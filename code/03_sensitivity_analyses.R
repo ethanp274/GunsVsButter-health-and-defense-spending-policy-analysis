@@ -10,6 +10,7 @@ suppressPackageStartupMessages({
   library(broom)
   library(broom.mixed)
   library(dplyr)
+  library(geepack)
   library(lme4)
   library(nlme)
   library(readr)
@@ -211,6 +212,10 @@ model_status <- function(model) {
     }
   }
 
+  if (inherits(model, "geeglm")) {
+    return("Model fitted with sandwich standard errors")
+  }
+
   "Model fitted"
 }
 
@@ -292,6 +297,16 @@ fit_sensitivity_model <- function(
           ),
           method = "ML"
         )
+      } else if (model_type == "gee_ar1") {
+        geepack::geeglm(
+          formula,
+          data = model_data,
+          id = country,
+          waves = year,
+          family = gaussian(link = "identity"),
+          corstr = "ar1",
+          std.err = "san.se"
+        )
       } else {
         stop("Unknown model type: ", model_type)
       }
@@ -314,6 +329,8 @@ fit_sensitivity_model <- function(
     } else if (inherits(model_object, "merMod")) {
       optimizer_code <- model_object@optinfo$conv$opt
       is.null(optimizer_code) || all(optimizer_code == 0)
+    } else if (inherits(model_object, "geeglm")) {
+      model_object$geese$error == 0
     } else {
       TRUE
     },
@@ -338,9 +355,11 @@ fit_sensitivity_model <- function(
 }
 
 
-# The fully adjusted annual-change formula is the reference specification
+# The fully adjusted annual-change formula is the reference specification.
+# Health-system type is represented only through the defence-change interaction
+# so the system main effect is not included as a standalone term.
 full_formula <- health_change_percent ~
-  defence_change_10pct * system +
+  defence_change_10pct + defence_change_10pct:system +
   defence_change_10pct * previous_debt_10pp_c +
   log2_gdp_percap_c +
   year_factor +
@@ -373,7 +392,7 @@ add_main_sensitivity(
   "One-year lag of defence change",
   primary_df,
   health_change_percent ~
-    lag_defence_1_10pct * system +
+    lag_defence_1_10pct + lag_defence_1_10pct:system +
     lag_defence_1_10pct * previous_debt_10pp_c +
     log2_gdp_percap_c +
     year_factor +
@@ -385,7 +404,7 @@ add_main_sensitivity(
   "Two-year lag of defence change",
   primary_df,
   health_change_percent ~
-    lag_defence_2_10pct * system +
+    lag_defence_2_10pct + lag_defence_2_10pct:system +
     lag_defence_2_10pct * previous_debt_10pp_c +
     log2_gdp_percap_c +
     year_factor +
@@ -397,7 +416,7 @@ add_main_sensitivity(
   "Three-year lag of defence change",
   primary_df,
   health_change_percent ~
-    lag_defence_3_10pct * system +
+    lag_defence_3_10pct + lag_defence_3_10pct:system +
     lag_defence_3_10pct * previous_debt_10pp_c +
     log2_gdp_percap_c +
     year_factor +
@@ -409,7 +428,7 @@ add_main_sensitivity(
   "Three-year cumulative changes with debt at the start of the period",
   primary_df,
   health_change_3yr_percent ~
-    defence_change_3yr_10pct * system +
+    defence_change_3yr_10pct + defence_change_3yr_10pct:system +
     defence_change_3yr_10pct * debt_start_3yr_10pp_c +
     log2_gdp_percap_c +
     year_factor +
@@ -423,7 +442,7 @@ add_main_sensitivity(
   "Country and year fixed effects",
   primary_df,
   health_change_percent ~
-    defence_change_10pct * system +
+    defence_change_10pct + defence_change_10pct:system +
     defence_change_10pct * previous_debt_10pp_c +
     log2_gdp_percap_c +
     year_factor +
@@ -436,11 +455,23 @@ add_main_sensitivity(
   "Generalized least squares with country-specific AR(1) correlation",
   primary_df,
   health_change_percent ~
-    defence_change_10pct * system +
+    defence_change_10pct + defence_change_10pct:system +
     defence_change_10pct * previous_debt_10pp_c +
     log2_gdp_percap_c +
     year_factor,
   model_type = "gls_ar1"
+)
+
+add_main_sensitivity(
+  "gee_ar1",
+  "Population-average GEE with country clusters and AR(1) working correlation",
+  primary_df,
+  health_change_percent ~
+    defence_change_10pct + defence_change_10pct:system +
+    defence_change_10pct * previous_debt_10pp_c +
+    log2_gdp_percap_c +
+    year_factor,
+  model_type = "gee_ar1"
 )
 
 # Test alternative change measures and adjustments
@@ -449,7 +480,7 @@ add_main_sensitivity(
   "Absolute percentage-point changes in GDP shares",
   primary_df,
   health_change_pp ~
-    defence_change_pp * system +
+    defence_change_pp + defence_change_pp:system +
     defence_change_pp * previous_debt_10pp_c +
     log2_gdp_percap_c +
     year_factor +
@@ -461,7 +492,7 @@ add_main_sensitivity(
   "Current-year public-debt level as moderator",
   primary_df,
   health_change_percent ~
-    defence_change_10pct * system +
+    defence_change_10pct + defence_change_10pct:system +
     defence_change_10pct * current_debt_10pp_c +
     log2_gdp_percap_c +
     year_factor +
@@ -473,7 +504,7 @@ add_main_sensitivity(
   "Public-debt percentage-point change as moderator",
   primary_df,
   health_change_percent ~
-    defence_change_10pct * system +
+    defence_change_10pct + defence_change_10pct:system +
     defence_change_10pct * debt_change_pp_c +
     log2_gdp_percap_c +
     year_factor +
@@ -485,7 +516,7 @@ add_main_sensitivity(
   "Previous-year public-debt level without interaction",
   primary_df,
   health_change_percent ~
-    defence_change_10pct * system +
+    defence_change_10pct + defence_change_10pct:system +
     previous_debt_10pp_c +
     log2_gdp_percap_c +
     year_factor +
@@ -497,7 +528,7 @@ add_main_sensitivity(
   "GDP per capita in $10,000 units",
   primary_df,
   health_change_percent ~
-    defence_change_10pct * system +
+    defence_change_10pct + defence_change_10pct:system +
     defence_change_10pct * previous_debt_10pp_c +
     gdp_per_10k_c +
     year_factor +
@@ -1042,8 +1073,16 @@ secondary_sensitivity_results <- bind_rows(
     )
   )
 
-if (nrow(main_sensitivity_overview) != 19) {
-  stop("Expected 19 main sensitivity specifications.")
+if (nrow(main_sensitivity_overview) != length(main_sensitivity_models)) {
+  stop(
+    paste0(
+      "Expected ",
+      length(main_sensitivity_models),
+      " main sensitivity specifications; found ",
+      nrow(main_sensitivity_overview),
+      "."
+    )
+  )
 }
 
 if (any(!main_sensitivity_overview$converged)) {

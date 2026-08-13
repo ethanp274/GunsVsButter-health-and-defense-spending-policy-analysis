@@ -10,7 +10,6 @@ suppressPackageStartupMessages({
   library(broom)
   library(broom.mixed)
   library(dplyr)
-  library(geepack)
   library(lme4)
   library(readr)
   library(tidyr)
@@ -120,7 +119,7 @@ if (nrow(main_data) == 0 ||
 }
 
 
-# Fit five explicit main models
+# Fit the explicit main-model sequence
 main_model_1 <- lm(
   health_change_percent ~ defence_change_10pct,
   data = main_data
@@ -134,7 +133,7 @@ main_model_2 <- lmer(
 
 main_model_3 <- lmer(
   health_change_percent ~
-    defence_change_10pct * system +
+    defence_change_10pct + defence_change_10pct:system +
     (1 | country),
   data = main_data,
   REML = FALSE
@@ -142,7 +141,7 @@ main_model_3 <- lmer(
 
 main_model_4 <- lmer(
   health_change_percent ~
-    defence_change_10pct * system +
+    defence_change_10pct + defence_change_10pct:system +
     defence_change_10pct * previous_debt_10pp_c +
     (1 | country),
   data = main_data,
@@ -151,7 +150,7 @@ main_model_4 <- lmer(
 
 main_model_5 <- lmer(
   health_change_percent ~
-    defence_change_10pct * system +
+    defence_change_10pct + defence_change_10pct:system +
     defence_change_10pct * previous_debt_10pp_c +
     log2_gdp_percap_c +
     year_factor +
@@ -160,27 +159,12 @@ main_model_5 <- lmer(
   REML = FALSE
 )
 
-main_model_6_population_average_gee <- geepack::geeglm(
-  health_change_percent ~
-    defence_change_10pct * system +
-    defence_change_10pct * previous_debt_10pp_c +
-    log2_gdp_percap_c +
-    year_factor,
-  data = main_data %>% arrange(country, year),
-  id = country,
-  waves = year,
-  family = gaussian(link = "identity"),
-  corstr = "ar1",
-  std.err = "san.se"
-)
-
 main_models <- list(
   model_1_unadjusted = main_model_1,
   model_2_country_random_intercept = main_model_2,
   model_3_system_moderation = main_model_3,
   model_4_debt_moderation = main_model_4,
-  model_5_fully_adjusted = main_model_5,
-  model_6_population_average_gee = main_model_6_population_average_gee
+  model_5_fully_adjusted = main_model_5
 )
 
 main_model_descriptions <- c(
@@ -193,9 +177,7 @@ main_model_descriptions <- c(
   model_4_debt_moderation =
     "Health-system and public-debt moderation",
   model_5_fully_adjusted =
-    "Fully adjusted with GDP per capita and year effects",
-  model_6_population_average_gee =
-    "Final population-average GEE with country clusters and AR(1) working correlation"
+    "Fully adjusted with GDP per capita and year effects"
 )
 
 
