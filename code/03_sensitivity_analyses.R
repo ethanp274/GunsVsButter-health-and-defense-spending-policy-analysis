@@ -8,6 +8,7 @@
 
 # This script is independent of 02_analysis.R and can be run from a fresh session.
 
+# Load the packages used for the robustness checks and alternative model fits.
 suppressPackageStartupMessages({
   library(broom)
   library(broom.mixed)
@@ -20,7 +21,7 @@ suppressPackageStartupMessages({
 })
 
 
-# Load the processed panel
+# Read the cleaned panel created in the processing step.
 master_df <- read_csv(
   "processed_data/primary_analysis.csv",
   na = "",
@@ -30,6 +31,7 @@ master_df <- read_csv(
 results_dir <- "results"
 dir.create(results_dir, showWarnings = FALSE)
 
+# Set the sample windows used throughout the sensitivity checks.
 excluded_analysis_years <- c(2020L, 2021L)
 current_non_nato_codes <- c("AUT", "CYP", "IRL", "MLT", "CHE")
 # Current OECD members represented in the 30-country study-country source.
@@ -42,7 +44,9 @@ oecd_member_codes <- c(
 analysis_end_year <- max(master_df$year, na.rm = TRUE)
 
 
-# Create annual, lagged, cumulative, and alternative change measures
+# Build the working panel for robustness checks.
+# This adds alternate debt, lag, and ratio variables while leaving the main
+# sample definition unchanged.
 panel_df <- master_df %>%
   group_by(code) %>%
   arrange(year, .by_group = TRUE) %>%
@@ -146,13 +150,17 @@ panel_df <- master_df %>%
   ungroup()
 
 
-# Use the primary sample to define common centring constants
+# Use the primary sample to define common centring constants before fitting the
+# sensitivity models. This keeps all adjusted specifications on a comparable scale
+# and makes interaction terms easier to read.
+# Restrict the main sensitivity sample to the headline years.
 primary_df <- panel_df %>%
   filter(
     year <= analysis_end_year,
     !year %in% excluded_analysis_years
   )
 
+# Center continuous moderators so the interaction terms are easier to interpret.
 centres <- c(
   current_debt_10pp = mean(primary_df$current_debt_10pp, na.rm = TRUE),
   log2_gdp_percap = mean(primary_df$log2_gdp_percap, na.rm = TRUE),
@@ -191,7 +199,7 @@ primary_df <- panel_df %>%
   )
 
 
-# Helpers fit models safely and preserve visible diagnostics
+# Helper functions keep model diagnostics readable in the results files.
 model_status <- function(model) {
   if (inherits(model, "error")) {
     return(conditionMessage(model))
@@ -277,6 +285,7 @@ fit_sensitivity_model <- function(
     arrange(country, year) %>%
     droplevels()
 
+  # Fit the requested model and keep any error visible instead of silently dropping it.
   model <- tryCatch(
     {
       if (model_type == "lmer") {
@@ -357,9 +366,7 @@ fit_sensitivity_model <- function(
 }
 
 
-# The fully adjusted annual-change formula is the reference specification.
-# Health-system type is represented through both its main effect and the
-# defence-change interaction, using the shorthand interaction form.
+# Define the reference annual-change model used across the main sensitivity checks.
 full_formula <- health_change_percent ~
   defence_change_10pct * system +
   defence_change_10pct * previous_debt_10pp_c +
@@ -367,6 +374,7 @@ full_formula <- health_change_percent ~
   year_factor +
   (1 | country)
 
+# Store the fitted main-sensitivity models in one list for comparison.
 main_sensitivity_models <- list()
 
 add_main_sensitivity <- function(
@@ -385,10 +393,7 @@ add_main_sensitivity <- function(
 }
 
 
-# Test one-, two-, and three-year lags
-#
-# Each lagged defence change is moderated by debt measured one year before
-# the health-spending change outcome.
+# Check whether the association changes with different defence lags.
 add_main_sensitivity(
   "lag_1_year",
   "One-year lag of defence change",
@@ -438,7 +443,7 @@ add_main_sensitivity(
 )
 
 
-# Test alternative country and residual-correlation structures
+# Check whether the result depends on country effects or on the residual structure.
 add_main_sensitivity(
   "country_fixed_effects",
   "Country and year fixed effects",
@@ -476,7 +481,7 @@ add_main_sensitivity(
   model_type = "gee_ar1"
 )
 
-# Test alternative change measures and adjustments
+# Test alternative change variables and debt moderators.
 add_main_sensitivity(
   "absolute_percentage_point_changes",
   "Absolute percentage-point changes in GDP shares",
@@ -538,7 +543,7 @@ add_main_sensitivity(
 )
 
 
-# Test alternative country and year samples
+# Check whether the result is driven by specific country groups or time windows.
 add_main_sensitivity(
   "nato_members_only",
   "NATO members only",
@@ -563,10 +568,7 @@ add_main_sensitivity(
   full_formula
 )
 
-# Include the pandemic years as an explicit main-model sensitivity. The
-# primary models and ordinary sensitivities continue to exclude 2020-2021.
-# Here, previous-year debt is restored for all years so 2021 uses 2020 debt and
-# 2022 uses 2021 debt.
+# Include COVID years as a separate sensitivity.
 covid_included_df <- panel_df %>%
   mutate(
     previous_debt_10pp = previous_government_debt_pct_gdp / 0.10,
@@ -600,7 +602,7 @@ add_main_sensitivity(
 )
 
 
-# Define NATO membership using accession years
+# Define NATO accession years for the historical membership check.
 nato_join_years <- c(
   BEL = 1949, DNK = 1949, FRA = 1949, ITA = 1949,
   LUX = 1949, NLD = 1949, NOR = 1949, PRT = 1949, GBR = 1949,
@@ -622,7 +624,7 @@ add_main_sensitivity(
 )
 
 
-# Winsorise health and defence changes at the 1st and 99th percentiles
+# Trim extreme values to check whether a few large changes drive the result.
 winsorise <- function(x, reference) {
   limits <- quantile(
     reference,
@@ -653,7 +655,7 @@ add_main_sensitivity(
 )
 
 
-# Assess whether one country drives the headline coefficients
+# Leave one country out to check whether the estimate is driven by one case.
 leave_one_country_out <- bind_rows(
   lapply(sort(unique(primary_df$code)), function(omitted_code) {
     result <- fit_sensitivity_model(
@@ -683,7 +685,7 @@ leave_one_country_out <- bind_rows(
 )
 
 
-# Combine and save the main sensitivity results
+# Combine the main sensitivity fits into one overview table.
 main_sensitivity_overview <- bind_rows(
   lapply(main_sensitivity_models, `[[`, "overview")
 )
@@ -699,12 +701,7 @@ main_sensitivity_coefficients <- bind_rows(
   )
 
 
-# Prepare secondary outcome levels and year-on-year changes
-#
-# Level models answer whether the spending balance is associated with the
-# level of system strength or health outcomes. Change-on-change models answer
-# the narrower short-run question and are kept as sensitivities because annual
-# differences can magnify measurement error in slow-moving indicators.
+# Prepare the secondary outcomes and short-run changes for extra checks.
 secondary_df <- panel_df %>%
   mutate(
     oop_health_spend_pct_points = 100 * oop_share_health_spend,
@@ -795,7 +792,7 @@ secondary_specs <- tribble(
 )
 
 
-# Decompose an exposure into within- and between-country components
+# Split each exposure into within-country and between-country parts.
 add_within_between <- function(data, exposure_var) {
   exposure_mean_var <- paste0(exposure_var, "_country_mean")
   exposure_within_var <- paste0(exposure_var, "_within")
@@ -919,7 +916,7 @@ fit_secondary_sensitivity <- function(
 }
 
 
-# Lag the ratio by one, three, and five years
+# Test lagged ratio models for the secondary outcomes.
 secondary_lag_results <- bind_rows(
   lapply(seq_len(nrow(secondary_specs)), function(i) {
     bind_rows(
@@ -936,7 +933,7 @@ secondary_lag_results <- bind_rows(
 )
 
 
-# Test whether ratio changes are associated with outcome changes
+# Test whether changes in the spending ratio predict outcome changes.
 secondary_ratio_change_results <- bind_rows(
   lapply(seq_len(nrow(secondary_specs)), function(i) {
     exposure_specs <- c(
@@ -963,7 +960,7 @@ secondary_ratio_change_results <- bind_rows(
 )
 
 
-# Add lagged debt level to the primary log-ratio specification
+# Check whether adding lagged debt changes the ratio association.
 secondary_debt_adjusted_results <- bind_rows(
   lapply(seq_len(nrow(secondary_specs)), function(i) {
     fit_secondary_sensitivity(
@@ -977,7 +974,7 @@ secondary_debt_adjusted_results <- bind_rows(
 )
 
 
-# Use alternative raw or bounded-outcome transformations where relevant
+# Try alternative outcome scales where the raw measure is easier to interpret.
 secondary_alternative_outcome_results <- bind_rows(
   lapply(seq_len(nrow(secondary_specs)), function(i) {
     alternative_outcome <- secondary_specs$raw_outcome_var[[i]]
@@ -999,7 +996,7 @@ secondary_alternative_outcome_results <- bind_rows(
 )
 
 
-# Model health and defence shares separately instead of using their ratio
+# Model health and defence shares separately as a check on the ratio specification.
 component_df <- secondary_df %>%
   add_within_between("log2_health_share") %>%
   add_within_between("log2_defence_share")
@@ -1100,7 +1097,7 @@ if (nrow(secondary_sensitivity_results) != 108) {
 }
 
 
-# Save all robustness results
+# Save sensitivity outputs for the summary report.
 write_csv(
   main_sensitivity_overview,
   file.path(results_dir, "main_sensitivity_overview.csv"),
@@ -1126,7 +1123,7 @@ write_csv(
 )
 
 
-# Save and print a concise execution summary
+# Print a short summary of the sensitivity run.
 summary_lines <- c(
   "Health and Defence Spending Sensitivity Analyses",
   "================================================",

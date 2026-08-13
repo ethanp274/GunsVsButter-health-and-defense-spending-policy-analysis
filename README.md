@@ -55,6 +55,7 @@ The primary analysis:
 - otherwise uses available outcome years from 2000 through 2025 subject to
   complete-case requirements;
 - uses Beveridge systems as the reference group;
+- includes a standalone system fixed effect plus the defence-spending-change-by-system interaction;
 - includes categorical year effects and a country random intercept;
 - adjusts for centred log2 GDP per capita; and
 - uses previous-year public debt, centred and scaled per 10 percentage points
@@ -64,6 +65,8 @@ The headline model is the fully adjusted mixed model:
 
 ```text
 health spending change ~
+  defence spending change +
+  system type +
   defence spending change * system type +
   defence spending change * previous-year debt level +
   log2 GDP per capita +
@@ -71,13 +74,21 @@ health spending change ~
   country random intercept
 ```
 
+This specification retains the main effect of health-system type and its
+interaction with defence-spending change. The main effect captures the
+average difference between Beveridge and Bismarck systems, while the
+interaction captures whether the defence-spending association differs by
+system type.
+
 Relative health-spending change is expressed as a percentage change. Defence
 change is scaled so its coefficient represents a 10% relative increase.
 
 The main model sequence is five staged specifications: pooled, country
 random-intercept, health-system moderation, debt moderation, and the fully
-adjusted model above. The GEE is retained as a robustness check rather than a
-headline main-model specification. Country fixed-effects models and GLS/AR(1)
+adjusted model above. The system-type term is retained as a fixed effect in
+all system-moderation models, and the interaction term is included alongside
+it. The GEE is retained as a robustness check rather than a headline
+main-model specification. Country fixed-effects models and GLS/AR(1)
 specifications remain sensitivity analyses. A separate one-off optimizer and
 convergence check was also run to confirm that the observed mixed-model
 singularity was not an artefact of default `lme4` settings or a poorly chosen

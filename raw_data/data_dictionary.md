@@ -46,6 +46,8 @@ are retained for provenance and are not read directly.
   processed output.
 - Country matching uses trimmed, upper-case three-letter codes. Country names
   and health-system classifications come from the study-country file.
+- Beveridge is the reference system category, and the headline model includes
+  both the standalone system fixed effect and the defence-spending-change-by-system interaction.
 - Blank cells, `NA`, `xxx`, `...`, `..`, and `. .` are treated as missing.
 - Missing observations remain missing. The pipeline does not impute or
   interpolate values.
@@ -116,6 +118,25 @@ The processing script also calculates:
   `government_debt_pct_gdp`.
 - `health_def_ratio`: health spending as a share of GDP divided by defence
   spending as a share of GDP.
+
+The main mixed-model specification is:
+
+```text
+health_change_percent ~
+  defence_change_10pct +
+  system +
+  defence_change_10pct * system +
+  defence_change_10pct * previous_debt_10pp_c +
+  log2_gdp_percap_c +
+  year_factor +
+  (1 | country)
+```
+
+This retains the standalone system fixed effect alongside the interaction
+between defence-spending change and system type. The system term captures the
+average baseline difference between Beveridge and Bismarck systems, while the
+interaction captures whether the defence-spending association differs by
+system type.
 
 The first retained change, for 2000, uses the 1999 source value. Subsequent
 changes use the immediately preceding retained year. Changes are missing when

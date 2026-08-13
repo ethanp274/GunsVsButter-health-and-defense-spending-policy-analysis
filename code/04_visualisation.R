@@ -30,6 +30,7 @@ plot_theme <- function() {
     )
 }
 
+# Set the common colour palette for the system and spending-time-series plots.
 viz_palette <- c(
   "Beveridge" = "#2c7fb8",
   "Bismarck" = "#d95f0e",
@@ -37,7 +38,8 @@ viz_palette <- c(
   "Defence" = "#d95f0e"
 )
 
-# Read model output files
+# Read the machine-generated model outputs so the figures stay aligned with the
+# fitted results rather than manually typed estimates.
 main_model_coefficients <- read_csv("results/main_model_coefficients.csv", show_col_types = FALSE)
 main_interaction_slopes <- read_csv("results/main_interaction_slopes.csv", show_col_types = FALSE)
 
@@ -56,7 +58,9 @@ plot_master_df <- master_df %>%
     !year %in% excluded_analysis_years
   )
 
-# Original plot 1: health-to-defence spending ratio over time
+# Original plot 1: health-to-defence spending ratio over time.
+# This panel tracks each country's ratio while showing the COVID gap as a shaded
+# exclusion band so the primary-analysis sample is visually clear.
 plot_df <- plot_master_df %>%
   select(country, year, health_def_ratio)
 
@@ -182,7 +186,9 @@ ggsave(
 
 cat("Saved health_def_ratio time-series plot to results/health_def_ratio_timeseries.png and .pdf\n")
 
-# Original plot 2: average health and defence spending as a share of GDP by health-system type
+# Original plot 2: average health and defence spending as a share of GDP by
+# health-system type. The lines separate system-level averages and spending type
+# while keeping the same styling conventions as the other plots.
 system_spend_df <- plot_master_df %>%
   mutate(
     system_label = case_when(
@@ -327,7 +333,9 @@ ggsave(
 
 cat("Saved system-average spending time-series plot to results/system_avg_spending_pct_gdp_timeseries.png and .pdf\n")
 
-# New plot 1: forest plot of key coefficients in the fully adjusted mixed model
+# New plot 1: forest plot of key coefficients in the fully adjusted mixed model.
+# This summary focuses on the core terms for interpretation without crowding the
+# graphic with the full year-effects block.
 forest_df <- main_model_coefficients %>%
   filter(
     model == "model_5_fully_adjusted",
@@ -398,7 +406,9 @@ ggsave(
 
 cat("Saved headline forest plot to results/main_model_forest_plot.png and .pdf\n")
 
-# New plot 2: marginal-effects plot for defence-change slopes across debt values by health-system type
+# New plot 2: marginal-effects plot for defence-change slopes across debt values
+# by health-system type. The figure turns the interaction into a more readable
+# slope summary across the observed debt range.
 slopes_df <- main_interaction_slopes %>%
   mutate(
     system_label = if_else(system == "BEV", "Beveridge", "Bismarck")

@@ -97,6 +97,7 @@ assert_nonempty <- function(data, source_name) {
 }
 
 # Reshape a wide source from one year per column to one year per row.
+# This is the common conversion step for the raw country-by-year CSV files.
 reshape_wide_country_year <- function(data, source_name) {
   require_columns(data, "code", source_name)
 

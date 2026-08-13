@@ -11,7 +11,8 @@
 # Rscript code/00_run_pipeline.R
 
 # Check and install all packages used by the pipeline before running any stage.
-# This keeps a fresh R installation from failing part-way through the workflow.
+# This keeps a fresh R installation from failing part-way through the workflow
+# and makes the pipeline reproducible across machines.
 required_packages <- c(
   "broom",
   "broom.mixed",
@@ -66,6 +67,9 @@ if (length(still_missing) > 0) {
   )
 }
 
+# Keep the stage order explicit so the pipeline builds the panel first, then
+# fits the main models, runs robustness checks, writes figures, and finally
+# generates the human-readable summary from the saved outputs.
 pipeline_steps <- c(
   "code/01_data_processing.R",
   "code/02_analysis.R",
@@ -75,7 +79,9 @@ pipeline_steps <- c(
 )
 
 
-# Check that the script was started from the repository root
+# Check that the script was started from the repository root so all relative
+# file paths resolve correctly and the generated outputs land in the expected
+# folders.
 missing_steps <- pipeline_steps[!file.exists(pipeline_steps)]
 
 if (length(missing_steps) > 0) {

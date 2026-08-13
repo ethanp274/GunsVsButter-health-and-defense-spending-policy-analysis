@@ -31,7 +31,8 @@ excluded_analysis_years <- c(2020L, 2021L)
 analysis_end_year <- max(master_df$year, na.rm = TRUE)
 
 
-# Prepare the primary sample and interpretable model scales
+# Build the primary analysis sample while keeping the debt lag tied to the
+# outcome year and excluding COVID years from the main estimand.
 primary_df <- master_df %>%
   group_by(code) %>%
   arrange(year, .by_group = TRUE) %>%
@@ -121,7 +122,9 @@ if (nrow(main_data) == 0 ||
 }
 
 
-# Fit the explicit main-model sequence
+# Fit the explicit main-model sequence in order so each model adds one layer of
+# complexity: pooled, country intercept, system moderation, debt moderation, and
+# then full adjustment with GDP and year effects.
 main_model_1 <- lm(
   health_change_percent ~ defence_change_10pct,
   data = main_data
@@ -169,6 +172,7 @@ main_models <- list(
   model_5_fully_adjusted = main_model_5
 )
 
+# Store short labels for each model so the tables and report stay readable.
 main_model_descriptions <- c(
   model_1_unadjusted =
     "Pooled unadjusted association",
@@ -183,7 +187,7 @@ main_model_descriptions <- c(
 )
 
 
-# Helpers create consistent, readable result tables
+# Helpers create consistent, readable result tables for the main models.
 model_converged <- function(model) {
   if (inherits(model, "geeglm")) {
     return(model$geese$error == 0)

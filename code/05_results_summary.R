@@ -19,7 +19,9 @@ output_file <- file.path(results_dir, "results_summary.md")
 html_output_file <- file.path(results_dir, "results_summary.html")
 
 
-# Check that every required result and figure is available
+# Check that every required result and figure is available before writing the
+# Markdown report. This prevents the summary from silently drifting away from the
+# current pipeline outputs or a missing figure.
 required_files <- c(
   "analysis_sample_flow.csv",
   "main_country_sample_counts.csv",
@@ -51,7 +53,8 @@ if (length(missing_files) > 0) {
 }
 
 
-# Load the machine-readable results
+# Load the machine-readable results so the report is assembled from the saved
+# outputs rather than manual retyping of coefficients or samples.
 sample_flow <- read_csv(
   file.path(results_dir, "analysis_sample_flow.csv"),
   show_col_types = FALSE
@@ -113,7 +116,7 @@ secondary_sensitivity <- read_csv(
 )
 
 
-# Small helpers keep Markdown formatting readable
+# Small helpers keep the Markdown output clean and consistent.
 format_number <- function(x, digits = 3) {
   ifelse(
     is.na(x),
@@ -192,7 +195,7 @@ get_main_term <- function(term_name) {
 }
 
 
-# Describe each staged main model with its compact equation
+# Describe each staged main model with its compact equation.
 main_equations <- tibble(
   model = c(
     "model_1_unadjusted",
