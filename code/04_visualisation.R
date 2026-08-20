@@ -456,3 +456,120 @@ ggsave(
 )
 
 cat("Saved interaction slopes plot to results/main_interaction_slopes_plot.png and .pdf\n")
+
+# New plot 3: system-level annual-change scatter with model-predicted trendlines
+# Points are system-level (Beveridge/Bismarck) yearly averages of annual
+# defence-change (x) and health-change (y). Trendlines use the fully-adjusted
+# model slope estimated at the median previous-year debt for each system.
+system_change_df <- plot_master_df %>%
+  # Ensure the change variables exist in the plotting frame. Use the same
+  # transformations as the analysis scripts so derived measures match.
+  mutate(
+    defence_change_10pct = if_else(!is.na(change_def_gdp), change_def_gdp / 0.10, NA_real_),
+    health_change_percent = if_else(!is.na(change_health_gdp), 100 * change_health_gdp, NA_real_),
+    system_label = case_when(
+      system == "BEV" ~ "Beveridge",
+      system == "BIS" ~ "Bismarck",
+      TRUE ~ as.character(system)
+    )
+  ) %>%
+  group_by(system_label, year) %>%
+  summarise(
+    mean_defence_change_10pct = mean(defence_change_10pct, na.rm = TRUE),
+    mean_health_change_percent = mean(health_change_percent, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  filter(!is.na(mean_defence_change_10pct), !is.na(mean_health_change_percent))
+
+# Grab the median-debt slopes from the interaction slopes table produced by
+# the analysis step. Handle common label variants for the 50th percentile.
+median_slopes <- main_interaction_slopes %>%
+  filter(grepl("50", debt_percentile)) %>%
+  transmute(
+    system = if_else(system == "BEV", "Beveridge", "Bismarck"),
+    slope = estimate,
+    slope_low = conf_low,
+    slope_high = conf_high
+  )
+
+# If the median row wasn't found by label, fall back to the middle quantile by
+# taking the median previous-debt value per system.
+if (nrow(median_slopes) < 2) {
+  median_slopes <- main_interaction_slopes %>%
+    group_by(system) %>%
+    slice_min(abs(previous_debt_pct_gdp - median(previous_debt_pct_gdp, na.rm = TRUE)), n = 1) %>%
+    ungroup() %>%
+    transmute(
+      system = if_else(system == "BEV", "Beveridge", "Bismarck"),
+      slope = estimate,
+      slope_low = conf_low,
+      slope_high = conf_high
+    )
+}
+
+# Compute intercepts so trendlines pass through each system's mean point.
+intercepts <- system_change_df %>%
+  group_by(system_label) %>%
+  summarise(
+    mean_x = mean(mean_defence_change_10pct, na.rm = TRUE),
+    mean_y = mean(mean_health_change_percent, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  left_join(median_slopes, by = c("system_label" = "system")) %>%
+  mutate(
+    intercept = mean_y - slope * mean_x,
+    intercept_low = mean_y - slope_low * mean_x,
+    intercept_high = mean_y - slope_high * mean_x
+  )
+
+scatter_plot <- ggplot(system_change_df, aes(x = mean_defence_change_10pct, y = mean_health_change_percent, colour = system_label)) +
+  geom_hline(yintercept = 0, linetype = "dashed", colour = "#52606d") +
+  geom_vline(xintercept = 0, linetype = "dashed", colour = "#52606d") +
+  geom_point(size = 3, alpha = 0.9) +
+  # Add main trendlines from the fully-adjusted model at median debt
+  geom_abline(
+    data = intercepts,
+    aes(slope = slope, intercept = intercept, colour = system_label),
+    linewidth = 1.1
+  ) +
+  # Add dashed lines for the slope confidence bounds
+  geom_abline(
+    data = intercepts,
+    aes(slope = slope_low, intercept = intercept_low, colour = system_label),
+    linetype = "dashed",
+    alpha = 0.45
+  ) +
+  geom_abline(
+    data = intercepts,
+    aes(slope = slope_high, intercept = intercept_high, colour = system_label),
+    linetype = "dashed",
+    alpha = 0.45
+  ) +
+  scale_colour_manual(values = c("Beveridge" = viz_palette[["Beveridge"]], "Bismarck" = viz_palette[["Bismarck"]])) +
+  labs(
+    title = "System-level annual changes: Defence vs Health",
+    subtitle = "Yearly system averages; trendlines show model slope at median previous-year debt",
+    x = "Mean defence change (per 10% relative increase)",
+    y = "Mean health change (percentage points)",
+    colour = "System"
+  ) +
+  plot_theme()
+
+ggsave(
+  filename = file.path(results_dir, "system_change_scatter.png"),
+  plot = scatter_plot,
+  width = 9,
+  height = 6,
+  dpi = 300,
+  bg = "white"
+)
+
+ggsave(
+  filename = file.path(results_dir, "system_change_scatter.pdf"),
+  plot = scatter_plot,
+  width = 9,
+  height = 6,
+  bg = "white"
+)
+
+cat("Saved system-change scatter plot to results/system_change_scatter.png and .pdf\n")
