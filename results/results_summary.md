@@ -1,6 +1,6 @@
 # Health and Defence Spending: Results Summary
 
-Generated: 2026-08-13
+Generated: 2026-08-20
 
 > These analyses estimate associations and do not establish causation.
 
