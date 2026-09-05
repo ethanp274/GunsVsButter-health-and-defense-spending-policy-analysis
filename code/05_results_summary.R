@@ -15,6 +15,9 @@ suppressPackageStartupMessages({
 })
 
 results_dir <- "results"
+tables_dir <- file.path(results_dir, "tables")
+sensitivities_dir <- file.path(results_dir, "sensitivities")
+figures_dir <- file.path(results_dir, "figures")
 output_file <- file.path(results_dir, "results_summary.md")
 html_output_file <- file.path(results_dir, "results_summary.html")
 
@@ -23,22 +26,28 @@ html_output_file <- file.path(results_dir, "results_summary.html")
 # Markdown report. This prevents the summary from silently drifting away from the
 # current pipeline outputs or a missing figure.
 required_files <- c(
-  "analysis_sample_flow.csv",
-  "main_country_sample_counts.csv",
-  "table1_descriptive_statistics.csv",
-  "main_model_overview.csv",
-  "main_model_coefficients.csv",
-  "main_interaction_slopes.csv",
-  "secondary_model_overview.csv",
-  "secondary_model_coefficients.csv",
-  "main_sensitivity_overview.csv",
-  "main_sensitivity_coefficients.csv",
-  "main_leave_one_country_out.csv",
-  "secondary_sensitivity_results.csv",
-  "health_def_ratio_timeseries.png",
-  "system_avg_spending_pct_gdp_timeseries.png",
-  "main_model_forest_plot.png",
-  "main_interaction_slopes_plot.png"
+  file.path("tables", c(
+    "analysis_sample_flow.csv",
+    "main_country_sample_counts.csv",
+    "table1_descriptive_statistics.csv",
+    "main_model_overview.csv",
+    "main_model_coefficients.csv",
+    "main_interaction_slopes.csv",
+    "secondary_model_overview.csv",
+    "secondary_model_coefficients.csv"
+  )),
+  file.path("sensitivities", c(
+    "main_sensitivity_overview.csv",
+    "main_sensitivity_coefficients.csv",
+    "main_leave_one_country_out.csv",
+    "secondary_sensitivity_results.csv"
+  )),
+  file.path("figures", c(
+    "health_def_ratio_timeseries.png",
+    "system_avg_spending_pct_gdp_timeseries.png",
+    "main_model_forest_plot.png",
+    "main_interaction_slopes_plot.png"
+  ))
 )
 
 missing_files <- required_files[
@@ -56,62 +65,62 @@ if (length(missing_files) > 0) {
 # Load the machine-readable results so the report is assembled from the saved
 # outputs rather than manual retyping of coefficients or samples.
 sample_flow <- read_csv(
-  file.path(results_dir, "analysis_sample_flow.csv"),
+  file.path(tables_dir, "analysis_sample_flow.csv"),
   show_col_types = FALSE
 )
 
 country_sample_counts <- read_csv(
-  file.path(results_dir, "main_country_sample_counts.csv"),
+  file.path(tables_dir, "main_country_sample_counts.csv"),
   show_col_types = FALSE
 )
 
 table1_descriptive_statistics <- read_csv(
-  file.path(results_dir, "table1_descriptive_statistics.csv"),
+  file.path(tables_dir, "table1_descriptive_statistics.csv"),
   show_col_types = FALSE
 )
 
 main_overview <- read_csv(
-  file.path(results_dir, "main_model_overview.csv"),
+  file.path(tables_dir, "main_model_overview.csv"),
   show_col_types = FALSE
 )
 
 main_coefficients <- read_csv(
-  file.path(results_dir, "main_model_coefficients.csv"),
+  file.path(tables_dir, "main_model_coefficients.csv"),
   show_col_types = FALSE
 )
 
 interaction_slopes <- read_csv(
-  file.path(results_dir, "main_interaction_slopes.csv"),
+  file.path(tables_dir, "main_interaction_slopes.csv"),
   show_col_types = FALSE
 )
 
 secondary_overview <- read_csv(
-  file.path(results_dir, "secondary_model_overview.csv"),
+  file.path(tables_dir, "secondary_model_overview.csv"),
   show_col_types = FALSE
 )
 
 secondary_coefficients <- read_csv(
-  file.path(results_dir, "secondary_model_coefficients.csv"),
+  file.path(tables_dir, "secondary_model_coefficients.csv"),
   show_col_types = FALSE
 )
 
 main_sensitivity_overview <- read_csv(
-  file.path(results_dir, "main_sensitivity_overview.csv"),
+  file.path(sensitivities_dir, "main_sensitivity_overview.csv"),
   show_col_types = FALSE
 )
 
 main_sensitivity_coefficients <- read_csv(
-  file.path(results_dir, "main_sensitivity_coefficients.csv"),
+  file.path(sensitivities_dir, "main_sensitivity_coefficients.csv"),
   show_col_types = FALSE
 )
 
 leave_one_country_out <- read_csv(
-  file.path(results_dir, "main_leave_one_country_out.csv"),
+  file.path(sensitivities_dir, "main_leave_one_country_out.csv"),
   show_col_types = FALSE
 )
 
 secondary_sensitivity <- read_csv(
-  file.path(results_dir, "secondary_sensitivity_results.csv"),
+  file.path(sensitivities_dir, "secondary_sensitivity_results.csv"),
   show_col_types = FALSE
 )
 
@@ -688,9 +697,9 @@ report_lines <- c(
   "",
   "### Model-output figures",
   "",
-  "![Headline model forest plot](main_model_forest_plot.png)",
+  "![Headline model forest plot](figures/main_model_forest_plot.png)",
   "",
-  "![Interaction slopes plot](main_interaction_slopes_plot.png)",
+  "![Interaction slopes plot](figures/main_interaction_slopes_plot.png)",
   "",
   "The GEE is retained as a robustness check in the sensitivity analyses rather than as a headline main model in the sequential sequence.",
   "",
@@ -763,11 +772,11 @@ report_lines <- c(
   "",
   "### Health-to-defence spending ratio",
   "",
-  "![Health-to-defence spending ratio over time](health_def_ratio_timeseries.png)",
+  "![Health-to-defence spending ratio over time](figures/health_def_ratio_timeseries.png)",
   "",
   "### Average spending by health-system type",
   "",
-  "![Average health and defence spending as a share of GDP](system_avg_spending_pct_gdp_timeseries.png)",
+  "![Average health and defence spending as a share of GDP](figures/system_avg_spending_pct_gdp_timeseries.png)",
   "",
   "## Interpretation cautions",
   "",
@@ -789,7 +798,7 @@ report_lines <- c(
   "Rscript code/05_results_summary.R",
   "```",
   "",
-  "The report is generated entirely from machine-readable files in `results/`; no estimates are entered manually."
+  "The report is generated entirely from machine-readable files in `results/tables/` and `results/sensitivities/`; no estimates are entered manually."
 )
 
 writeLines(report_lines, output_file)

@@ -75,7 +75,8 @@ pipeline_steps <- c(
   "code/02_analysis.R",
   "code/03_sensitivity_analyses.R",
   "code/04_visualisation.R",
-  "code/05_results_summary.R"
+  "code/05_results_summary.R",
+  "code/07_render_data_dictionary.R"
 )
 
 
@@ -91,6 +92,14 @@ if (length(missing_steps) > 0) {
   )
 }
 
+# All contents of results/ are generated. Clear them before a full run so a
+# publication-facing results directory cannot retain stale files from an older
+# analysis. Each downstream stage recreates the directories it owns.
+results_dir <- "results"
+if (dir.exists(results_dir)) {
+  unlink(list.files(results_dir, full.names = TRUE), recursive = TRUE)
+}
+dir.create(results_dir, showWarnings = FALSE)
 
 # Run each stage in a fresh R session and stop if any stage fails
 rscript_command <- file.path(

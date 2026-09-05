@@ -212,10 +212,10 @@ fixed_effects <- bind_rows(lapply(split(case_table, 1:nrow(case_table)), functio
 }))
 
 # Save the raw comparison outputs.
-results_dir <- "results"
-dir.create(results_dir, showWarnings = FALSE)
-write_csv(results, "results/mixed_model_optimizer_sensitivity.csv")
-write_csv(fixed_effects, "results/mixed_model_optimizer_fixed_effects.csv")
+results_dir <- file.path("results", "diagnostics")
+dir.create(results_dir, recursive = TRUE, showWarnings = FALSE)
+write_csv(results, file.path(results_dir, "mixed_model_optimizer_sensitivity.csv"))
+write_csv(fixed_effects, file.path(results_dir, "mixed_model_optimizer_fixed_effects.csv"))
 
 # Print a concise summary to the console for quick inspection.
 print(results %>%

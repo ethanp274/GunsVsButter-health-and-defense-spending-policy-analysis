@@ -40,11 +40,11 @@ viz_palette <- c(
 
 # Read the machine-generated model outputs so the figures stay aligned with the
 # fitted results rather than manually typed estimates.
-main_model_coefficients <- read_csv("results/main_model_coefficients.csv", show_col_types = FALSE)
-main_interaction_slopes <- read_csv("results/main_interaction_slopes.csv", show_col_types = FALSE)
+main_model_coefficients <- read_csv("results/tables/main_model_coefficients.csv", show_col_types = FALSE)
+main_interaction_slopes <- read_csv("results/tables/main_interaction_slopes.csv", show_col_types = FALSE)
 
-results_dir <- "results"
-dir.create(results_dir, showWarnings = FALSE)
+results_dir <- file.path("results", "figures")
+dir.create(results_dir, recursive = TRUE, showWarnings = FALSE)
 
 # Load processed data for the original descriptive plots
 master_df <- read_csv("processed_data/primary_analysis.csv", na = c(""), show_col_types = FALSE)
@@ -184,7 +184,7 @@ ggsave(
   bg = "white"
 )
 
-cat("Saved health_def_ratio time-series plot to results/health_def_ratio_timeseries.png and .pdf\n")
+cat("Saved health_def_ratio time-series plot to results/figures/health_def_ratio_timeseries.png and .pdf\n")
 
 # Original plot 2: average health and defence spending as a share of GDP by
 # health-system type. The lines separate system-level averages and spending type
@@ -331,7 +331,7 @@ ggsave(
   bg = "white"
 )
 
-cat("Saved system-average spending time-series plot to results/system_avg_spending_pct_gdp_timeseries.png and .pdf\n")
+cat("Saved system-average spending time-series plot to results/figures/system_avg_spending_pct_gdp_timeseries.png and .pdf\n")
 
 # New plot 1: forest plot of key coefficients in the fully adjusted mixed model.
 # This summary focuses on the core terms for interpretation without crowding the
@@ -404,7 +404,7 @@ ggsave(
   bg = "white"
 )
 
-cat("Saved headline forest plot to results/main_model_forest_plot.png and .pdf\n")
+cat("Saved headline forest plot to results/figures/main_model_forest_plot.png and .pdf\n")
 
 # New plot 2: marginal-effects plot for defence-change slopes across debt values
 # by health-system type. The figure turns the interaction into a more readable
@@ -455,7 +455,7 @@ ggsave(
   bg = "white"
 )
 
-cat("Saved interaction slopes plot to results/main_interaction_slopes_plot.png and .pdf\n")
+cat("Saved interaction slopes plot to results/figures/main_interaction_slopes_plot.png and .pdf\n")
 
 # New plot 3: system-level annual-change scatter with model-predicted trendlines
 # Points are system-level (Beveridge/Bismarck) yearly averages of annual
@@ -572,4 +572,4 @@ ggsave(
   bg = "white"
 )
 
-cat("Saved system-change scatter plot to results/system_change_scatter.png and .pdf\n")
+cat("Saved system-change scatter plot to results/figures/system_change_scatter.png and .pdf\n")

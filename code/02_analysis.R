@@ -25,8 +25,8 @@ master_df <- read_csv(
   show_col_types = FALSE
 )
 
-results_dir <- "results"
-dir.create(results_dir, showWarnings = FALSE)
+results_dir <- file.path("results", "tables")
+dir.create(results_dir, recursive = TRUE, showWarnings = FALSE)
 excluded_analysis_years <- c(2020L, 2021L)
 analysis_end_year <- max(master_df$year, na.rm = TRUE)
 
@@ -881,4 +881,4 @@ writeLines(
 
 # Print the same concise summary to the console
 cat(paste(summary_lines, collapse = "\n"))
-cat("\n\nMain analysis outputs saved in the results/ folder.\n")
+cat("\n\nMain analysis outputs saved in results/tables/.\n")

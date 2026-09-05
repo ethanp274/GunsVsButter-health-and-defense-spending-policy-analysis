@@ -9,7 +9,7 @@
 </head>
 <body>
 <h1>Health and Defence Spending: Results Summary</h1>
-<p>Generated: 2026-08-20</p>
+<p>Generated: 2026-09-05</p>
 <blockquote>
 <p>These analyses estimate associations and do not establish causation.</p>
 </blockquote>
@@ -586,8 +586,8 @@
 </tbody>
 </table>
 <h3>Model-output figures</h3>
-<p><img src="main_model_forest_plot.png" alt="Headline model forest plot" /></p>
-<p><img src="main_interaction_slopes_plot.png" alt="Interaction slopes plot" /></p>
+<p><img src="figures/main_model_forest_plot.png" alt="Headline model forest plot" /></p>
+<p><img src="figures/main_interaction_slopes_plot.png" alt="Interaction slopes plot" /></p>
 <p>The GEE is retained as a robustness check in the sensitivity analyses rather than as a headline main model in the sequential sequence.</p>
 <h3>Categorical year effects</h3>
 <p>These coefficients are the common year-level differences in relative health-spending change from the 2000 reference year in the fully adjusted model. They should be interpreted as adjustment for shared annual shocks, not as effects caused by the calendar year.</p>
@@ -1011,9 +1011,9 @@
 <p>Across the remaining change-on-change models, 2 of 20 95% confidence intervals excluded zero. Directions and timing varied across outcomes, so these results do not indicate a consistent short-run pattern.</p>
 <h2>Descriptive figures</h2>
 <h3>Health-to-defence spending ratio</h3>
-<p><img src="health_def_ratio_timeseries.png" alt="Health-to-defence spending ratio over time" /></p>
+<p><img src="figures/health_def_ratio_timeseries.png" alt="Health-to-defence spending ratio over time" /></p>
 <h3>Average spending by health-system type</h3>
-<p><img src="system_avg_spending_pct_gdp_timeseries.png" alt="Average health and defence spending as a share of GDP" /></p>
+<p><img src="figures/system_avg_spending_pct_gdp_timeseries.png" alt="Average health and defence spending as a share of GDP" /></p>
 <h2>Interpretation cautions</h2>
 <ul>
 <li>The models are associational and may retain residual confounding or reverse causation.</li>
@@ -1030,7 +1030,7 @@ Rscript code/03_sensitivity_analyses.R
 Rscript code/04_visualisation.R
 Rscript code/05_results_summary.R
 </code></pre>
-<p>The report is generated entirely from machine-readable files in <code>results/</code>; no estimates are entered manually.</p>
+<p>The report is generated entirely from machine-readable files in <code>results/tables/</code> and <code>results/sensitivities/</code>; no estimates are entered manually.</p>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
 </body>

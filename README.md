@@ -87,9 +87,8 @@ The main model sequence is five staged specifications: pooled, country
 random-intercept, health-system moderation, debt moderation, and the fully
 adjusted model above. The system-type term is retained as a fixed effect in
 all system-moderation models, and the interaction term is included alongside
-it. The GEE is retained as a robustness check rather than a headline
-main-model specification. Country fixed-effects models and GLS/AR(1)
-specifications remain sensitivity analyses. A separate one-off optimizer and
+it. The country-clustered GEE, country fixed-effects, and GLS/AR(1)
+specifications are sensitivity analyses. A separate one-off optimizer and
 convergence check was also run to confirm that the observed mixed-model
 singularity was not an artefact of default `lme4` settings or a poorly chosen
 optimisation path; it is not incorporated into the standard pipeline.
@@ -222,6 +221,7 @@ used only for model-diagnostics rigour:
 3. `code/03_sensitivity_analyses.R`
 4. `code/04_visualisation.R`
 5. `code/05_results_summary.R`
+6. `code/07_render_data_dictionary.R`
 
 The auxiliary script `code/06_mixed_model_sensitivity.R` is a separate,
 non-routine robustness check for optimizer and convergence settings. It is kept
@@ -252,25 +252,32 @@ The processing stage writes:
 
 - `processed_data/primary_analysis.csv`
 
-The downstream stages write machine-readable model summaries, diagnostics,
-sensitivity results, and figures under `results/`.
-
-The generated report also includes a country-level table of primary-analysis
-panel years, included complete-case observations, excluded observations, and
-the specific included years: `results/main_country_sample_counts.csv`.
-
-It also includes generated Table 1 descriptive statistics by health-system type
-and overall: `results/table1_descriptive_statistics.csv`.
-
-The one-off optimizer check produces supplementary files in `results/` for
-quality assurance, including the mixed-model optimiser comparisons and fixed
-effects under alternative settings, but these are not part of the routine
-analysis pipeline.
-
-The main human-readable output is:
+The master pipeline clears and rebuilds `results/` on every run. Compiled,
+human-readable reports remain at the top level:
 
 - [results/results_summary.md](results/results_summary.md)
 - [results/results_summary.html](results/results_summary.html)
+
+All other generated outputs are grouped by purpose:
+
+- `results/tables/`: primary model, secondary model, sample, and descriptive tables;
+- `results/sensitivities/`: robustness-model tables and sensitivity summary;
+- `results/figures/`: publication-ready PNG and PDF figures; and
+- `results/diagnostics/`: non-routine optimizer-sensitivity outputs.
+
+The generated report also includes a country-level table of primary-analysis
+panel years, included complete-case observations, excluded observations, and
+the specific included years:
+`results/tables/main_country_sample_counts.csv`.
+
+It also includes generated Table 1 descriptive statistics by health-system type
+and overall: `results/tables/table1_descriptive_statistics.csv`.
+
+The one-off optimizer check produces supplementary files in
+`results/diagnostics/` for
+quality assurance, including the mixed-model optimiser comparisons and fixed
+effects under alternative settings, but these are not part of the routine
+analysis pipeline.
 
 They contain the model equations, headline and secondary results, conditional
 slopes, categorical year effects, lagged sensitivities, other robustness

@@ -28,8 +28,8 @@ master_df <- read_csv(
   show_col_types = FALSE
 )
 
-results_dir <- "results"
-dir.create(results_dir, showWarnings = FALSE)
+results_dir <- file.path("results", "sensitivities")
+dir.create(results_dir, recursive = TRUE, showWarnings = FALSE)
 
 # Set the sample windows used throughout the sensitivity checks.
 excluded_analysis_years <- c(2020L, 2021L)
@@ -1158,4 +1158,4 @@ writeLines(
 )
 
 cat(paste(summary_lines, collapse = "\n"))
-cat("\n\nSensitivity outputs saved in the results/ folder.\n")
+cat("\n\nSensitivity outputs saved in results/sensitivities/.\n")

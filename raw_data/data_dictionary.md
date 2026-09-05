@@ -2,7 +2,7 @@
 
 Project: Harry Rourke's MGHL thesis
 Prepared by: Ethan Phillips
-Last updated: 5 August 2026
+Last updated: 5 September 2026
 
 ## Purpose
 
@@ -23,7 +23,7 @@ are retained for provenance and are not read directly.
 | --- | ---: | --- |
 | `IMF_debt_pct_gdp.csv` | 384 x 78 | Wide IMF general government debt as a share of GDP. |
 | `OECD_beds_per_k.csv` | 1,225 x 40 | Long OECD hospital beds, per 1,000 people. |
-| `../20260731-WHO BEDS .csv` | 704 x 34 | Long WHO hospital beds, per 10,000 people; used only to supplement missing OECD values. |
+| `20260731-WHO BEDS .csv` | 704 x 34 | Long WHO hospital beds, per 10,000 people; used only to supplement missing OECD values. |
 | `OECD_gdp_per_cap_updated.csv` | 913 x 44 | Long OECD GDP per capita in PPP-converted US dollars per person at current prices; updated extract includes Croatia. |
 | `OECD_health_spending_pct_gdp.csv` | 1,488 x 46 | Long OECD government/compulsory health spending as a percentage of GDP. |
 | `WHO_missing_health_spending_pct_gdp.csv` | 8 x 29 | Wide WHO government health spending as a percentage of GDP for countries with missing OECD values; used as a fill source rather than a replacement for OECD. |
@@ -170,3 +170,12 @@ and diagnostic-scan extracts are provenance-only files; they are not read by
 the current pipeline. The OOP workbook in `updated_sources_040826/` is an
 explicitly retained alternative; the primary OOP input remains
 `OECD_oop_pct_health_spend.csv`.
+
+## Generated outputs
+
+`processed_data/primary_analysis.csv` is the generated clean panel. The
+pipeline rebuilds `results/` from scratch: reports are written to `results/`,
+primary tables to `results/tables/`, robustness outputs to
+`results/sensitivities/`, figures to `results/figures/`, and optional
+optimizer diagnostics to `results/diagnostics/`. These files do not replace
+the raw inputs documented above.

@@ -10,8 +10,8 @@ Before changing the project:
 2. Read `raw_data/data_dictionary.md`.
 3. Inspect `git status --short` and preserve unrelated user changes.
 4. Read the complete script or document you intend to edit.
-5. Treat `results/results_summary.md` as generated output, not a hand-edited
-   source.
+5. Treat all contents of `results/` as generated output, not hand-edited
+   source material.
 
 The local dissertation proposal,
 `MGHL DISSERTATION PROPOSAL DEFENCEHEALTH.docx`, is historical context. It may
@@ -93,17 +93,30 @@ without an explicit methodological decision from the user.
 - `code/00_run_pipeline.R`: runs the full pipeline.
 - `code/01_data_processing.R`: reads the current raw CSV inputs and creates
   the clean panel.
-- `code/02_analysis.R`: fits the six main models and primary secondary models.
+- `code/02_analysis.R`: fits the five staged main models and primary secondary models.
 - `code/03_sensitivity_analyses.R`: fits main and secondary robustness checks.
 - `code/04_visualisation.R`: generates descriptive figures.
 - `code/05_results_summary.R`: regenerates the Markdown results report.
+- `code/07_render_data_dictionary.R`: regenerates the HTML data dictionary
+  from its Markdown source.
 - `raw_data/data_dictionary.md`: authoritative data inventory and units.
 - `processed_data/primary_analysis.csv`: generated analysis dataset.
-- `results/main_country_sample_counts.csv`: generated country-level main-sample
+- `results/tables/main_country_sample_counts.csv`: generated country-level main-sample
   observation counts and included years.
-- `results/table1_descriptive_statistics.csv`: generated retained-panel
+- `results/tables/table1_descriptive_statistics.csv`: generated retained-panel
   descriptive statistics by health-system type and overall.
 - `results/results_summary.md`: generated human-readable results.
+
+Generated results are organised as follows:
+
+- `results/`: compiled Markdown and HTML reports only.
+- `results/tables/`: primary analysis tables and concise summaries.
+- `results/sensitivities/`: robustness-analysis outputs.
+- `results/figures/`: PNG and PDF figures.
+- `results/diagnostics/`: optional non-routine optimizer diagnostics.
+
+`code/00_run_pipeline.R` clears and regenerates `results/`; do not place
+manual files there.
 
 `raw_data/sources/` contains provenance workbooks. `deprecated/` contains
 superseded inputs and analyses. Neither directory should be substituted for
@@ -122,9 +135,8 @@ the current CSV inputs without explicit instruction.
 - Centre continuous moderators before interactions.
 - Keep categorical year effects as factors.
 - Do not suppress singularity or convergence diagnostics.
-- Treat the country-clustered GEE as the final population-average model in the
-  sequential main-model sequence; retain the mixed model's diagnostics and
-  interpretation as the headline random-intercept specification.
+- Keep the country-clustered GEE as a population-average sensitivity analysis;
+  retain the mixed model as the headline random-intercept specification.
 - Do not manually type estimates into the report generator.
 - Do not edit raw CSVs or source workbooks unless the user explicitly requests
   a data correction.
@@ -156,8 +168,8 @@ Then check:
 - previous-year debt is correctly aligned within country;
 - lagged defence models use debt at `t - 1` relative to health change at `t`;
 - no UHC secondary model or result has reappeared;
-- the main model sequence contains the final population-average GEE, while
-  GEE is absent from the sensitivity-analysis output;
+- the main model sequence contains the five staged specifications, while the
+  population-average GEE remains in the sensitivity-analysis output;
 - Greece-excluded, NATO-only, and OECD-only sensitivities are present;
 - the secondary results contain only the five prespecified outcomes;
 - 2020 and 2021 are absent from primary fitted samples but present in the

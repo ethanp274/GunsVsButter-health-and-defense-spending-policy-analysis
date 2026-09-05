@@ -1,6 +1,6 @@
 # Health and Defence Spending: Results Summary
 
-Generated: 2026-08-20
+Generated: 2026-09-05
 
 > These analyses estimate associations and do not establish causation.
 
@@ -111,9 +111,9 @@ Estimates are shown as coefficient [95% confidence interval]. Year-dummy coeffic
 
 ### Model-output figures
 
-![Headline model forest plot](main_model_forest_plot.png)
+![Headline model forest plot](figures/main_model_forest_plot.png)
 
-![Interaction slopes plot](main_interaction_slopes_plot.png)
+![Interaction slopes plot](figures/main_interaction_slopes_plot.png)
 
 The GEE is retained as a robustness check in the sensitivity analyses rather than as a headline main model in the sequential sequence.
 
@@ -232,11 +232,11 @@ Across the remaining change-on-change models, 2 of 20 95% confidence intervals e
 
 ### Health-to-defence spending ratio
 
-![Health-to-defence spending ratio over time](health_def_ratio_timeseries.png)
+![Health-to-defence spending ratio over time](figures/health_def_ratio_timeseries.png)
 
 ### Average spending by health-system type
 
-![Average health and defence spending as a share of GDP](system_avg_spending_pct_gdp_timeseries.png)
+![Average health and defence spending as a share of GDP](figures/system_avg_spending_pct_gdp_timeseries.png)
 
 ## Interpretation cautions
 
@@ -258,4 +258,4 @@ Rscript code/04_visualisation.R
 Rscript code/05_results_summary.R
 ```
 
-The report is generated entirely from machine-readable files in `results/`; no estimates are entered manually.
+The report is generated entirely from machine-readable files in `results/tables/` and `results/sensitivities/`; no estimates are entered manually.
