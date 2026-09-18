@@ -1,6 +1,6 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # MAIN ANALYSIS OF HEALTH AND DEFENCE SPENDING
-# Harry Rourke & Ethan Phillips
+# HR & EP
 # Last updated: 2026-08-13
 # Headline sequence: pooled -> random-intercept -> moderation -> fully adjusted
 # GEE retained as a robustness analysis rather than a headline main-model stage

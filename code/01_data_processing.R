@@ -1,6 +1,6 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # DATA CLEANING AND PREPARATION FOR ANALYSIS OF HEALTH AND DEFENCE SPENDING
-# Harry Rourke & Ethan Phillips
+# HR & EP
 # Last updated: 2026-08-13
 # Panel coverage: 2000-2025; 1999 is used only for first-year changes and lagged debt
 # Primary analyses exclude 2020 and 2021; explicit sensitivity includes them

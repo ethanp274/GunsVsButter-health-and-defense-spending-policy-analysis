@@ -1,6 +1,6 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # RUN THE COMPLETE HEALTH AND DEFENCE SPENDING PIPELINE
-# Harry Rourke & Ethan Phillips
+# HR & EP
 # Last updated: 2026-08-13
 # Core analysis years: 2000-2025; 1999 is read only for first-year changes/debt
 # Headline sequence: pooled -> random-intercept -> moderation -> fully adjusted

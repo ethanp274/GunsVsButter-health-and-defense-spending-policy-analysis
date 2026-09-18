@@ -1,6 +1,6 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # GENERATE A MARKDOWN SUMMARY OF ANALYSIS RESULTS
-# Harry Rourke & Ethan Phillips
+# HR & EP
 # Last updated: 2026-08-13
 # Summary reflects the five-stage headline model sequence and the robustness checks
 # used for the current, final analysis design as of this date

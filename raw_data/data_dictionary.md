@@ -1,7 +1,7 @@
 # Data Dictionary
 
-Project: Harry Rourke's MGHL thesis
-Prepared by: Ethan Phillips
+Project: HR's MGHL thesis
+Prepared by: EP
 Last updated: 5 September 2026
 
 ## Purpose

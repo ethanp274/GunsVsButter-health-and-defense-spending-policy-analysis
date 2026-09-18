@@ -1,6 +1,6 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # VISUALISATION OF HEALTH AND DEFENCE SPENDING TRADEOFF
-# Harry Rourke & Ethan Phillips
+# HR & EP
 # Last updated: 2026-08-13
 # Result figures use the headline model estimates and interaction slopes
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
