@@ -19,6 +19,10 @@ master_df <- read_csv(
   show_col_types = FALSE
 )
 
+if (any(master_df$code == "CYP" & master_df$year >= 2019L)) {
+  stop("The processed analysis panel must exclude Cyprus from 2019 onward.")
+}
+
 excluded_analysis_years <- c(2020L, 2021L)
 analysis_end_year <- max(master_df$year, na.rm = TRUE)
 

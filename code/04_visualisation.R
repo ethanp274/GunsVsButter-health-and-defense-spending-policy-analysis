@@ -49,6 +49,10 @@ dir.create(results_dir, recursive = TRUE, showWarnings = FALSE)
 # Load processed data for the original descriptive plots
 master_df <- read_csv("processed_data/primary_analysis.csv", na = c(""), show_col_types = FALSE)
 
+if (any(master_df$code == "CYP" & master_df$year >= 2019L)) {
+  stop("The processed analysis panel must exclude Cyprus from 2019 onward.")
+}
+
 excluded_analysis_years <- c(2020L, 2021L)
 analysis_end_year <- max(master_df$year, na.rm = TRUE)
 
@@ -155,7 +159,7 @@ health_def_ratio_plot <- ggplot(
     title = "Health-to-defence spending ratio over time",
     subtitle = paste(
       "Ratio of health spending share of GDP to defence spending share of GDP;",
-      "2020-2021 excluded"
+      "2020-2021 excluded; Cyprus through 2018"
     ),
     x = "Year",
     y = "Health-to-defence spending ratio",
@@ -301,7 +305,7 @@ system_spend_plot <- system_spend_df %>%
       min(system_spend_df$year, na.rm = TRUE),
       "-",
       max(system_spend_df$year, na.rm = TRUE),
-      "; 2020-2021 excluded"
+      "; 2020-2021 excluded; Cyprus through 2018"
     ),
     x = "Year",
     y = "Average spending as a share of GDP",
@@ -377,7 +381,10 @@ forest_plot <- ggplot(forest_df, aes(y = term_order, x = estimate)) +
   geom_point(size = 3.2, colour = "#2c7fb8") +
   labs(
     title = "Headline model coefficients",
-    subtitle = "Fully adjusted mixed model, 2000-2025 excluding 2020-2021",
+    subtitle = paste(
+      "Fully adjusted mixed model, 2000-2025 excluding 2020-2021;",
+      "Cyprus through 2018"
+    ),
     x = "Estimated coefficient",
     y = NULL
   ) +

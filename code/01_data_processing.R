@@ -2,7 +2,8 @@
 # DATA CLEANING AND PREPARATION FOR ANALYSIS OF HEALTH AND DEFENCE SPENDING
 # HR & EP
 # Last updated: 2026-08-13
-# Panel coverage: 2000-2025; 1999 is used only for first-year changes and lagged debt
+# Panel coverage: 2000-2025; Cyprus is retained through 2018
+# 1999 is used only for first-year changes and lagged debt
 # Primary analyses exclude 2020 and 2021; explicit sensitivity includes them
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -75,6 +76,8 @@ study_codes <- systems_df$code
 excluded_analysis_years <- c(2020L, 2021L)
 panel_years <- 2000:2025
 source_years <- c((min(panel_years) - 1L), panel_years)
+excluded_country_code <- "CYP"
+excluded_country_from_year <- 2019L
 
 
 # Helpers for the two source layouts
@@ -464,7 +467,10 @@ panel_df <- panel_df %>%
   arrange(country, year)
 
 master_df <- panel_df %>%
-  filter(year %in% panel_years) %>%
+  filter(
+    year %in% panel_years,
+    !(code == excluded_country_code & year >= excluded_country_from_year)
+  ) %>%
   select(
     country,
     code,
@@ -495,12 +501,28 @@ if (n_distinct(master_df$code) != 30) {
   stop("The finalized panel must contain exactly 30 countries.")
 }
 
-if (nrow(master_df) != 30 * length(panel_years)) {
-  stop("The finalized panel must contain 780 country-year rows.")
+expected_panel_rows <- 29 * length(panel_years) +
+  sum(panel_years < excluded_country_from_year)
+
+if (nrow(master_df) != expected_panel_rows) {
+  stop("The finalized panel must contain 773 country-year rows.")
 }
 
 if (any(range(master_df$year) != c(min(panel_years), max(panel_years)))) {
   stop("The finalized panel must cover 2000-2025.")
+}
+
+if (any(master_df$code == excluded_country_code &
+        master_df$year >= excluded_country_from_year)) {
+  stop("Cyprus must be excluded from the finalized panel from 2019 onward.")
+}
+
+cyprus_years <- master_df %>%
+  filter(code == excluded_country_code) %>%
+  pull(year)
+
+if (length(cyprus_years) != 19 || max(cyprus_years) != 2018L) {
+  stop("The finalized panel must retain Cyprus only through 2018.")
 }
 
 if (anyDuplicated(master_df[c("code", "year")]) > 0) {

@@ -35,10 +35,11 @@ exploratory sensitivities.
 
 ## Current study design
 
-The processing stage constructs a balanced framework of 30 countries and 26
-years (2000-2025), with unavailable source observations retained as `NA`.
-The primary analysis and standard descriptive outputs exclude 2020 and 2021;
-an explicit main-model sensitivity includes them.
+The processing stage constructs a 30-country framework for 2000-2025, with
+Cyprus retained through 2018 only and unavailable source observations retained
+as `NA`. The panel contains 773 country-year rows. The primary analysis and
+standard descriptive outputs exclude 2020 and 2021; an explicit main-model
+sensitivity includes them for all retained country-years.
 Source observations from 1999 are read only to calculate the first retained
 year's changes and previous-year debt; 1999 is not included as an output row.
 There is no imputation or interpolation.
@@ -47,13 +48,16 @@ The primary analysis:
 
 - includes all countries in the authoritative study-country source, including
   Luxembourg; Iceland is absent from that source;
+- excludes Cyprus from 2019 onward in the processed analysis dataset because
+  its health-system classification changed from Beveridge to Bismarck in 2019;
 - excludes 2020 and 2021 from the primary analysis because of the exceptional
   effects of COVID-19 on spending, GDP, debt, and health measures; the years
-  remain in the processed panel for the explicit main-model sensitivity;
+  remain in the processed panel for other retained country-years and enter the
+  explicit main-model sensitivity;
 - omits 2022 from the main model because its required previous-year debt value
   is from excluded 2021;
-- otherwise uses available outcome years from 2000 through 2025 subject to
-  complete-case requirements;
+- otherwise uses available outcome years from 2000 through 2025 (Cyprus through
+  2018) subject to complete-case requirements;
 - uses Beveridge systems as the reference group;
 - includes a standalone system fixed effect plus the defence-spending-change-by-system interaction;
 - includes categorical year effects and a country random intercept;
@@ -198,7 +202,7 @@ apply; this repository does not assert a blanket licence over those data.
 This pipeline was edited with assistance from GPT-5.6 Luna (OpenAI) and MAI-Code-1.1-Flash (Microsoft).
 
 The repository was last reviewed and the pipeline was last regenerated on
-12 August 2026. Original source-download dates are not consistently recorded
+30 September 2026. Original source-download dates are not consistently recorded
 in the current provenance files. A repository-level citation record and code
 licence should be added before archival or public release.
 
@@ -251,6 +255,9 @@ install.packages(c(
 The processing stage writes:
 
 - `processed_data/primary_analysis.csv`
+
+This shared processed dataset applies the Cyprus cutoff before the primary,
+secondary, sensitivity, and descriptive-figure stages read it.
 
 The master pipeline clears and rebuilds `results/` on every run. Compiled,
 human-readable reports remain at the top level:

@@ -38,7 +38,8 @@ the code before relying on an old estimate.
 
 Preserve these decisions unless the user explicitly changes them:
 
-- The processed panel covers 30 countries and 2000-2025. Primary analyses,
+- The processed panel covers 30 countries and 2000-2025, with Cyprus retained
+  only through 2018. Primary analyses,
   plots, and standard descriptive outputs exclude 2020 and 2021; an explicit
   main sensitivity includes them. Source values from 1999 are used only to calculate
   the first retained year's changes and
@@ -46,8 +47,9 @@ Preserve these decisions unless the user explicitly changes them:
 - Raw missing observations remain `NA`; do not impute or interpolate.
 - Health and defence spending are shares of GDP, stored as proportions.
 - Health spending as a share of total government spending is not used.
-- All countries in the authoritative study-country source are included,
-  including Luxembourg; Iceland is absent from that source.
+- All countries in the authoritative study-country source are represented,
+  including Luxembourg; Cyprus has no observations from 2019 onward, and
+  Iceland is absent from that source.
 - COVID years 2020 and 2021 are excluded from primary analyses, plots, and
   standard descriptive outputs; they are included only in the explicit main
   sensitivity.
@@ -154,8 +156,8 @@ Rscript code/00_run_pipeline.R
 Then check:
 
 - every stage exits successfully;
-- the processed data still contain 30 countries, 780 rows, and years
-  2000-2025; primary-analysis outputs exclude 2020 and 2021;
+- the processed data contain 30 countries, 773 rows, and years 2000-2025;
+  Cyprus ends in 2018; primary-analysis outputs exclude 2020 and 2021;
 - the 2000 change variables use 1999 source values while the output panel
   begins in 2000;
 - the main model uses the intended countries, years, timing, and complete-case

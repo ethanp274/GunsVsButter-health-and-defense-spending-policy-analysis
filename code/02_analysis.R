@@ -25,6 +25,10 @@ master_df <- read_csv(
   show_col_types = FALSE
 )
 
+if (any(master_df$code == "CYP" & master_df$year >= 2019L)) {
+  stop("The processed analysis panel must exclude Cyprus from 2019 onward.")
+}
+
 results_dir <- file.path("results", "tables")
 dir.create(results_dir, recursive = TRUE, showWarnings = FALSE)
 excluded_analysis_years <- c(2020L, 2021L)
@@ -830,7 +834,7 @@ summary_lines <- c(
     min(main_data$year),
     max(main_data$year)
   ),
-  "Iceland is absent from the authoritative study-country source; Luxembourg is included in all analyses.",
+  "Iceland is absent from the authoritative study-country source; Luxembourg is included. Cyprus is retained through 2018 and excluded from 2019 onward in all analyses.",
   "COVID years 2020 and 2021 are excluded from the primary analysis; they are retained in the processed panel for the explicit main-model sensitivity.",
   "The main models also omit 2022 because its previous-year debt value is from excluded 2021.",
   "The headline model includes country random intercepts and categorical year effects.",

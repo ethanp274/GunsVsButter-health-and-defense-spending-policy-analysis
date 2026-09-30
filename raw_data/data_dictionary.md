@@ -2,16 +2,17 @@
 
 Project: HR's MGHL thesis
 Prepared by: EP
-Last updated: 5 September 2026
+Last updated: 30 September 2026
 
 ## Purpose
 
 The current source inputs are combined by `code/01_data_processing.R` into a
-30-country panel covering 2000-2025. Source values from 1999 are used only as
-the prior-year input for the first retained year's changes and debt. The output
-has one row per country-year; primary analyses and descriptive outputs exclude
-2020 and 2021, while a dedicated main sensitivity includes them. Source
-observations that are unavailable remain `NA`.
+30-country panel covering 2000-2025, with Cyprus retained through 2018 only.
+The output has 773 country-year rows. Source values from 1999 are used only as
+the prior-year input for the first retained year's changes and debt. Primary
+analyses and descriptive outputs exclude 2020 and 2021, while a dedicated main
+sensitivity includes them for the retained country-years. Source observations
+that are unavailable remain `NA`.
 
 The pipeline reads the current CSV files plus the WHO beds CSV. Other
 workbooks, consultation extracts, diagnostic-scan extracts, and Numbers files
@@ -39,8 +40,10 @@ are retained for provenance and are not read directly.
 
 ## Standard conventions
 
-- The processed panel is limited to the 30 countries in
-  `oecd_europe_health_systems.csv` and years 2000-2025.
+- The processed panel uses the 30 countries in
+  `oecd_europe_health_systems.csv` and years 2000-2025, except Cyprus is
+  excluded from 2019 onward because its health-system classification changed
+  from Beveridge to Bismarck in 2019.
 - Source values are read from 1999 through 2025 so that 2000 changes can be
   calculated from 1999-2000. The 1999 working row is not retained in the
   processed output.
@@ -150,8 +153,9 @@ to the health-change outcome year.
 
 ## Coverage limitations
 
-- The clean panel remains a complete 780-row country-year framework even when
-  source indicators are unavailable.
+- The clean panel contains 773 country-year rows: 26 years for 29 countries
+  and 19 years for Cyprus (2000-2018), even when source indicators are
+  unavailable.
 - The 1999 source year is used only for first-year change and debt
   calculations; it is not included as a processed panel year.
 - OECD indicator coverage differs across countries and years. GDP per capita,
@@ -173,7 +177,8 @@ explicitly retained alternative; the primary OOP input remains
 
 ## Generated outputs
 
-`processed_data/primary_analysis.csv` is the generated clean panel. The
+`processed_data/primary_analysis.csv` is the generated analysis panel with the
+Cyprus cutoff applied for every downstream analysis. The
 pipeline rebuilds `results/` from scratch: reports are written to `results/`,
 primary tables to `results/tables/`, robustness outputs to
 `results/sensitivities/`, figures to `results/figures/`, and optional

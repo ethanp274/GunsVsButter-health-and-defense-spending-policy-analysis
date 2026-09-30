@@ -10,14 +10,15 @@
 <h1>Data Dictionary</h1>
 <p>Project: HR's MGHL thesis
 Prepared by: EP
-Last updated: 5 September 2026</p>
+Last updated: 30 September 2026</p>
 <h2>Purpose</h2>
 <p>The current source inputs are combined by <code>code/01_data_processing.R</code> into a
-30-country panel covering 2000-2025. Source values from 1999 are used only as
-the prior-year input for the first retained year's changes and debt. The output
-has one row per country-year; primary analyses and descriptive outputs exclude
-2020 and 2021, while a dedicated main sensitivity includes them. Source
-observations that are unavailable remain <code>NA</code>.</p>
+30-country panel covering 2000-2025, with Cyprus retained through 2018 only.
+The output has 773 country-year rows. Source values from 1999 are used only as
+the prior-year input for the first retained year's changes and debt. Primary
+analyses and descriptive outputs exclude 2020 and 2021, while a dedicated main
+sensitivity includes them for the retained country-years. Source observations
+that are unavailable remain <code>NA</code>.</p>
 <p>The pipeline reads the current CSV files plus the WHO beds CSV. Other
 workbooks, consultation extracts, diagnostic-scan extracts, and Numbers files
 are retained for provenance and are not read directly.</p>
@@ -110,8 +111,10 @@ are retained for provenance and are not read directly.</p>
 </table>
 <h2>Standard conventions</h2>
 <ul>
-<li>The processed panel is limited to the 30 countries in
-<code>oecd_europe_health_systems.csv</code> and years 2000-2025.</li>
+<li>The processed panel uses the 30 countries in
+<code>oecd_europe_health_systems.csv</code> and years 2000-2025, except Cyprus is
+excluded from 2019 onward because its health-system classification changed
+from Beveridge to Bismarck in 2019.</li>
 <li>Source values are read from 1999 through 2025 so that 2000 changes can be
 calculated from 1999-2000. The 1999 working row is not retained in the
 processed output.</li>
@@ -268,8 +271,9 @@ as <code>previous_government_debt_pct_gdp</code>, so its timing remains explicit
 to the health-change outcome year.</p>
 <h2>Coverage limitations</h2>
 <ul>
-<li>The clean panel remains a complete 780-row country-year framework even when
-source indicators are unavailable.</li>
+<li>The clean panel contains 773 country-year rows: 26 years for 29 countries
+and 19 years for Cyprus (2000-2018), even when source indicators are
+unavailable.</li>
 <li>The 1999 source year is used only for first-year change and debt
 calculations; it is not included as a processed panel year.</li>
 <li>OECD indicator coverage differs across countries and years. GDP per capita,
@@ -288,7 +292,8 @@ the current pipeline. The OOP workbook in <code>updated_sources_040826/</code> i
 explicitly retained alternative; the primary OOP input remains
 <code>OECD_oop_pct_health_spend.csv</code>.</p>
 <h2>Generated outputs</h2>
-<p><code>processed_data/primary_analysis.csv</code> is the generated clean panel. The
+<p><code>processed_data/primary_analysis.csv</code> is the generated analysis panel with the
+Cyprus cutoff applied for every downstream analysis. The
 pipeline rebuilds <code>results/</code> from scratch: reports are written to <code>results/</code>,
 primary tables to <code>results/tables/</code>, robustness outputs to
 <code>results/sensitivities/</code>, figures to <code>results/figures/</code>, and optional

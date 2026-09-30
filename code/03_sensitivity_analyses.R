@@ -28,6 +28,10 @@ master_df <- read_csv(
   show_col_types = FALSE
 )
 
+if (any(master_df$code == "CYP" & master_df$year >= 2019L)) {
+  stop("The processed analysis panel must exclude Cyprus from 2019 onward.")
+}
+
 results_dir <- file.path("results", "sensitivities")
 dir.create(results_dir, recursive = TRUE, showWarnings = FALSE)
 
